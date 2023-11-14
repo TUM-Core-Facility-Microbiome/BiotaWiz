@@ -28,8 +28,10 @@ const createWindow = () => {
         mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
     }
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // open the DevTools when in not packaged (proxy for development environment)
+    if (!app.isPackaged) {
+        mainWindow.webContents.openDevTools();
+    }
 
     // show main window when it is ready
     mainWindow.once('ready-to-show', () => {
