@@ -2,7 +2,7 @@
   "name": "ngstoolkit2",
   "productName": "ngstoolkit2",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Analyse 16S rRNA amplicons for microbiome studies using the TIC pipeline",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
