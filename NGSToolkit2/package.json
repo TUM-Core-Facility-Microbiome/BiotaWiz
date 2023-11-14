@@ -16,6 +16,14 @@
     "name": "Zeno Sewald",
     "email": "13609987+zsewa@users.noreply.github.com"
   },
+  "contributors": [
+    {
+      "name": "Mohsen Pourjam"
+    },
+    {
+      "name": "Zeno Sewald"
+    }
+  ],
   "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^6.4.2",
