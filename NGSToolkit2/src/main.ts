@@ -1,4 +1,5 @@
 import {app, BrowserWindow} from 'electron';
+import MenuBuilder from './electron/menu';
 import path from 'path';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -17,6 +18,9 @@ const createWindow = () => {
         show: false,  // hide the window until it is ready
     });
 
+    const menuBuilder = new MenuBuilder(mainWindow);
+    menuBuilder.buildMenu();
+
     // and load the index.html of the app.
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -24,8 +28,10 @@ const createWindow = () => {
         mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
     }
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // open the DevTools when in not packaged (proxy for development environment)
+    if (!app.isPackaged) {
+        mainWindow.webContents.openDevTools();
+    }
 
     // show main window when it is ready
     mainWindow.once('ready-to-show', () => {
