@@ -30,7 +30,10 @@ import './index.css';
 
 console.log('👋 This message is being logged by "renderer.ts", included via Vite');
 
+// mount the Vue app
 import {createApp} from 'vue';
 import App from './views/App.vue';
-
-createApp(App).mount('#app');
+import router from './views/Router';
+const app = createApp(App);
+app.use(router);
+app.mount('#app');
