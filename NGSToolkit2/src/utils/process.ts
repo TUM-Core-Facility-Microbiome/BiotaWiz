@@ -1,6 +1,7 @@
 import * as child_process from "child_process";
 import * as platform from "./platform";
 import {BrowserWindow} from "electron";
+import {getBackend} from "../api/storage";
 
 async function dockerHelloWorld(): Promise<number> {
     return runSubprocess(
@@ -18,7 +19,7 @@ function wslHelloWorld(): Promise<number> {
     );
 }
 
-function runSubprocess(command: string, args: string[]): Promise<number> {
+export function runSubprocess(command: string, args: string[]): Promise<number> {
     return new Promise<number>((resolve, reject) => {
         const window = BrowserWindow.getFocusedWindow();
 
@@ -66,4 +67,27 @@ export function runMockProcess(): Promise<number> {
         [platform.platforms.MAC]: () => dockerHelloWorld(),
         default: () => dockerHelloWorld(),
     })();
+}
+
+export function getBackendVersion(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        getBackend().then((backend) => {
+            const subprocess = child_process.spawn(
+                backend.command,
+                ["--version"],
+            );
+
+            subprocess.stdout.on('data', (data) => {
+                if (data instanceof Buffer) {
+                    const msg = data.toString();
+                    console.log(msg);
+                    resolve(msg);
+                }
+            });
+            subprocess.on('close', (code, signal) => {
+                console.log(`Child closed with code ${code} and signal ${signal}`);
+                reject(code);
+            })
+        });
+    });
 }

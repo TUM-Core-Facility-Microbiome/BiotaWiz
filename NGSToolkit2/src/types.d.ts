@@ -7,3 +7,9 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 interface IDictionary<T> {
     [key: string]: T;
 }
+
+interface IBackend {
+    name: string;
+    command: string;
+    argsPrefix: string[];
+}

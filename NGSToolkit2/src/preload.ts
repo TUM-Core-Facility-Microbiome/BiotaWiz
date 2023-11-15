@@ -4,14 +4,8 @@ import {contextBridge, ipcRenderer} from "electron";
 
 
 const indexBridge = {
-    getPlatformName: async () => {
-        return new Promise<string> ((resolve, reject) => {
-            ipcRenderer.invoke('getPlatformName').then((result: string) => {
-                resolve(result);
-            }).catch((error: Error) => {
-                reject(error);
-            });
-        });
+    getPlatformName: async (): Promise<string> => {
+        return ipcRenderer.invoke('getPlatformName')
     },
     checkWslAvailable: async () => {
         return new Promise<boolean> ((resolve, reject) => {
@@ -39,6 +33,12 @@ const indexBridge = {
                 reject(error);
             });
         });
+    },
+    getBackend: async (): Promise<IBackend> => {
+        return ipcRenderer.invoke('getBackend');
+    },
+    getBackendVersion: async (): Promise<string> => {
+        return ipcRenderer.invoke('getBackendVersion');
     },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {

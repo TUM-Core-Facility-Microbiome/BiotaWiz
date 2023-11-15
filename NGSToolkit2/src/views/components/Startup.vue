@@ -1,7 +1,8 @@
 <template>
   <p class="text-center">Running startup checks</p>
   <p>Detected OS: {{ state.platform }}</p>
-  <p>Backend: {}</p>
+  <p>Backend: {{ state.backendName }}</p>
+  <p>Backend Version: {{ state.backendVersion }}</p>
 </template>
 
 <script setup lang="ts">
@@ -12,7 +13,9 @@ import {reactive} from "vue";
 const router = useRouter();
 
 const state = reactive({
-  platform: "unknown"
+  platform: "unknown",
+  backendName: "unknown",
+  backendVersion: "loading",
 });
 
 // get platform name
@@ -23,12 +26,28 @@ indexBridge.getPlatformName().then((platform: string) => {
   state.platform = "unknown";
 });
 
-indexBridge.runMockProcess().then((code: number) => {
-    console.log("Process exited with code 0");
-    router.push('/application-shell');
-}).catch((code: number) => {
-  console.log("Process failed with code " + code);
+indexBridge.getBackend().then((backend: IBackend) => {
+  console.log("Backend: " , backend);
+  state.backendName = backend.name;
+}).catch(() => {
+  console.log("Could not determine backend");
+  state.backendName = "unknown";
 });
+
+indexBridge.getBackendVersion().then((version: string) => {
+  console.log("Backend version: " , version);
+  state.backendVersion = version;
+}).catch(() => {
+  console.log("Could not determine backend version");
+  state.backendVersion = "communication failed";
+});
+
+// indexBridge.runMockProcess().then((code: number) => {
+//   console.log("Process exited with code 0");
+//   router.push('/application-shell');
+// }).catch((code: number) => {
+//   console.log("Process failed with code " + code);
+// });
 </script>
 
 <script lang="ts">
