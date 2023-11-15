@@ -30,6 +30,15 @@ const indexBridge = {
                 reject(error);
             });
         });
+    },
+    handleFolderOpen: async () => {
+        return new Promise<string> ((resolve, reject) => {
+            ipcRenderer.invoke('dialog:handleFolderOpen').then((result: string) => {
+                resolve(result);
+            }).catch((error: Error) => {
+                reject(error);
+            });
+        });
     }
 }
 
