@@ -1,6 +1,6 @@
 import {createWebHashHistory, createRouter} from "vue-router";
 
-const router = createRouter({
+const index = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
@@ -9,19 +9,19 @@ const router = createRouter({
         },
         {
             path: '/startup',
-            component: () => import('./Startup.vue'),
+            component: () => import('../components/Startup.vue'),
         },
         {
             path: '/application-shell',
-            component: () => import('./ApplicationShell.vue'),
+            component: () => import('../components/ApplicationShell.vue'),
             children: [
                 {
                     path: '/preprocessing',
-                    component: () => import('./Preprocessing.vue'),
+                    component: () => import('../components/Preprocessing.vue'),
                 },
                 {
                     path: '/settings',
-                    component: () => import('./Settings.vue'),
+                    component: () => import('../components/Settings.vue'),
                 }
             ]
         },
@@ -32,4 +32,4 @@ const router = createRouter({
     ]
 });
 
-export default router;
+export default index;

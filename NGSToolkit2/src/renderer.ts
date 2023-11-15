@@ -33,7 +33,8 @@ console.log('👋 This message is being logged by "renderer.ts", included via Vi
 // mount the Vue app
 import {createApp} from 'vue';
 import App from './views/App.vue';
-import router from './views/Router';
+import router from './views/router/index';
+
 const app = createApp(App);
 app.use(router);
 app.mount('#app');

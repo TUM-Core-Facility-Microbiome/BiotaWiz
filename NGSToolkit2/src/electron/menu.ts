@@ -190,6 +190,12 @@ export default class MenuBuilder {
                 label: '&Window',
                 submenu: [
                     {
+                        label: '&Settings',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/settings');
+                        },
+                    },
+                    {
                         label: '&Close',
                         accelerator: 'Ctrl+W',
                         click: () => {
