@@ -12,7 +12,7 @@ ipcMain.handle("getPlatformName", () => {
     return getPlatform();
 });
 
-ipcMain.handle("runMockProcess", () => {
+ipcMain.handle("runMockProcess", async () => {
     console.log("runMockProcess");
-    runMockProcess();
+    return runMockProcess();
 });

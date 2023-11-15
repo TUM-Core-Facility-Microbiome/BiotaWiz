@@ -1,4 +1,5 @@
 <template>
+  <p>Preprocessing works!</p>
   <button class="btn btn-blue" type="button" id="btn" @click="handleClick">Choose a folder</button>
   <p v-if="state.path">Path: <strong class="break-normal sm:break-words md:break-all lg:truncate xl:break-normal ...">{{state.path}}</strong></p>
 </template>

@@ -23,11 +23,11 @@ const indexBridge = {
         });
     },
     runMockProcess: async () => {
-        return new Promise<void> ((resolve, reject) => {
-            ipcRenderer.invoke('runMockProcess').then(() => {
-                resolve();
-            }).catch((error: Error) => {
-                reject(error);
+        return new Promise<number>((resolve, reject) => {
+            ipcRenderer.invoke('runMockProcess').then((code: number) => {
+                resolve(code);
+            }).catch((code: number) => {
+                reject(code);
             });
         });
     },
@@ -44,6 +44,11 @@ const indexBridge = {
     handleChangeRouteTo: (callback: (route: string) => void) => {
         ipcRenderer.on('changeRouteTo', (event, route) => {
             callback(route);
+        });
+    },
+    handleLogRequests: (callback: (log: string, level: string) => void) => {
+        ipcRenderer.on('logRequests', (event, log: string, level: string) => {
+            callback(log, level);
         });
     }
 }

@@ -22,6 +22,22 @@ indexBridge.handleChangeRouteTo((route: string) => {
   }
   router.push(route);
 });
+
+indexBridge.handleLogRequests((message: string, level: string) => {
+  if (level == 'trace') {
+    console.trace(message);
+  } else if (level == 'debug') {
+    console.debug(message);
+  } else if (level == 'info') {
+    console.info(message);
+  } else if (level == 'warn') {
+    console.warn(message);
+  } else if (level == 'error') {
+    console.error(message);
+  } else {
+    console.log(message);
+  }
+});
 </script>
 
 <script lang="ts">

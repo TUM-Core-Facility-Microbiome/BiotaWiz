@@ -1,63 +1,66 @@
 import * as child_process from "child_process";
 import * as platform from "./platform";
+import {BrowserWindow} from "electron";
 
-function dockerHelloWorld(): child_process.ChildProcessWithoutNullStreams {
-    console.log("dockerHelloWorld");
-
-    const subprocess = child_process.spawn(
+async function dockerHelloWorld(): Promise<number> {
+    return runSubprocess(
         "docker",
-        ["run", "--rm", "hello-world"],
+        ["run", "--rm", "python", "python", "-c",
+            "import time; print('Hello World'); time.sleep(1); print('Hello World', flush=True); time.sleep(5); print('Hello World'); time.sleep(1);"],
     );
 
-    subprocess.on('error', () => {
-        console.error("Could not launch the process");
-    });
-    subprocess.on('close', (code, signal) => {
-        console.log(`Child closed with code ${code} and signal ${signal}`);
-    });
-    subprocess.on('exit', (code, signal) => {
-        console.log(`Child exited with code ${code} and signal ${signal}`);
-    });
-    subprocess.stdout.on('data', (data) => {
-        console.log(`STDOUT: ${data}`);
-    });
-    subprocess.stderr.on('data', (data) => {
-        console.log(`STDERR: ${data}`);
-    });
-
-    return subprocess;
 }
 
-function wslHelloWorld(): child_process.ChildProcessWithoutNullStreams {
-    console.log("wslHelloWorld");
-
-    const subprocess = child_process.spawn(
+function wslHelloWorld(): Promise<number> {
+    return runSubprocess(
         "wsl",
         ["-l", "-v"],
     );
-
-    subprocess.on('error', () => {
-        console.error("Could not launch the process");
-    });
-    subprocess.on('close', (code, signal) => {
-        console.log(`Child closed with code ${code} and signal ${signal}`);
-    });
-    subprocess.on('exit', (code, signal) => {
-        console.log(`Child exited with code ${code} and signal ${signal}`);
-    });
-    subprocess.stdout.on('data', (data) => {
-        console.log(`STDOUT: ${data}`);
-    });
-    subprocess.stderr.on('data', (data) => {
-        console.log(`STDERR: ${data}`);
-    });
-
-    return subprocess;
 }
 
-export function runMockProcess(): void {
+function runSubprocess(command: string, args: string[]): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+        const window = BrowserWindow.getFocusedWindow();
+
+        const subprocess = child_process.spawn(command, args);
+        console.log(`Spawned child with pid ${subprocess.pid}`);
+
+        subprocess.stdout.on('data', (data) => {
+            if (data instanceof Buffer) {
+                const msg = data.toString();
+                console.log(msg);
+                window.webContents.send('logRequests', msg, 'info');
+            }
+        });
+        subprocess.stderr.on('data', (data) => {
+            if (data instanceof Buffer) {
+                const msg = data.toString();
+                console.warn(msg);
+                window.webContents.send('logRequests', msg, 'warn');
+            }
+        });
+
+        subprocess.on('error', () => {
+            console.error("Could not launch the process");
+        });
+        subprocess.on('exit', (code, signal) => {
+            console.log(`Child exited with code ${code} and signal ${signal}`);
+        });
+        // close always emits either after exit or error
+        subprocess.on('close', (code, signal) => {
+            console.log(`Child closed with code ${code} and signal ${signal}`);
+            if (code === 0) {
+                resolve(code);
+            } else {
+                reject(code);
+            }
+        });
+    });
+}
+
+export function runMockProcess(): Promise<number> {
     console.log("Choosing mock process by platform");
-    platform.byOS({
+    return platform.byOS({
         [platform.platforms.LINUX]: () => dockerHelloWorld(),
         [platform.platforms.WINDOWS]: () => wslHelloWorld(),
         [platform.platforms.MAC]: () => dockerHelloWorld(),
