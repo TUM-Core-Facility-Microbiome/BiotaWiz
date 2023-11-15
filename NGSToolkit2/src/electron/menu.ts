@@ -190,11 +190,32 @@ export default class MenuBuilder {
                 label: '&Window',
                 submenu: [
                     {
+                        label: '&Run startup checks',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/startup');
+                        }
+                    },
+                    {type: 'separator'},
+                    {
+                        label: '&Preprocessing',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/preprocessing');
+                        }
+                    },
+                    {
+                        label: '&Analysis',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/analysis');
+                        }
+                    },
+                    {type: 'separator'},
+                    {
                         label: '&Settings',
                         click: () => {
                             this.mainWindow.webContents.send('changeRouteTo', '/settings');
                         },
                     },
+                    {type: 'separator'},
                     {
                         label: '&Close',
                         accelerator: 'Ctrl+W',

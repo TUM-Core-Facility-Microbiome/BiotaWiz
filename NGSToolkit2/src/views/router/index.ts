@@ -16,14 +16,22 @@ const index = createRouter({
             component: () => import('../components/ApplicationShell.vue'),
             children: [
                 {
+                    path: '/',
+                    redirect: '/preprocessing',
+                },
+                {
                     path: '/preprocessing',
                     component: () => import('../components/Preprocessing.vue'),
                 },
                 {
-                    path: '/settings',
-                    component: () => import('../components/Settings.vue'),
+                    path: '/analysis',
+                    component: () => import('../components/Analysis.vue'),
                 }
             ]
+        },
+        {
+            path: '/settings',
+            component: () => import('../components/Settings.vue'),
         },
         {
             path: "/:catchAll(.*)",

@@ -42,9 +42,7 @@ const indexBridge = {
     },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {
-        console.log('indexBridge.handleChangeRouteTo');
         ipcRenderer.on('changeRouteTo', (event, route) => {
-            console.log('indexBridge.handleChangeRouteTo: changeRouteTo', route);
             callback(route);
         });
     }

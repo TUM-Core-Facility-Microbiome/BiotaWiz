@@ -10,11 +10,16 @@ import router from "./router";
 
 // on router changes log
 router.afterEach((to, from) => {
-  console.log(`Route changed from ${from.path} to ${to.path}`);
+  console.debug(`Route changed from ${from.path} to ${to.path}`);
 });
 
 indexBridge.handleChangeRouteTo((route: string) => {
-  console.log(`Changing route to ${route}`);
+  console.debug(`Main world requested route change to ${route}`);
+  // check if route is current route
+  if (router.currentRoute.value.path === route) {
+    console.debug(`Route ${route} is current route, not changing`);
+    return;
+  }
   router.push(route);
 });
 </script>

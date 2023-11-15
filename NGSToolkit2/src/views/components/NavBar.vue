@@ -6,9 +6,6 @@
     <li class="flex-1 mr-2">
       <router-link to="/analysis" class="header nav" href="#">Analysis</router-link>
     </li>
-    <li class="flex-1 mr-2">
-      <router-link to="/settings" class="header nav" href="#">Settings</router-link>
-    </li>
   </ul>
 </template>
 
