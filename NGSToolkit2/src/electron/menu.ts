@@ -197,15 +197,15 @@ export default class MenuBuilder {
                     },
                     {type: 'separator'},
                     {
-                        label: '&Preprocessing',
+                        label: '&Study Selection',
                         click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/preprocessing');
+                            this.mainWindow.webContents.send('changeRouteTo', '/study-selection');
                         }
                     },
                     {
-                        label: '&Analysis',
+                        label: '&Parameters',
                         click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/analysis');
+                            this.mainWindow.webContents.send('changeRouteTo', '/parameters');
                         }
                     },
                     {type: 'separator'},

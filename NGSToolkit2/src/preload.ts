@@ -40,6 +40,9 @@ const indexBridge = {
     getBackendVersion: async (): Promise<string> => {
         return ipcRenderer.invoke('getBackendVersion');
     },
+    loadStudiesFromBaseDirectory: async (baseDirectory: string): Promise<IFileSystemNode[]> => {
+        return ipcRenderer.invoke('loadStudiesFromBaseDirectory', baseDirectory);
+    },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {
         ipcRenderer.on('changeRouteTo', (event, route) => {

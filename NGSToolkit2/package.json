@@ -46,6 +46,7 @@
     "typescript": "~4.5.4"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.0.18",
     "electron-json-storage": "^4.6.0",
     "electron-squirrel-startup": "^1.0.0",
     "vue": "^3.3.8",

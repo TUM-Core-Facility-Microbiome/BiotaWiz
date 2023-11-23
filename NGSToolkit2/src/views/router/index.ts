@@ -17,14 +17,14 @@ const index = createRouter({
             children: [
                 {
                     path: '/',
-                    redirect: '/preprocessing',
+                    redirect: '/study-selection',
                 },
                 {
-                    path: '/preprocessing',
-                    component: () => import('../components/Preprocessing.vue'),
+                    path: '/study-selection',
+                    component: () => import('../components/StudySelection.vue'),
                 },
                 {
-                    path: '/analysis',
+                    path: '/parameters',
                     component: () => import('../components/Analysis.vue'),
                 }
             ]

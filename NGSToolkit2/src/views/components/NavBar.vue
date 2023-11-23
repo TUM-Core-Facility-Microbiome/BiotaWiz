@@ -1,10 +1,10 @@
 <template>
   <ul class="flex">
     <li class="flex-1 mr-2">
-      <router-link to="/preprocessing" class="header nav">Preprocessing</router-link>
+      <router-link to="/study-selection" class="header nav">Study Selection</router-link>
     </li>
     <li class="flex-1 mr-2">
-      <router-link to="/analysis" class="header nav" href="#">Analysis</router-link>
+      <router-link to="/parameters" class="header nav" href="#">Pipeline Parameters</router-link>
     </li>
   </ul>
 </template>

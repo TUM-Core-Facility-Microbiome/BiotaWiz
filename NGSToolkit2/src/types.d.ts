@@ -13,3 +13,10 @@ interface IBackend {
     command: string;
     argsPrefix: string[];
 }
+
+interface IFileSystemNode {
+    name: string;
+    type: string;
+    path: string;
+    children?: IFileSystemNode[];
+}
