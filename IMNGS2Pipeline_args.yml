@@ -1,0 +1,52 @@
+# The config yaml file for IMNGS2 Pipeline The arguemnts should be placed with the
+# name of pipeline step (CamelCase) and the arguments added as indentaion to.
+# If an argument parser exists with the same name of pipeline step (e.g: MergePairsArgs),
+# then the arguments would be implemented in processing.
+#####################
+### Preprocessing ###
+#####################
+MergePairsArgs:
+  fastq_maxdiffs: 50
+  fastq_pctid: 50
+  fastq_minmergelen: 200
+  fastq_maxmergelen: 600
+TrimBothSidesArgs:
+  stripleft: 15  # 15 is optimum.  Change only if you know exact lenght of you primers
+  stripright: 15  # 15 is optimum. Change only if you know exact lenght of you primers
+TrimOneSideArgs:
+  stripleft: 15
+FilterBothSidesArgs:
+  fastq_maxee_rate: 0.002
+FilterOneSideArgs:
+  fastq_maxee_rate: 0.002
+  fastq_truncqual: 10
+DereplicationArgs:
+  sizein: true
+  sizeout: true
+# sort_sequences:
+ClusterZOTUsArgs:
+  minsize: 2  # This value gives highest possible ZOTUS for more resolution.
+Filter16SArgs:
+  e: 0.1
+  num_alignments: 1
+# prepare_zotus:
+BuildZOTUTableArgs:
+  id: 0.99  # This value results more refined ZOTU count than 0.97 (default)
+FilterZOTUAbundanceArgs:
+  abundance_cutoff: 0.0
+# select_zotu_seqs:
+AddTaxArgs:
+  turn: all
+################
+### Analysis ###
+################
+TrimSidesArgs:
+  stripleft: 5
+  stripright: 5
+ComplexTICArgs:
+  family_sim: 0.90
+  genus_sim: 0.95
+  species_sim: 0.97
+CreateTableTICArgs:
+  abund_limit: 0.0
+  sample_wise_correction: false
