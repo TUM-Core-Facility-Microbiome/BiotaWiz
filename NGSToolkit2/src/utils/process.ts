@@ -2,6 +2,8 @@ import * as child_process from "child_process";
 import * as platform from "./platform";
 import {BrowserWindow} from "electron";
 import {getBackend} from "../api/storage";
+import {getDistributionTarPath, initializeWslBackend, terminateWslBackend} from "./backend";
+
 
 async function dockerHelloWorld(): Promise<number> {
     return runSubprocess(
@@ -86,7 +88,108 @@ export function getBackendVersion(): Promise<string> {
             subprocess.on('close', (code, signal) => {
                 console.log(`Child closed with code ${code} and signal ${signal}`);
                 reject(code);
-            })
+            });
         });
+    });
+}
+
+async function checksumUnix(path: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const subprocess = child_process.spawn(
+            'sha256sum',
+            [path],
+        );
+
+        subprocess.stdout.on('data', (data) => {
+            if (data instanceof Buffer) {
+                const msg = data.toString();
+                console.log(msg);
+                resolve(msg);
+            }
+        });
+        subprocess.on('close', (code, signal) => {
+            console.log(`Child closed with code ${code} and signal ${signal}`);
+            reject(code);
+        });
+    });
+}
+
+async function checksumWindows(path: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const subprocess = child_process.spawn(
+            'certutil',
+            ['-hashfile', path, 'SHA256'],
+        );
+
+        subprocess.stdout.on('data', (data) => {
+            if (data instanceof Buffer) {
+                const msg = data.toString();
+                console.log(msg);
+                resolve(msg);
+            }
+        });
+        subprocess.on('close', (code, signal) => {
+            console.log(`Child closed with code ${code} and signal ${signal}`);
+            reject(code);
+        });
+    });
+}
+
+export async function getChecksum(path: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        console.log("Calculating checksum by platform");
+        const stdout: Promise<string> = platform.byOS({
+            [platform.platforms.LINUX]: () => checksumUnix(path),
+            [platform.platforms.WINDOWS]: () => checksumWindows(path),
+            [platform.platforms.MAC]: () => checksumUnix(path),
+            default: () => {
+                throw new Error(`Platform ${platform.getPlatform()} not supported`);
+            },
+        })();
+
+        stdout.then(
+            (value) => {
+                const sha265Regex = new RegExp('^[A-Fa-f0-9]{64}', 'm')  // any of the lines need to start with a sha256 hash
+
+                let match;
+                if ((match = sha265Regex.exec(value)) !== null) {
+                    // The result can be accessed through the `m`-variable.
+                    match.forEach((match, groupIndex) => {
+                        console.log(`Found match, group ${groupIndex}: ${match}`);
+                        resolve(match);
+                    });
+                } else {
+                    reject(`Could not parse checksum from ${value}`);
+                }
+            }
+        ).catch((reason) => {
+            reject(reason);
+        });
+    });
+}
+
+export async function initializeBackend(): Promise<void> {
+    return platform.byOS({
+        [platform.platforms.LINUX]: () => getDistributionTarPath(),
+        [platform.platforms.WINDOWS]: () => initializeWslBackend(),
+        [platform.platforms.MAC]: () => getDistributionTarPath(),
+        default: () => getDistributionTarPath(),
+    })();
+}
+
+export async function terminateBackend(): Promise<void> {
+    return platform.byOS({
+        [platform.platforms.LINUX]: () => {
+            console.log("Not implemented yet");
+        },
+        [platform.platforms.WINDOWS]: () => {
+            terminateWslBackend();
+        },
+        [platform.platforms.MAC]: () => {
+            console.log("Not implemented yet");
+        },
+        default: () => {
+            console.log("Not implemented yet");
+        },
     });
 }

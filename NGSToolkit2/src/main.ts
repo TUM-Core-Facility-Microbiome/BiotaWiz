@@ -61,8 +61,20 @@ app.on('activate', () => {
     }
 });
 
+app.on('will-quit', () => {
+    console.log("Application will quit");
+    console.log("Running cleanup tasks");
+
+    terminateBackend().then(() => {
+        console.log("Backend terminated successfully");
+    }).catch((err) => {
+        console.error("Could not terminate backend", err);
+    });
+});
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 import "./api/api";
 
 import "./api/file-explorer";
+import {terminateBackend} from "./utils/process";

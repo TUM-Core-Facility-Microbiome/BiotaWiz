@@ -42,12 +42,12 @@ indexBridge.getBackendVersion().then((version: string) => {
   state.backendVersion = "communication failed";
 });
 
-// indexBridge.runMockProcess().then((code: number) => {
-//   console.log("Process exited with code 0");
-//   router.push('/application-shell');
-// }).catch((code: number) => {
-//   console.log("Process failed with code " + code);
-// });
+indexBridge.initializeBackend().then(() => {
+  console.log("Backend initialized");
+  router.push('/application-shell');
+}).catch(() => {
+  console.log("Backend initialization failed");
+});
 </script>
 
 <script lang="ts">

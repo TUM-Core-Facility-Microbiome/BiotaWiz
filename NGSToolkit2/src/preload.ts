@@ -43,6 +43,9 @@ const indexBridge = {
     loadStudiesFromBaseDirectory: async (baseDirectory: string): Promise<IFileSystemNode[]> => {
         return ipcRenderer.invoke('loadStudiesFromBaseDirectory', baseDirectory);
     },
+    initializeBackend: async () => {
+        return ipcRenderer.invoke('initializeBackend');
+    },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {
         ipcRenderer.on('changeRouteTo', (event, route) => {
@@ -53,7 +56,7 @@ const indexBridge = {
         ipcRenderer.on('logRequests', (event, log: string, level: string) => {
             callback(log, level);
         });
-    }
+    },
 }
 
 contextBridge.exposeInMainWorld('indexBridge', indexBridge);

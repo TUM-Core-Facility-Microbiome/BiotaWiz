@@ -1,6 +1,7 @@
-import {ipcMain} from 'electron';
+import {BrowserWindow, ipcMain} from 'electron';
 import {getPlatform} from "../utils/platform";
-import {getBackendVersion, runMockProcess} from "../utils/process";
+import {getDistributionTarPath} from "../utils/backend";
+import {getBackendVersion, initializeBackend, runMockProcess} from "../utils/process";
 import {handleFolderOpen} from "./dialogs";
 import {getBackend} from "./storage";
 import {detectStudyFolders} from "./file-explorer";
@@ -30,5 +31,11 @@ ipcMain.handle("runMockProcess", async () => {
 ipcMain.handle("loadStudiesFromBaseDirectory", async (event, baseDirectory: string): Promise<IFileSystemNode[]> => {
     return new Promise<IFileSystemNode[]>((resolve) => {
         resolve(detectStudyFolders(baseDirectory));
+    });
+});
+
+ipcMain.handle("initializeBackend", async () => {
+    initializeBackend().then(() => {
+        console.log(`Backend initialized`);
     });
 });
