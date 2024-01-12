@@ -9,7 +9,6 @@ async function dockerHelloWorld(): Promise<number> {
         ["run", "--rm", "python", "python", "-c",
             "import time; print('Hello World'); time.sleep(1); print('Hello World', flush=True); time.sleep(5); print('Hello World'); time.sleep(1);"],
     );
-
 }
 
 function wslHelloWorld(): Promise<number> {
