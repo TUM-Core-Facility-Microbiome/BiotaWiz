@@ -6,7 +6,7 @@ import {
     BrowserWindow,
     MenuItemConstructorOptions,
 } from 'electron';
-import { APP_NAME, GITHUB_BASE_URL, TIC_PAPER_URL } from '../config';
+import { GITHUB_BASE_URL, TIC_PAPER_URL } from '../config';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
     selector?: string;
@@ -56,14 +56,14 @@ export default class MenuBuilder {
             label: 'Electron',
             submenu: [
                 {
-                    label: `About ${APP_NAME}`,
+                    label: `About ${app.name}`,
                     selector: 'orderFrontStandardAboutPanel:',
                 },
                 {type: 'separator'},
                 {label: 'Services', submenu: []},
                 {type: 'separator'},
                 {
-                    label: `Hide ${APP_NAME}`,
+                    label: `Hide ${app.name}`,
                     accelerator: 'Command+H',
                     selector: 'hide:',
                 },
