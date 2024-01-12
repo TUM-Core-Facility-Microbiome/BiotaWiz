@@ -6,9 +6,7 @@ import {
     BrowserWindow,
     MenuItemConstructorOptions,
 } from 'electron';
-
-
-const GITHUB_URL = 'https://github.com/TUM-Core-Facility-Microbiome/NGSToolkit2';
+import { APP_NAME, GITHUB_BASE_URL, TIC_PAPER_URL } from '../config';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
     selector?: string;
@@ -58,14 +56,14 @@ export default class MenuBuilder {
             label: 'Electron',
             submenu: [
                 {
-                    label: 'About NGSToolkit2',
+                    label: `About ${APP_NAME}`,
                     selector: 'orderFrontStandardAboutPanel:',
                 },
                 {type: 'separator'},
                 {label: 'Services', submenu: []},
                 {type: 'separator'},
                 {
-                    label: 'Hide NGSToolkit2',
+                    label: `Hide ${APP_NAME}`,
                     accelerator: 'Command+H',
                     selector: 'hide:',
                 },
@@ -158,19 +156,19 @@ export default class MenuBuilder {
                 {
                     label: 'Documentation',
                     click() {
-                        shell.openExternal(GITHUB_URL);
+                        shell.openExternal(GITHUB_BASE_URL);
                     },
                 },
                 {
                     label: 'Community Discussions',
                     click() {
-                        shell.openExternal(`${GITHUB_URL}/discussions`);
+                        shell.openExternal(`${GITHUB_BASE_URL}/discussions`);
                     },
                 },
                 {
                     label: 'Search Issues',
                     click() {
-                        shell.openExternal(`${GITHUB_URL}/issues`);
+                        shell.openExternal(`${GITHUB_BASE_URL}/issues`);
                     },
                 },
             ],
@@ -259,19 +257,25 @@ export default class MenuBuilder {
                     {
                         label: 'Documentation',
                         click() {
-                            shell.openExternal(GITHUB_URL);
+                            shell.openExternal(GITHUB_BASE_URL);
                         },
+                    },
+                    {
+                        label: 'TIC-pipeline paper',
+                        click() {
+                            shell.openExternal(TIC_PAPER_URL);
+                        }
                     },
                     {
                         label: 'Community Discussions',
                         click() {
-                            shell.openExternal(`${GITHUB_URL}/discussions`);
+                            shell.openExternal(`${GITHUB_BASE_URL}/discussions`);
                         },
                     },
                     {
                         label: 'Search Issues',
                         click() {
-                            shell.openExternal(`${GITHUB_URL}/issues`);
+                            shell.openExternal(`${GITHUB_BASE_URL}/issues`);
                         },
                     },
                 ],
