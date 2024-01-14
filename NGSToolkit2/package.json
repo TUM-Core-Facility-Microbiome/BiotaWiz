@@ -51,6 +51,7 @@
     "electron-json-storage": "^4.6.0",
     "electron-squirrel-startup": "^1.0.0",
     "vue": "^3.3.8",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "yaml": "^2.3.4"
   }
 }
