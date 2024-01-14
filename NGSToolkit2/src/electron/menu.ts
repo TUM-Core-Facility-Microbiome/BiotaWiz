@@ -297,6 +297,12 @@ export default class MenuBuilder {
                             shell.openExternal(`${GITHUB_BASE_URL}/issues`);
                         },
                     },
+                    {
+                        label: 'Third-party licenses',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/third-party-licenses');
+                        }
+                    },
                 ],
             },
         ];

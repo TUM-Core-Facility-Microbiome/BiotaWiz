@@ -44,12 +44,16 @@ const index = createRouter({
                 {
                     path: '/rhea',
                     component: () => import('../components/rhea/RheaOutLink.vue'),
-                }
+                },
             ]
         },
         {
             path: '/settings',
             component: () => import('../components/settings/Settings.vue'),
+        },
+        {
+            path: '/third-party-licenses',
+            component: () => import('../components/license/ThirdPartyLicenses.vue'),
         },
         {
             path: "/:catchAll(.*)",
