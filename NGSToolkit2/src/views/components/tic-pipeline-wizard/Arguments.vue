@@ -375,7 +375,7 @@ let family_sim = ref(0.90);
 let genus_sim = ref(0.95);
 let species_sim = ref(0.97);
 
-function generateYaml() {
+function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
   const DEFAULT_TIC_PIPELINE_ARGUMENTS: ITicPipelineArguments = {
     MergePairsArgs: {
       fastq_maxdiffs: 50,
@@ -467,6 +467,12 @@ function generateYaml() {
   args.MergePairsArgs = mergePairsArgs;
   args.ClusterZOTUsArgs = clusterZOTUsArgs;
   args.ComplexTICArgs = complexTICArgs;
+
+  return args;
+}
+
+function generateYaml() {
+  const args = generateTicPipelineArgumentsObj();
 
   console.log(args);
   console.log(stringify(args));
