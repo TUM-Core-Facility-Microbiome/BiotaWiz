@@ -101,10 +101,8 @@ let spikeMode = ref("spiked");
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import CheckmarkIcon from "../default/ReduceIcon.vue";
 
 export default defineComponent({
   name: 'SpikeMode',
-  components: {CheckmarkIcon},
 });
 </script>

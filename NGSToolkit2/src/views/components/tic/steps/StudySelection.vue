@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import StudyBrowser from "./StudyBrowser.vue";
+import StudyBrowser from "../../default/StudyBrowser.vue";
 import { reactive } from "vue";
 
 const state = reactive({

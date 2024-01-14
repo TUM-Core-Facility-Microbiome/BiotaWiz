@@ -17,29 +17,33 @@ const index = createRouter({
             children: [
                 {
                     path: '/',
-                    redirect: '/study-selection',
+                    redirect: '/tic/base-selection',
                 },
                 {
-                    path: '/tic-pipeline-wizard',
-                    component: () => import('../components/TicPipelineWizard.vue'),
+                    path: '/tic',
+                    component: () => import('../components/tic/TicPipelineWizard.vue'),
                     children: [
                         {
+                            path: '/base-selection',
+                            component: () => import('../components/tic/steps/BaseSelection.vue'),
+                        },
+                        {
+                            path: '/study-selection',
+                            component: () => import('../components/tic/steps/StudySelection.vue'),
+                        },
+                        {
                             path: '/arguments',
-                            component: () => import('../components/tic-pipeline-wizard/Arguments.vue'),
+                            component: () => import('../components/tic/steps/Arguments.vue'),
                         },
                         {
                             path: '/spike-mode',
-                            component: () => import('../components/tic-pipeline-wizard/SpikeMode.vue'),
+                            component: () => import('../components/tic/steps/SpikeMode.vue'),
                         }
                     ]
                 },
                 {
-                    path: '/study-selection',
-                    component: () => import('../components/StudySelection.vue'),
-                },
-                {
-                    path: '/parameters',
-                    component: () => import('../components/Analysis.vue'),
+                    path: '/rhea',
+                    component: () => import('../components/rhea/RheaOutLink.vue'),
                 }
             ]
         },

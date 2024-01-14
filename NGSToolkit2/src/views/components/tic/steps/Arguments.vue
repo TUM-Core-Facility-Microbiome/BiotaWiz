@@ -481,8 +481,8 @@ function generateYaml() {
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import ReduceIcon from "../default/ReduceIcon.vue";
-import ExpandIcon from "../default/ExpandIcon.vue";
+import ReduceIcon from "../../default/icons/ReduceIcon.vue";
+import ExpandIcon from "../../default/icons/ExpandIcon.vue";
 
 export default defineComponent({
   name: 'Arguments',

@@ -1,0 +1,3 @@
+<template>
+  Stub
+</template>
