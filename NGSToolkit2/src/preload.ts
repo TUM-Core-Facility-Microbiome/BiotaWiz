@@ -4,6 +4,16 @@ import {contextBridge, ipcRenderer} from "electron";
 
 
 const indexBridge = {
+    // renderer to main
+    openExternal: async (url: string) => {
+        return new Promise<void>((resolve, reject) => {
+            ipcRenderer.invoke('openExternal', url).then(() => {
+                resolve();
+            }).catch((error: Error) => {
+                reject(error);
+            });
+        });
+    },
     getPlatformName: async (): Promise<string> => {
         return ipcRenderer.invoke('getPlatformName')
     },

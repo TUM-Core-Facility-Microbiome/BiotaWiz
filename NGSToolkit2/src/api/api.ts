@@ -1,4 +1,4 @@
-import {BrowserWindow, ipcMain} from 'electron';
+import {BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {getDistributionTarPath} from "../utils/backend";
 import {getBackendVersion, initializeBackend, runMockProcess} from "../utils/process";
@@ -6,6 +6,9 @@ import {handleFolderOpen} from "./dialogs";
 import {getBackend} from "./storage";
 import {detectStudyFolders} from "./file-explorer";
 
+ipcMain.handle('openExternal', async (event, url: string) => {
+    return await shell.openExternal(url);
+});
 
 ipcMain.handle('dialog:handleFolderOpen', async () => {
     return await handleFolderOpen();

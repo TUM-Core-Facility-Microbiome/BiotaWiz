@@ -1,6 +1,19 @@
 <template>
-  We recommend using <a target="_blank" href="https://lagkouvardos.github.io/Rhea/">Rhea</a> for analyzing your samples.
+  We recommend using Rhea for analyzing microbial profiles.
+
+  <div class="mt-4">
+    <a
+        class="inline-block rounded border border-indigo-600 px-12 py-3 text-sm font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:bg-indigo-500"
+        @click="openInDefaultBrowser('https://lagkouvardos.github.io/Rhea/')"
+    >
+      Find out more
+    </a>
+  </div>
+
 </template>
 
 <script setup lang="ts">
+async function openInDefaultBrowser(url: string) {
+  await indexBridge.openExternal(url);
+}
 </script>
