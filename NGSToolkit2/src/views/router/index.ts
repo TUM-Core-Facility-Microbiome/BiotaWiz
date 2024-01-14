@@ -9,7 +9,7 @@ const index = createRouter({
         },
         {
             path: '/startup',
-            component: () => import('../components/Startup.vue'),
+            component: () => import('../components/startup/Startup.vue'),
         },
         {
             path: '/application-shell',
@@ -17,7 +17,7 @@ const index = createRouter({
             children: [
                 {
                     path: '/',
-                    redirect: '/tic/base-selection',
+                    redirect: '/base-selection',
                 },
                 {
                     path: '/tic',
@@ -49,7 +49,7 @@ const index = createRouter({
         },
         {
             path: '/settings',
-            component: () => import('../components/Settings.vue'),
+            component: () => import('../components/settings/Settings.vue'),
         },
         {
             path: "/:catchAll(.*)",

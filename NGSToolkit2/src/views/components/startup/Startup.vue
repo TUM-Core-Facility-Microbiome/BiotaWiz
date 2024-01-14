@@ -44,7 +44,7 @@ indexBridge.getBackendVersion().then((version: string) => {
 
 indexBridge.initializeBackend().then(() => {
   console.log("Backend initialized");
-  router.push('/application-shell');
+  router.push('/base-selection');
 }).catch(() => {
   console.log("Backend initialization failed");
 });

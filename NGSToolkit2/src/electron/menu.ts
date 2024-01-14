@@ -195,15 +195,34 @@ export default class MenuBuilder {
                     },
                     {type: 'separator'},
                     {
-                        label: '&Study Selection',
+                        label: '&TIC pipeline',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/base-selection');
+                        }
+                    },
+                    {
+                        label: '&Study selection',
                         click: () => {
                             this.mainWindow.webContents.send('changeRouteTo', '/study-selection');
                         }
                     },
                     {
-                        label: '&Parameters',
+                        label: '&Spike-ins',
                         click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/parameters');
+                            this.mainWindow.webContents.send('changeRouteTo', '/spike-mode');
+                        }
+                    },
+                    {
+                        label: '&Arguments',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/arguments');
+                        }
+                    },
+                    {type: 'separator'},
+                    {
+                        label: '&Rhea',
+                        click: () => {
+                            this.mainWindow.webContents.send('changeRouteTo', '/rhea');
                         }
                     },
                     {type: 'separator'},
