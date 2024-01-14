@@ -358,7 +358,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref} from 'vue';
 import {stringify} from "yaml";
 
 let stripleft = ref(15);
