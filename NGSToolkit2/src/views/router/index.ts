@@ -26,6 +26,10 @@ const index = createRouter({
                         {
                             path: '/arguments',
                             component: () => import('../components/tic-pipeline-wizard/Arguments.vue'),
+                        },
+                        {
+                            path: '/spike-mode',
+                            component: () => import('../components/tic-pipeline-wizard/SpikeMode.vue'),
                         }
                     ]
                 },
