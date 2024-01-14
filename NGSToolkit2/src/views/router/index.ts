@@ -20,6 +20,16 @@ const index = createRouter({
                     redirect: '/study-selection',
                 },
                 {
+                    path: '/tic-pipeline-wizard',
+                    component: () => import('../components/TicPipelineWizard.vue'),
+                    children: [
+                        {
+                            path: '/arguments',
+                            component: () => import('../components/tic-pipeline-wizard/Arguments.vue'),
+                        }
+                    ]
+                },
+                {
                     path: '/study-selection',
                     component: () => import('../components/StudySelection.vue'),
                 },
