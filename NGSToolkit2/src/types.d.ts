@@ -20,3 +20,87 @@ interface IFileSystemNode {
     path: string;
     children?: IFileSystemNode[];
 }
+
+interface IMergePairsArgs {
+    fastq_maxdiffs: number;
+    fastq_pctid: number;
+    fastq_minmergelen: number;
+    fastq_maxmergelen: number;
+}
+
+interface ITrimBothSidesArgs {
+    stripleft: number;
+    stripright: number;
+}
+
+interface ITrimOneSideArgs {
+    stripleft: number;
+}
+
+interface IFilterBothSidesArgs {
+    fastq_maxee_rate: number;
+}
+
+interface IFilterOneSideArgs {
+    fastq_maxee_rate: number;
+    fastq_truncqual: number;
+}
+
+interface IDereplicationArgs {
+    sizein: boolean;
+    sizeout: boolean;
+}
+
+interface IClusterZOTUsArgs {
+    minsize: number;
+}
+
+interface IFilter16SArgs {
+    e: number;
+    num_alignments: number;
+}
+
+interface IBuildZOTUTableArgs {
+    id: number;
+}
+
+interface IFilterZOTUAbundanceArgs {
+    abundance_cutoff: number;
+}
+
+interface IAddTaxArgs {
+    turn: string;
+}
+
+interface ITrimSidesArgs {
+    stripleft: number;
+    stripright: number;
+}
+
+interface IComplexTICArgs {
+    family_sim: number;
+    genus_sim: number;
+    species_sim: number;
+}
+
+interface ICreateTableTICArgs {
+    abund_limit: number;
+    sample_wise_correction: boolean;
+}
+
+interface ITicPipelineArguments {
+    MergePairsArgs: IMergePairsArgs;
+    TrimBothSidesArgs: ITrimBothSidesArgs;
+    TrimOneSideArgs: ITrimOneSideArgs;
+    FilterBothSidesArgs: IFilterBothSidesArgs;
+    FilterOneSideArgs: IFilterOneSideArgs;
+    DereplicationArgs: IDereplicationArgs;
+    ClusterZOTUsArgs: IClusterZOTUsArgs;
+    Filter16SArgs: IFilter16SArgs;
+    BuildZOTUTableArgs: IBuildZOTUTableArgs;
+    FilterZOTUAbundanceArgs: IFilterZOTUAbundanceArgs;
+    AddTaxArgs: IAddTaxArgs;
+    TrimSidesArgs: ITrimSidesArgs;
+    ComplexTICArgs: IComplexTICArgs;
+    CreateTableTICArgs: ICreateTableTICArgs;
+}

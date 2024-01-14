@@ -50,13 +50,13 @@
           <div class="pt-6">
             <div class="text-lg font-bold">Abundance limit</div>
             <div class="text-sm text-gray-700">
-              Filter clusters based on their relative abundance.
+              Abundance limit for table creation.
             </div>
             <div class="mt-3">
               <div>
                 <label for="abund_limit">
                   <div class="text-sm font-mono">abund_limit</div>
-                  <div class="text-xs text-gray-500">abundance filter threshold from 0 (no filtering) to 1</div>
+                  <div class="text-xs text-gray-500">abundance limit</div>
                 </label>
                 <input
                     id="abund_limit"
@@ -94,7 +94,7 @@
                   <input
                       type="radio"
                       v-model="sample_wise_correction"
-                      value="true"
+                      value=true
                       id="sample-wise-correction-yes"
                       class="peer hidden"
                   />
@@ -111,7 +111,7 @@
                   <input
                       type="radio"
                       v-model="sample_wise_correction"
-                      value="false"
+                      value=false
                       id="sample-wise-correction-no"
                       class="peer hidden"
                       checked
@@ -349,12 +349,17 @@
     <p>family_sim: {{ family_sim }}</p>
     <p>genus_sim: {{ genus_sim }}</p>
     <p>species_sim: {{ species_sim }}</p>
-  </div>
+    <br>
+    </div>
+  <div>
+    <button class="btn" @click="generateYaml()">Generate YAML</button>
+    </div>
 
 </template>
 
 <script setup lang="ts">
 import {ref} from 'vue'
+import {stringify} from "yaml";
 
 let stripleft = ref(15);
 let stripright = ref(15);
@@ -369,6 +374,103 @@ let minsize = ref(2);
 let family_sim = ref(0.90);
 let genus_sim = ref(0.95);
 let species_sim = ref(0.97);
+
+function generateYaml() {
+  const DEFAULT_TIC_PIPELINE_ARGUMENTS: ITicPipelineArguments = {
+    MergePairsArgs: {
+      fastq_maxdiffs: 50,
+      fastq_pctid: 50,
+      fastq_minmergelen: 200,
+      fastq_maxmergelen: 600
+    },
+    TrimBothSidesArgs: {
+      stripleft: 15,
+      stripright: 15
+    },
+    TrimOneSideArgs: {
+      stripleft: 15
+    },
+    FilterBothSidesArgs: {
+      fastq_maxee_rate: 0.002
+    },
+    FilterOneSideArgs: {
+      fastq_maxee_rate: 0.002,
+      fastq_truncqual: 10
+    },
+    DereplicationArgs: {
+      sizein: true,
+      sizeout: true
+    },
+    ClusterZOTUsArgs: {
+      minsize: 2
+    },
+    Filter16SArgs: {
+      e: 0.1,
+      num_alignments: 1
+    },
+    BuildZOTUTableArgs: {
+      id: 0.99
+    },
+    FilterZOTUAbundanceArgs: {
+      abundance_cutoff: 0
+    },
+    AddTaxArgs: {
+      turn: "all"
+    },
+    TrimSidesArgs: {
+      stripleft: 5,
+      stripright: 5
+    },
+    ComplexTICArgs: {
+      family_sim: 0.9,
+      genus_sim: 0.95,
+      species_sim: 0.97
+    },
+    CreateTableTICArgs: {
+      abund_limit: 0,
+      sample_wise_correction: false
+    }
+  }
+
+  const trimBothSidesArgs: ITrimBothSidesArgs = {
+    stripleft: Number(stripleft.value),
+    stripright: Number(stripright.value),
+  };
+
+  const createTableTICArgs: ICreateTableTICArgs = {
+    abund_limit: Number(abund_limit.value),
+    sample_wise_correction: Boolean(sample_wise_correction.value),
+  };
+
+  const mergePairsArgs: IMergePairsArgs = {
+    fastq_maxdiffs: Number(fastq_maxdiffs.value),
+    fastq_pctid: Number(fastq_pctid.value),
+    fastq_minmergelen: Number(fastq_minmergelen.value),
+    fastq_maxmergelen: Number(fastq_maxmergelen.value),
+  };
+
+  const clusterZOTUsArgs: IClusterZOTUsArgs = {
+    minsize: Number(minsize.value),
+  };
+
+  const complexTICArgs: IComplexTICArgs = {
+    family_sim: Number(family_sim.value),
+    genus_sim: Number(genus_sim.value),
+    species_sim: Number(species_sim.value),
+  };
+
+  // patch args
+  const args = DEFAULT_TIC_PIPELINE_ARGUMENTS;
+  args.TrimBothSidesArgs = trimBothSidesArgs;
+  // TODO: TrimOneSideArgs. Is this only for non-paired reads?
+  args.CreateTableTICArgs = createTableTICArgs;
+  args.MergePairsArgs = mergePairsArgs;
+  args.ClusterZOTUsArgs = clusterZOTUsArgs;
+  args.ComplexTICArgs = complexTICArgs;
+
+  console.log(args);
+  console.log(stringify(args));
+}
 </script>
 
 <script lang="ts">
