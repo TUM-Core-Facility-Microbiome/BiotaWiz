@@ -5,8 +5,8 @@
         <h2 class="text-lg font-medium">Settings</h2>
 
         <span class="relative h-5 w-5 shrink-0">
-          <ReduceIcon></ReduceIcon>
-          <ExpandIcon></ExpandIcon>
+          <ReduceIcon/>
+          <ExpandIcon/>
         </span>
       </summary>
 
@@ -136,8 +136,8 @@
         <h2 class="text-lg font-medium">Advanced Settings</h2>
 
         <span class="relative h-5 w-5 shrink-0">
-          <ReduceIcon></ReduceIcon>
-          <ExpandIcon></ExpandIcon>
+          <ReduceIcon/>
+          <ExpandIcon/>
         </span>
       </summary>
 
@@ -350,10 +350,10 @@
     <p>genus_sim: {{ genus_sim }}</p>
     <p>species_sim: {{ species_sim }}</p>
     <br>
-    </div>
+  </div>
   <div>
     <button class="btn" @click="generateYaml()">Generate YAML</button>
-    </div>
+  </div>
 
 </template>
 
