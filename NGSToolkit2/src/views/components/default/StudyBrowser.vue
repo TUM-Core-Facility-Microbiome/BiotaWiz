@@ -29,7 +29,7 @@ const state = reactive({
 });
 
 const updateStudies = () => {
-  indexBridge.loadStudiesFromBaseDirectory(props.baseDir).then((studies: IFileSystemNode[]) => {
+  indexBridge.loadStudiesFromBaseDirectory().then((studies: IFileSystemNode[]) => {
     console.log("Studies: " , studies);
     state.files = studies;
   }).catch(() => {

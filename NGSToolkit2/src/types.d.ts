@@ -104,3 +104,7 @@ interface ITicPipelineArguments {
     ComplexTICArgs: IComplexTICArgs;
     CreateTableTICArgs: ICreateTableTICArgs;
 }
+
+interface ITicBaseDirectory {
+    path: string;
+}

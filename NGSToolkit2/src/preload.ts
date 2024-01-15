@@ -50,11 +50,14 @@ const indexBridge = {
     getBackendVersion: async (): Promise<string> => {
         return ipcRenderer.invoke('getBackendVersion');
     },
-    loadStudiesFromBaseDirectory: async (baseDirectory: string): Promise<IFileSystemNode[]> => {
-        return ipcRenderer.invoke('loadStudiesFromBaseDirectory', baseDirectory);
+    loadStudiesFromBaseDirectory: async (): Promise<IFileSystemNode[]> => {
+        return ipcRenderer.invoke('loadStudiesFromBaseDirectory');
     },
     initializeBackend: async () => {
         return ipcRenderer.invoke('initializeBackend');
+    },
+    publishTicBaseDirectory: async (baseDirectory: string) => {
+        return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);
     },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {

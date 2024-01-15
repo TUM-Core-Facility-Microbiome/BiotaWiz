@@ -17,9 +17,11 @@ const state = reactive({
 });
 
 const selectBaseDir = () => {
-  indexBridge.handleFolderOpen().then((baseDir: string) => {
+  indexBridge.handleFolderOpen().then(async (baseDir: string) => {
     console.log("Base dir: ", baseDir);
     state.baseDir = baseDir;
+
+    await indexBridge.publishTicBaseDirectory(baseDir);
   }).catch(() => {
     console.log("Could not select base dir");
   });
