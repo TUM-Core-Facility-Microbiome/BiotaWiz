@@ -213,9 +213,9 @@ export default class MenuBuilder {
                         }
                     },
                     {
-                        label: '&Arguments',
+                        label: '&Analysis parameters',
                         click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/arguments');
+                            this.mainWindow.webContents.send('changeRouteTo', '/params');
                         }
                     },
                     {type: 'separator'},

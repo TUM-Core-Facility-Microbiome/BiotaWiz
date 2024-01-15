@@ -1,8 +1,8 @@
 <template>
-  <div class="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white">
+  <div class="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white select-none">
     <details class="group p-6" open>
       <summary class="flex cursor-pointer items-center justify-between gap-1.5 text-gray-900">
-        <h2 class="text-lg font-medium">Settings</h2>
+        <h2 class="text-lg font-medium">Basic Parameters</h2>
 
         <span class="relative h-5 w-5 shrink-0">
           <ReduceIcon/>
@@ -133,7 +133,7 @@
 
     <details class="group p-6 [&_summary::-webkit-details-marker]:hidden">
       <summary class="flex cursor-pointer items-center justify-between gap-1.5 text-gray-900">
-        <h2 class="text-lg font-medium">Advanced Settings</h2>
+        <h2 class="text-lg font-medium">Advanced Parameters</h2>
 
         <span class="relative h-5 w-5 shrink-0">
           <ReduceIcon/>

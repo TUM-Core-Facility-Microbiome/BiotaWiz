@@ -32,8 +32,8 @@ const index = createRouter({
                             component: () => import('../components/tic/steps/StudySelection.vue'),
                         },
                         {
-                            path: '/arguments',
-                            component: () => import('../components/tic/steps/Arguments.vue'),
+                            path: '/params',
+                            component: () => import('../components/tic/steps/Parameters.vue'),
                         },
                         {
                             path: '/spike-mode',
