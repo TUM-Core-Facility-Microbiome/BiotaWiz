@@ -5,6 +5,7 @@ import {getBackendVersion, initializeBackend, runMockProcess} from "../utils/pro
 import {handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "./storage";
 import {detectStudyFolders} from "./file-explorer";
+import {SpikeMode} from "../enums";
 
 ipcMain.handle('openExternal', async (event, url: string) => {
     return await shell.openExternal(url);
@@ -48,4 +49,35 @@ ipcMain.handle("initializeBackend", async () => {
 ipcMain.handle("publish:ticBaseDirectory", async (event, baseDirectory: string) => {
     console.log(`Setting TIC base directory to ${baseDirectory}`);
     await setTicBaseDirectory(baseDirectory);
+});
+
+ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
+    // parse spike mode
+    let mode;
+    if (spikeModeName === SpikeMode.SPIKED) {
+        mode = SpikeMode.SPIKED;
+    } else if (spikeModeName === SpikeMode.PARTIAL) {
+        mode = SpikeMode.PARTIAL;
+    } else {
+        mode = SpikeMode.NONE;
+    }
+    console.log(`Selected spike mode: ${mode}`);
+
+    // save prefilled mapping file to baseDirectory
+    const baseDirectory = await getTicBaseDirectory();
+    const path = `${baseDirectory}/mapping.tsv`;
+    const fs = require('fs');
+    const content = "#SampleID\ttotal_weight_in_g\tamount_spike\tparent_path\n"; // TODO: fill with selected samples
+    fs.writeFile(path, content, (err: string) => {
+        console.error(err);
+    });
+
+    // open mapping file in default editor
+    if (mode == SpikeMode.SPIKED) {
+        shell.openPath(path).then(() => {
+            console.log(`Opened mapping file in default editor`);
+        }).catch((err: string) => {
+            console.error(err);
+        });
+    }
 });

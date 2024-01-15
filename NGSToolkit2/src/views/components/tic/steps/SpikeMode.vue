@@ -91,12 +91,17 @@
   <div class="mt-4 font-mono text-red-800 text-xs">
     <p>spikeMode: {{ spikeMode }}</p>
   </div>
+  <button @click="publishSpikeMode()">Create Mapping File</button>
 </template>
 
 <script setup lang="ts">
 import {ref} from "vue";
 
 let spikeMode = ref("spiked");
+
+async function publishSpikeMode() {
+  await indexBridge.publishSpikeMode(spikeMode.value);
+}
 </script>
 
 <script lang="ts">
