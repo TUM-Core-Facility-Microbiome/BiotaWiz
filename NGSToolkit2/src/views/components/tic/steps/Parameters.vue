@@ -70,13 +70,13 @@
                       type="range"
                       v-model="abund_limit"
                       min="0"
-                      max="1"
+                      max="0.5"
                       step="0.01"
                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                       tabindex="-1"
                   >
                   <span class="text-sm text-gray-500 absolute start-0 -bottom-6">No filtering (0)</span>
-                  <span class="text-sm text-gray-500 absolute end-0 -bottom-6">Max (1)</span>
+                  <span class="text-sm text-gray-500 absolute end-0 -bottom-6">Max (0.5)</span>
                 </div>
               </div>
             </div>
