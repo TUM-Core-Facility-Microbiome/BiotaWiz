@@ -1,39 +1,73 @@
 // list files in a directory
 import {readdirSync} from "fs";
 import {join} from "path";
+import * as fs from "fs";
 
 export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
-    // search for folders having a fastq sub-folder
-    const files = readdirSync(join(baseDirectory));
-    const studies = [];
-    for (const file of files) {
-        const stats = readdirSync(join(baseDirectory, file));
-        for (const stat of stats) {
-            if (stat === "fastq") {
-                const studyFolder = {
-                    name: file,
-                    type: "study",
-                    path: join(baseDirectory, file),
-                    children: [] as IFileSystemNode[],
-                }
+    const root: IFileSystemNode = {
+        name: baseDirectory,
+        type: "directory",
+        path: baseDirectory,
+        children: [],
+    }
 
-                // list the files in the fastq folder
-                const fastqFiles = readdirSync(join(baseDirectory, file, stat));
-                for (const fastqFile of fastqFiles) {
-                    // TODO: Check if file is a fastq file or gzipped fastq file; handle paired read files
-                    studyFolder.children.push({
-                            name: fastqFile,
-                            type: "fastq",
-                            path: join(baseDirectory, file, stat, fastqFile),
-                        }
-                    )
-                }
+    // recursively list all files in baseDirectory and build file tree
+    listDirectory(baseDirectory, root, baseDirectory);
+    return root.children;
+}
 
-                if (studyFolder.children.length > 0) {
-                    studies.push(studyFolder);
+function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path: string) {
+    const files = readdirSync(path);
+    files.forEach((nodeName) => {
+        if (fs.statSync(join(path, nodeName)).isDirectory()) {
+            const currentNode: IFileSystemNode = {
+                name: nodeName,
+                type: "directory",
+                path: join(path, nodeName),
+                children: [],
+            }
+            currentRoot.children.push(currentNode);
+            listDirectory(baseDirectory, currentNode, join(path, nodeName));
+        } else {
+            let match;
+            if ((match = matchFastqFile(nodeName)) !== null) {
+                const sampleId = match[1];
+                const forward = match[2] === "1";
+                const extension = match[3];
+                const currentNode: IFileSystemSample = {
+                    name: sampleId,
+                    path: join(path, nodeName),
+                    type: "sample",
+                    isPaired: false,
+                    isCompressed: extension.endsWith(".gz"),
+                    metadataAvailable: false,
+                }
+                if (forward) {
+                    currentRoot.children.push(currentNode);
+                } else {
+                    // check for node with same sampleId and modify it
+                    let forwardNode;
+                    if ((forwardNode = currentRoot.children.find((node) => node.name === sampleId)) !== undefined) {
+                        (forwardNode as IFileSystemSample).isPaired = true;
+                    }
                 }
             }
         }
+        const relativePath = join(path, nodeName).replace(baseDirectory, ".");
+        console.log(relativePath, nodeName);
+    });
+}
+
+function matchFastqFile(fileName: string): RegExpExecArray | null {
+    if (fileName.endsWith(".fastq") || fileName.endsWith(".fastq.gz")) {
+        const regex = new RegExp('(^.*)_S\\d_L\\d{3}_R([1,2])_\\d{3}\\.(fastq(\\.gz)?)', 'gm')
+        let match;
+
+        if ((match = regex.exec(fileName)) !== null) {
+            console.log(match);
+            return match;
+        }
+    } else {
+        return null;
     }
-    return studies;
 }

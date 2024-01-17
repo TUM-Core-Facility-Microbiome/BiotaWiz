@@ -21,6 +21,13 @@ interface IFileSystemNode {
     children?: IFileSystemNode[];
 }
 
+interface IFileSystemSample extends IFileSystemNode {
+    type: "sample";
+    isPaired: boolean;
+    isCompressed: boolean;
+    metadataAvailable: boolean;  // amount of spike-in and sample weight
+}
+
 interface IMergePairsArgs {
     fastq_maxdiffs: number;
     fastq_pctid: number;

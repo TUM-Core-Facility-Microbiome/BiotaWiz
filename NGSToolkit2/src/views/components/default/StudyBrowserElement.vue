@@ -6,7 +6,7 @@
           <div class="flex cursor-pointer mt-1" @mousedown.prevent>
             <input
                 type="checkbox"
-                v-if="item.type === 'study'"
+                v-if="item.type === 'directory'"
                 :indeterminate="isIndeterminate(item)"
                 v-model="item.selected"
                 class="mr-2 cursor-pointer"
@@ -21,20 +21,20 @@
                 @click.stop
                 @change="handleCheckboxChange(item)"
             />
-            <template v-if="item.type === 'study' && !item.expanded">
+            <template v-if="item.type === 'directory' && !item.expanded">
               <FolderIcon class="h-6 w-6 text-blue-500 mr-1"/>
             </template>
-            <template v-else-if="item.type === 'study' && item.expanded">
+            <template v-else-if="item.type === 'directory' && item.expanded">
               <FolderOpenIcon class="h-6 w-6 text-blue-500  mr-1"/>
             </template>
             <template v-else>
               <DocumentIcon class="h-6 w-6 text-blue-500 mr-1"/>
             </template>
-            <p class="font-mono">{{ item.name }}</p>
+            <p class="font-mono">{{ item.name }} {{ item.isCompressed }} {{ item.isPaired }}</p>
           </div>
         </span>
       </div>
-      <StudyBrowserElement v-if="item.expanded && item.type === 'study'" :items="item.children" @selection-changed="selectItem"/>
+      <StudyBrowserElement v-if="item.expanded && item.type === 'directory'" :items="item.children" @selection-changed="selectItem"/>
     </li>
   </ul>
 </template>

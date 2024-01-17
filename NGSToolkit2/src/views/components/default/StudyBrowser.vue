@@ -2,7 +2,7 @@
   <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded" @click="updateStudies">Reload</button>
   <p>Selected files: {{ state.selectedItems.length }}</p>
   <div class="study-browser">
-    <StudyBrowserElement :items="state.files" @selection-changed="handleSelect" />
+    <StudyBrowserElement :items="state.tree" @selection-changed="handleSelect" />
   </div>
 </template>
 
@@ -24,14 +24,14 @@ const props = defineProps({
 });
 
 const state = reactive({
-  files: [] as IFileSystemNode[],
+  tree: [] as IFileSystemNode[],
   selectedItems: [] as IFileSystemNode[],
 });
 
 const updateStudies = () => {
   indexBridge.loadStudiesFromBaseDirectory().then((studies: IFileSystemNode[]) => {
     console.log("Studies: " , studies);
-    state.files = studies;
+    state.tree = studies;
   }).catch(() => {
     console.log("Could not load studies");
   });
