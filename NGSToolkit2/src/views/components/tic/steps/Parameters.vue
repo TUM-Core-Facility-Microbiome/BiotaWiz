@@ -17,6 +17,9 @@
             <div class="text-sm text-gray-700">
               Remove primer artifacts at the beginning and end of reads.
               Adjust these settings based on the length of the primers.
+              <br>
+              If all samples are un-paired, only <code>stripleft</code> will be used. You can keep the default value
+              for <code>stripright</code>.
             </div>
             <div class="grid grid-cols-1 gap-6 mt-3 sm:grid-cols-2">
               <div>
@@ -433,8 +436,12 @@ function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
   }
 
   const trimBothSidesArgs: ITrimBothSidesArgs = {
-    stripleft: Number(stripleft.value),
+    stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
     stripright: Number(stripright.value),
+  };
+
+  const trimOneSideArgs: ITrimOneSideArgs = {
+    stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
   };
 
   const createTableTICArgs: ICreateTableTICArgs = {
@@ -462,7 +469,7 @@ function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
   // patch args
   const args = DEFAULT_TIC_PIPELINE_ARGUMENTS;
   args.TrimBothSidesArgs = trimBothSidesArgs;
-  // TODO: TrimOneSideArgs. Is this only for non-paired reads?
+  args.TrimOneSideArgs = trimOneSideArgs;
   args.CreateTableTICArgs = createTableTICArgs;
   args.MergePairsArgs = mergePairsArgs;
   args.ClusterZOTUsArgs = clusterZOTUsArgs;
