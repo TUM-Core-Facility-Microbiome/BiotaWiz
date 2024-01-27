@@ -1,3 +1,7 @@
+export function getVersionString(version: SemanticVersion) {
+    return `${version.major}.${version.minor}.${version.patch}`;
+}
+
 /**
  * Parse a GitHub tag into a semver object
  * @param tag
@@ -60,10 +64,9 @@ export function getMatchingVersions(versions: SemanticVersion[], matcher: Semant
 export function getLatestMatchingVersion(versions: SemanticVersion[], matcher: SemanticVersionMatcher) {
     const matchingVersions = getMatchingVersions(versions, matcher);
     if (matchingVersions.length === 0) {
-        throw new Error(`No matching version found for ${matcher}`);
+        return null;
     }
-
-    console.log(`Found ${matchingVersions.length} compatible versions: ${matchingVersions.map((version) => `${version.major}.${version.minor}.${version.patch}`).join(', ')}`);
+    console.debug(`Found ${matchingVersions.length} compatible versions: ${matchingVersions.map((version) => `${version.major}.${version.minor}.${version.patch}`).join(', ')}`);
 
     return matchingVersions.reduce((prev, curr) => {
         if (prev.major > curr.major) {

@@ -1,8 +1,8 @@
 import * as child_process from "child_process";
 import * as platform from "./platform";
 import {BrowserWindow} from "electron";
-import {getBackend} from "../api/storage";
-import {getDistributionTarPath, initializeWslBackend, terminateWslBackend} from "./backend";
+import {getBackend} from "./storage";
+import {terminateWslBackend} from "./backend";
 
 
 async function dockerHelloWorld(): Promise<number> {
@@ -72,23 +72,23 @@ export function runMockProcess(): Promise<number> {
 
 export function getBackendVersion(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        getBackend().then((backend) => {
-            const subprocess = child_process.spawn(
-                backend.command,
-                ["--version"],
-            );
+        const backend = getBackend();
 
-            subprocess.stdout.on('data', (data) => {
-                if (data instanceof Buffer) {
-                    const msg = data.toString();
-                    console.log(msg);
-                    resolve(msg);
-                }
-            });
-            subprocess.on('close', (code, signal) => {
-                console.log(`Child closed with code ${code} and signal ${signal}`);
-                reject(code);
-            });
+        const subprocess = child_process.spawn(
+            backend.command,
+            ["--version"],
+        );
+
+        subprocess.stdout.on('data', (data) => {
+            if (data instanceof Buffer) {
+                const msg = data.toString();
+                console.log(msg);
+                resolve(msg);
+            }
+        });
+        subprocess.on('close', (code, signal) => {
+            console.log(`Child closed with code ${code} and signal ${signal}`);
+            reject(code);
         });
     });
 }
@@ -166,15 +166,6 @@ export async function getChecksum(path: string): Promise<string> {
             reject(reason);
         });
     });
-}
-
-export async function initializeBackend(): Promise<void> {
-    return platform.byOS({
-        [platform.platforms.LINUX]: () => getDistributionTarPath(),
-        [platform.platforms.WINDOWS]: () => initializeWslBackend(),
-        [platform.platforms.MAC]: () => getDistributionTarPath(),
-        default: () => getDistributionTarPath(),
-    })();
 }
 
 export async function terminateBackend(): Promise<void> {

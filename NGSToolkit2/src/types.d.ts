@@ -116,8 +116,25 @@ interface ITicBaseDirectory {
     path: string;
 }
 
+// modeled after https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-a-release-by-tag-name
+interface GitHubAsset {
+    "url": string;
+    "browser_download_url": string;
+    "id": number;
+    "node_id": string;
+    "name": string;
+    "label": string;
+    "state": string;
+    "content_type": string;
+    "size": number;
+    "download_count": number;
+    "created_at": string;
+    "updated_at": string;
+    "uploader": object;
+}
+
 // modeled after https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-the-latest-release
-interface GitHubReleasesLatestResponse {
+interface GitHubRelease {
     "assets_url": string;
     "upload_url": string;
     "tarball_url": string;
@@ -133,7 +150,7 @@ interface GitHubReleasesLatestResponse {
     "prerelease": boolean;
     "tag_name": string;
     "target_commitish": string;
-    "assets": object[];
+    "assets": GitHubAsset[];
     "url": string;
 }
 

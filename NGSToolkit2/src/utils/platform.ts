@@ -1,5 +1,6 @@
 // adapted from https://www.freecodecamp.org/news/how-to-write-os-specific-code-in-electron-bf6379c62ff6/
 import * as os from 'os';
+import {findHandlerOrDefault} from "./handler";
 
 export const platforms: IDictionary<string> = {
     WINDOWS: 'WINDOWS',
@@ -26,22 +27,7 @@ const osIdentifierMapping: IDictionary<string> = {
 // current platform to match against a given object with handlers
 const currentPlatform: string = osIdentifierMapping[os.platform()];
 
-// find a handler for the current platform or return the default handler
-const findHandlerOrDefault = (handlerName: string, dictionary: IDictionary<() => never>): () => never => {
-    const handler = dictionary[handlerName];
 
-    if (handler) {
-        return handler;
-    }
-
-    if (dictionary.default) {
-        return dictionary.default;
-    }
-
-    return () => {
-        throw new Error(`No handler for platform ${handlerName} found`);
-    };
-};
 
 export const byOS = findHandlerOrDefault.bind(null, currentPlatform);
 

@@ -1,9 +1,9 @@
 import {BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
-import {getDistributionTarPath} from "../utils/backend";
-import {getBackendVersion, initializeBackend, runMockProcess} from "../utils/process";
+import {getImageTarball, initializeBackend} from "../utils/backend";
+import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFolderOpen} from "./dialogs";
-import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "./storage";
+import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "./file-explorer";
 import {SpikeMode} from "../enums";
 

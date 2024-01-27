@@ -1,19 +1,52 @@
 import path from "path";
 import * as fs from "fs";
-import {getChecksum} from "./process";
 import {
+    COMPATIBLE_IMAGE_VERSIONS,
     DISTRIBUTION_NAME,
-    WSL_TAR_CHECKSUM,
-    WSL_TAR_NAME,
     IMAGE_REPOSITORY,
-    GITHUB_BASE_URL,
-    COMPATIBLE_IMAGE_VERSIONS
+    IMAGE_ASSET_NAME
 } from "../config";
 import axios from "axios";
-import {getLatestMatchingVersion, semVerFromGitHubTag} from "./semver";
+import {getLatestMatchingVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./semver";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
+
+import {byOS, platforms} from "./platform";
+import {getBackend, getImageTag, setImageTag} from "./storage";
+import {BrowserWindow} from "electron";
+import jsonStorage from "electron-json-storage";
+import {findHandlerOrDefault} from "./handler";
+
+const DOCKER = {
+    name: "Docker",
+    command: "docker",
+    argsPrefix: ["run", "--rm"],
+}
+
+const WSL = {
+    name: "Windows Subsystem for Linux",
+    command: "wsl",
+    argsPrefix: ["-l", "-v"],
+}
+
+export function getDefaultBackend(): IBackend {
+    return byOS({
+        [platforms.LINUX]: () => {
+            return DOCKER
+        },
+        [platforms.WINDOWS]: () => {
+            return WSL
+        },
+        [platforms.MAC]: () => {
+            return DOCKER
+        },
+        default: () => {
+            return DOCKER
+        },
+    })();
+}
+
 
 /**
  * Ensure that the distribution tarball exists.
@@ -26,29 +59,13 @@ function checkTarExists(path: string) {
     }
 }
 
-/**
- * Ensure the distribution tarball is valid.
- * @param path
- * @throws Error if the tarball is not valid.
- */
-async function checkTarValid(path: string) {
-    checkTarExists(path);
-
-    // compare the SHA256 checksums to validate the download
-    const actualChecksum = await getChecksum(path);
-    console.log(actualChecksum);
-    const expectedChecksum = WSL_TAR_CHECKSUM;
-    if (actualChecksum !== expectedChecksum) {
-        throw new Error(`Checksum of distribution tarball does not match. Expected ${expectedChecksum}, but got ${actualChecksum}`);
-    }
-}
 
 /**
  * Query GitHub for the latest release tag of the image.
  */
 async function getCurrentImageReleaseTag() {
     return new Promise<SemanticVersion>((resolve, reject) => {
-        axios.get<GitHubReleasesLatestResponse>(
+        axios.get<GitHubRelease>(
             `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/latest`,
             {
                 headers: {
@@ -66,10 +83,32 @@ async function getCurrentImageReleaseTag() {
     });
 }
 
+async function getCompatibleImageReleaseTags() {
+    return new Promise<SemanticVersion[]>((resolve, reject) => {
+        axios.get<GitHubRelease[]>(
+            `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
+            {
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28'
+                },
+            }
+        ).then((response) => {
+            const data = response.data;
+            const tags = data.map((release) => {
+                return semVerFromGitHubTag(release.tag_name);
+            });
+            const compatibleTags = getMatchingVersions(tags, COMPATIBLE_IMAGE_VERSIONS);
+            resolve(compatibleTags);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
 async function getLatestCompatibleImageReleaseTag() {
     return new Promise<SemanticVersion>((resolve, reject) => {
         // query GitHub for available releases
-        axios.get<GitHubReleasesLatestResponse[]>(
+        axios.get<GitHubRelease[]>(
             `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
             {
                 headers: {
@@ -89,47 +128,109 @@ async function getLatestCompatibleImageReleaseTag() {
     });
 }
 
+async function getImageReleaseAssetUrl(releaseTag: SemanticVersion) {
+    return new Promise<string>((resolve, reject) => {
+        // load specified release and find the tarball
+        const RELEASE_URL = `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/tags/v${getVersionString(releaseTag)}`;
+        console.log(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
+        axios.get<GitHubRelease>(
+            RELEASE_URL,
+            {headers: {'X-GitHub-Api-Version': '2022-11-28'}}
+        ).then((response) => {
+            const data = response.data;
+            const assets = data.assets;
+
+            // find the tarball
+            console.log(`Release has ${assets.length} assets attached. Searching for ${IMAGE_ASSET_NAME}`);
+            const tarball = assets.find((asset) => {
+                return asset.name === IMAGE_ASSET_NAME;
+            });
+
+            if (tarball === undefined) {
+                reject(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${getVersionString(releaseTag)}`);
+            }
+
+            resolve(tarball.browser_download_url);
+        });
+    });
+}
+
 /**
  * Download the distribution tarball and places it to the expected path.
  */
-async function downloadDistributionTar(path: string) {
-    // TODO: implement
-    const expectedPath = getExpectedDistributionTarPath();
-    const imageReleaseVersion = await getCurrentImageReleaseTag();
-    console.log(imageReleaseVersion);
-    const latestCompatibleVersion = await getLatestCompatibleImageReleaseTag();
-    console.log(`Latest compatible version: ${latestCompatibleVersion.major}.${latestCompatibleVersion.minor}.${latestCompatibleVersion.patch}`);
-    throw new Error(`Not implemented yet. Place tar by hand at ${expectedPath}`);
+async function downloadDistributionTar(releaseTag: SemanticVersion, path: string) {
+    return new Promise<void>((resolve, reject) => {
+        // get tarball URL
+        getImageReleaseAssetUrl(releaseTag).then((tarballUrl) => {
+            // download tarball
+            console.log(`Downloading tarball from ${tarballUrl} to ${path}`);
+            const expectedPath = getExpectedDistributionTarPath(releaseTag);
+            const writer = fs.createWriteStream(expectedPath);
+            axios.get(
+                tarballUrl,
+                {responseType: 'stream'}
+            ).then((response) => {
+                response.data.pipe(writer);
+
+                writer.on('finish', resolve);
+                writer.on('error', (error) => {
+                    reject(error);
+                });
+            }).catch((error) => {
+                reject(error);
+            });
+        }).catch((error) => {
+            reject(error);
+        });
+    });
 }
 
-function getExpectedDistributionTarPath() {
+function getExpectedDistributionTarPath(releaseTag: SemanticVersion) {
     const appDataDirectory = app.getPath('temp');
-    return path.join(appDataDirectory, WSL_TAR_NAME);
+    return path.join(appDataDirectory, `${getImageName(releaseTag)}.tar.gz`);
 }
 
-function getDistributionInstallLocation() {
-    const appDataDirectory = app.getPath('userData');
-    return path.join(appDataDirectory, 'wsl-distro');
+function getDistributionInstallLocation(releaseTag: SemanticVersion) {
+    const appDataDirectory = byOS({
+        [platforms.WINDOWS]: () => {
+            // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
+            const localAppData = process.env.LOCALAPPDATA;
+            if (localAppData === undefined) {
+                return app.getPath('userData');  // fallback when environment variable is not set
+            }
+            return path.join(localAppData, app.name);
+        },
+        default: () => app.getPath('userData'),
+    })();
+    const installDir = path.join(appDataDirectory, 'wsl-distro', getImageName(releaseTag));
+
+    // make sure the path exists
+    if (!fs.existsSync(installDir)) {
+        fs.mkdirSync(installDir, {recursive: true});
+    }
+    console.log(`Distribution will be installed to ${installDir}`);
+
+    return installDir;
 }
 
 /**
- * Get the path of the distribution tarball. If it does not exist, download it.
+ * Get the path of the image tarball. If it does not exist, download it.
  *
  * @returns The path of the distribution tarball.
  */
-export async function getDistributionTarPath(): Promise<string> {
-    const expectedPath = getExpectedDistributionTarPath();
+export async function getImageTarball(releaseTag: SemanticVersion) {
+    const expectedPath = getExpectedDistributionTarPath(releaseTag);
 
     if (!fs.existsSync(expectedPath)) {
-        await downloadDistributionTar(expectedPath);
+        await downloadDistributionTar(releaseTag, expectedPath);
     }
 
-    await checkTarValid(expectedPath);
+    checkTarExists(expectedPath);
 
     return expectedPath;
 }
 
-export async function getDistroVersion(distribution: string) {
+export async function getDistroWslVersion(distribution: string) {
     const distributions = await wsl.listVerbose();
     for (const distro of distributions) {
         if (distro.name === distribution) {
@@ -139,39 +240,51 @@ export async function getDistroVersion(distribution: string) {
     throw new Error(`Distribution ${distribution} not found`);
 }
 
-export async function registerWslDistribution() {
-    const tarPath = await getDistributionTarPath();
-    const installLocation = getDistributionInstallLocation();
+export async function registerWslDistribution(releaseTag: SemanticVersion) {
+    const tarPath = await getImageTarball(releaseTag);
+    const installLocation = getDistributionInstallLocation(releaseTag);
 
     // import distribution
-    console.log(`Importing distribution ${DISTRIBUTION_NAME} from ${tarPath} to ${installLocation}`);
-    await wsl.importDistribution(DISTRIBUTION_NAME, installLocation, tarPath);
+    const distributionName = getImageName(releaseTag);
+    console.log(`Importing distribution ${distributionName} from ${tarPath} to ${installLocation}`);
+    await wsl.importDistribution(distributionName, installLocation, tarPath);
+}
 
-    // ensure distribution is running on WSL2
-    const version = await getDistroVersion(DISTRIBUTION_NAME);
-    console.log(`Distribution ${DISTRIBUTION_NAME} has version ${version}`);
-    if (version !== 2) {
-        console.log(`Setting version of distribution ${DISTRIBUTION_NAME} to 2`);
-        await wsl.setVersion(DISTRIBUTION_NAME, 2);
+function getImageName(releaseTag: SemanticVersion) {
+    const backend = getBackend();
+    switch (backend) {
+        case DOCKER:
+            return `${DISTRIBUTION_NAME}:${getVersionString(releaseTag)}`;
+        case WSL:
+            return `${DISTRIBUTION_NAME}_${getVersionString(releaseTag)}`;
+        default:
+            throw new Error(`Backend ${backend.name} not supported`);
     }
 }
 
-export async function initializeWslBackend() {
+export async function initializeWslBackend(releaseTag: SemanticVersion) {
     // check if the distribution is registered
-    const installed = await wsl.isInstalled(DISTRIBUTION_NAME);
+    const distribution = getImageName(releaseTag);
+    const installed = await wsl.isInstalled(distribution);
     if (installed) {
-        console.log(`WSL distribution ${DISTRIBUTION_NAME} is installed`);
+        console.log(`WSL distribution ${distribution} is registered.`);
     } else {
-        console.log(`WSL distribution ${DISTRIBUTION_NAME} is not installed`);
-        await registerWslDistribution();
+        console.log(`WSL distribution ${distribution} is not registered.`);
+        await registerWslDistribution(releaseTag);
     }
 
-    const version = await wsl.listVerbose();
-    console.log(`WSL version: ${version}`);
+    // ensure distribution is running on WSL2
+    const version = await getDistroWslVersion(distribution);
+    if (version !== 2) {
+        console.log(`Setting version of distribution ${distribution} to 2`);
+        await wsl.setVersion(distribution, 2);
+    } else {
+        console.log(`Distribution ${distribution} is running on WSL2.`);
+    }
 
     // ensure the distribution is running
-    await wsl.runDistribution(DISTRIBUTION_NAME);
-    await wsl.waitForRunning(DISTRIBUTION_NAME);
+    await wsl.runDistribution(distribution);
+    await wsl.waitForRunning(distribution);
 }
 
 export async function initializeDockerBackend() {
@@ -186,4 +299,35 @@ export async function terminateWslBackend() {
 
 export async function terminateDockerBackend() {
     throw new Error("Not implemented yet");
+}
+
+export async function initializeBackend() {
+    // get the version of the image
+    let releaseTag = getImageTag();
+    if (releaseTag === null) {
+        console.log("No image version specified in storage, querying GitHub for latest version");
+
+        releaseTag = await getLatestCompatibleImageReleaseTag();
+        console.log(`Latest compatible version: ${releaseTag.major}.${releaseTag.minor}.${releaseTag.patch}`);
+
+        await setImageTag(releaseTag);
+    } else {
+        console.log(`Image version: ${releaseTag.major}.${releaseTag.minor}.${releaseTag.patch}`);
+    }
+
+    // run initialization
+    // this will download and register the image if necessary
+    const backend = getBackend();
+    switch (backend) {
+        case DOCKER:
+            console.log(`Initializing Docker backend`);
+            throw new Error(`Initialization for docker backend is not implemented yet.`); // TODO: implement Docker backend
+            break;
+        case WSL:
+            console.log(`Initializing WSL backend`);
+            await initializeWslBackend(releaseTag);
+            break;
+        default:
+            throw new Error(`Backend ${backend.name} not supported`);
+    }
 }
