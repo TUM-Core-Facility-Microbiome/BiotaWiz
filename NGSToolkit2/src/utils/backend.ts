@@ -308,11 +308,11 @@ export async function initializeBackend() {
         console.log("No image version specified in storage, querying GitHub for latest version");
 
         releaseTag = await getLatestCompatibleImageReleaseTag();
-        console.log(`Latest compatible version: ${releaseTag.major}.${releaseTag.minor}.${releaseTag.patch}`);
+        console.log(`Latest compatible version: ${getVersionString(releaseTag)}`);
 
         await setImageTag(releaseTag);
     } else {
-        console.log(`Image version: ${releaseTag.major}.${releaseTag.minor}.${releaseTag.patch}`);
+        console.log(`Expecting image version: ${getVersionString(releaseTag)}`);
     }
 
     // run initialization
