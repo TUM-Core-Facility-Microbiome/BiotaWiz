@@ -115,3 +115,41 @@ interface ITicPipelineArguments {
 interface ITicBaseDirectory {
     path: string;
 }
+
+// modeled after https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-the-latest-release
+interface GitHubReleasesLatestResponse {
+    "assets_url": string;
+    "upload_url": string;
+    "tarball_url": string;
+    "zipball_url": string;
+    "created_at": string;
+    "published_at": string;
+    "draft": boolean;
+    "id": number;
+    "node_id": string;
+    "author": object;
+    "html_url": string;
+    "name": string;
+    "prerelease": boolean;
+    "tag_name": string;
+    "target_commitish": string;
+    "assets": object[];
+    "url": string;
+}
+
+interface SemanticVersion {
+    major: number;
+    minor: number;
+    patch: number;
+}
+
+interface NumberRange {
+    min: number | null;
+    max: number | null;
+}
+
+interface SemanticVersionMatcher {
+    major: number | NumberRange | null;
+    minor: number | NumberRange | null;
+    patch: number | NumberRange | null;
+}

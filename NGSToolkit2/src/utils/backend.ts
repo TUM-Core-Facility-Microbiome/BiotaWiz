@@ -1,9 +1,18 @@
 import path from "path";
 import * as fs from "fs";
 import {getChecksum} from "./process";
-import {DISTRIBUTION_NAME, WSL_TAR_CHECKSUM, WSL_TAR_NAME} from "../config";
+import {
+    DISTRIBUTION_NAME,
+    WSL_TAR_CHECKSUM,
+    WSL_TAR_NAME,
+    IMAGE_REPOSITORY,
+    GITHUB_BASE_URL,
+    COMPATIBLE_IMAGE_VERSIONS
+} from "../config";
+import axios from "axios";
+import {getLatestMatchingVersion, semVerFromGitHubTag} from "./semver";
 
-const { app } = require('electron');
+const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
 
 /**
@@ -35,11 +44,61 @@ async function checkTarValid(path: string) {
 }
 
 /**
+ * Query GitHub for the latest release tag of the image.
+ */
+async function getCurrentImageReleaseTag() {
+    return new Promise<SemanticVersion>((resolve, reject) => {
+        axios.get<GitHubReleasesLatestResponse>(
+            `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/latest`,
+            {
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28'
+                },
+            }
+        ).then((response) => {
+            const data = response.data;
+            const tag = data.tag_name;
+            const semver: SemanticVersion = semVerFromGitHubTag(tag);
+            resolve(semver);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+async function getLatestCompatibleImageReleaseTag() {
+    return new Promise<SemanticVersion>((resolve, reject) => {
+        // query GitHub for available releases
+        axios.get<GitHubReleasesLatestResponse[]>(
+            `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
+            {
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28'
+                },
+            }
+        ).then((response) => {
+            const data = response.data;
+            const availableVersions = data.map((release) => {
+                return semVerFromGitHubTag(release.tag_name);
+            });
+            const latestCompatibleVersion = getLatestMatchingVersion(availableVersions, COMPATIBLE_IMAGE_VERSIONS);
+            resolve(latestCompatibleVersion);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+/**
  * Download the distribution tarball and places it to the expected path.
  */
-function downloadDistributionTar(path: string) {
+async function downloadDistributionTar(path: string) {
     // TODO: implement
     const expectedPath = getExpectedDistributionTarPath();
+    const imageReleaseVersion = await getCurrentImageReleaseTag();
+    console.log(imageReleaseVersion);
+    const latestCompatibleVersion = await getLatestCompatibleImageReleaseTag();
+    console.log(`Latest compatible version: ${latestCompatibleVersion.major}.${latestCompatibleVersion.minor}.${latestCompatibleVersion.patch}`);
     throw new Error(`Not implemented yet. Place tar by hand at ${expectedPath}`);
 }
 
@@ -62,7 +121,7 @@ export async function getDistributionTarPath(): Promise<string> {
     const expectedPath = getExpectedDistributionTarPath();
 
     if (!fs.existsSync(expectedPath)) {
-        downloadDistributionTar(expectedPath);
+        await downloadDistributionTar(expectedPath);
     }
 
     await checkTarValid(expectedPath);
