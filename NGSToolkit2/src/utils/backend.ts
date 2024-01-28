@@ -287,9 +287,10 @@ export async function initializeWslBackend(releaseTag: SemanticVersion) {
 }
 
 export async function initializeDockerBackend(releaseTag: SemanticVersion) {
-    // check if the image is registered
     const docker = new Docker();  // initialize with defaults; using socket
     const image = getImageName(releaseTag);
+
+    // check if the image is registered
     const images = await docker.listImages();
     const imageExists = images.some((imageInfo: any) => {
         return imageInfo.RepoTags.includes(image);
