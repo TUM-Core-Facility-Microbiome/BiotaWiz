@@ -69,7 +69,7 @@ const indexBridge = {
         });
     },
     handleLogRequests: (callback: (log: string, level: string) => void) => {
-        ipcRenderer.on('logRequests', (event, log: string, level: string) => {
+        ipcRenderer.on('logRequest', (event, log: string, level: string) => {
             callback(log, level);
         });
     },

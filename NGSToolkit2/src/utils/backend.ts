@@ -10,6 +10,7 @@ import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {getBackend, getImageTag, setImageTag} from "./storage";
 import {getLatestMatchingVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./semver";
+import {logToDevTools} from "./logHandler";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
@@ -297,13 +298,15 @@ export async function initializeDockerBackend(releaseTag: SemanticVersion) {
     });
 
     if (imageExists) {
-        console.log(`Image ${image} exists.`);
+        logToDevTools(`Image ${image} exists.`);
         return;
     } else {
-        console.log(`Image ${image} does not exist.`);
+        logToDevTools(`Image ${image} does not exist.`);
         // pull the image
         await docker.pull(image).then((stream: any) => {
-            stream.pipe(process.stdout);
+            stream.on('finish', () => {
+                logToDevTools(`Image ${image} pulled.`);
+            });
         });
         return;
     }
@@ -322,14 +325,14 @@ export async function initializeBackend() {
     // get the version of the image
     let releaseTag = getImageTag();
     if (releaseTag === null) {
-        console.log("No image version specified in storage, querying GitHub for latest version");
+        logToDevTools("No image version specified in storage, querying GitHub for latest version");
 
         releaseTag = await getLatestCompatibleImageReleaseTag();
-        console.log(`Latest compatible version: ${getVersionString(releaseTag)}`);
+        logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
 
         // await setImageTag(releaseTag);  // TODO: manage if user wants to update or use a fixed version
     } else {
-        console.log(`Expecting image version: ${getVersionString(releaseTag)}`);
+        logToDevTools(`Expecting image version: ${getVersionString(releaseTag)}`);
     }
 
     // run initialization
@@ -337,11 +340,11 @@ export async function initializeBackend() {
     const backend = getBackend();
     switch (backend) {
         case DOCKER:
-            console.log(`Initializing Docker backend`);
+            logToDevTools(`Initializing Docker backend`);
             await initializeDockerBackend(releaseTag);
             break;
         case WSL:
-            console.log(`Initializing WSL backend`);
+            logToDevTools(`Initializing WSL backend`);
             await initializeWslBackend(releaseTag);
             break;
         default:

@@ -3,6 +3,7 @@ import * as platform from "./platform";
 import {BrowserWindow} from "electron";
 import {getBackend} from "./storage";
 import {terminateWslBackend} from "./backend";
+import {logToDevTools} from "./logHandler";
 
 
 async function dockerHelloWorld(): Promise<number> {
@@ -31,14 +32,13 @@ export function runSubprocess(command: string, args: string[]): Promise<number> 
             if (data instanceof Buffer) {
                 const msg = data.toString();
                 console.log(msg);
-                window.webContents.send('logRequests', msg, 'info');
+                logToDevTools(msg);
             }
         });
         subprocess.stderr.on('data', (data) => {
             if (data instanceof Buffer) {
                 const msg = data.toString();
-                console.warn(msg);
-                window.webContents.send('logRequests', msg, 'warn');
+                logToDevTools(msg, 'warn');
             }
         });
 
