@@ -4,6 +4,7 @@
 
     <div class="mt-4" v-for="thirdPartyLicense in thirdPartyLicenses">
       <h1 class="font-mono font-bold">{{ thirdPartyLicense.name }}</h1>
+      <small class="text-gray-700">Licensed under <code>{{ thirdPartyLicense.license }}</code> license</small>
       <pre class="font-mono text-xs">{{ thirdPartyLicense.licenseText }}</pre>
     </div>
   </div>
