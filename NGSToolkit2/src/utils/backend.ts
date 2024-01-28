@@ -131,7 +131,7 @@ async function getImageReleaseAssetUrl(releaseTag: SemanticVersion) {
     return new Promise<string>((resolve, reject) => {
         // load specified release and find the tarball
         const RELEASE_URL = `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/tags/v${getVersionString(releaseTag)}`;
-        console.log(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
+        logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
         axios.get<GitHubRelease>(
             RELEASE_URL,
             {headers: {'X-GitHub-Api-Version': '2022-11-28'}}
@@ -140,7 +140,7 @@ async function getImageReleaseAssetUrl(releaseTag: SemanticVersion) {
             const assets = data.assets;
 
             // find the tarball
-            console.log(`Release has ${assets.length} assets attached. Searching for ${IMAGE_ASSET_NAME}`);
+            logToDevTools(`Release has ${assets.length} assets attached. Searching for ${IMAGE_ASSET_NAME}`);
             const tarball = assets.find((asset) => {
                 return asset.name === IMAGE_ASSET_NAME;
             });
@@ -162,7 +162,7 @@ async function downloadDistributionTar(releaseTag: SemanticVersion, path: string
         // get tarball URL
         getImageReleaseAssetUrl(releaseTag).then((tarballUrl) => {
             // download tarball
-            console.log(`Downloading tarball from ${tarballUrl} to ${path}`);
+            logToDevTools(`Downloading tarball from ${tarballUrl} to ${path}`);
             const expectedPath = getExpectedDistributionTarPath(releaseTag);
             const writer = fs.createWriteStream(expectedPath);
             axios.get(
@@ -207,7 +207,7 @@ function getDistributionInstallLocation(releaseTag: SemanticVersion) {
     if (!fs.existsSync(installDir)) {
         fs.mkdirSync(installDir, {recursive: true});
     }
-    console.log(`Distribution will be installed to ${installDir}`);
+    logToDevTools(`Distribution will be installed to ${installDir}`);
 
     return installDir;
 }
@@ -246,7 +246,7 @@ export async function registerWslDistribution(releaseTag: SemanticVersion) {
 
     // import distribution
     const distributionName = getImageName(releaseTag);
-    console.log(`Importing distribution ${distributionName} from ${tarBall} to ${installLocation}`);
+    logToDevTools(`Importing distribution ${distributionName} from ${tarBall} to ${installLocation}`);
     await wsl.importDistribution(distributionName, installLocation, tarBall);
 }
 
@@ -267,19 +267,19 @@ export async function initializeWslBackend(releaseTag: SemanticVersion) {
     const distribution = getImageName(releaseTag);
     const installed = await wsl.isInstalled(distribution);
     if (installed) {
-        console.log(`WSL distribution ${distribution} is registered.`);
+        logToDevTools(`WSL distribution ${distribution} is registered.`);
     } else {
-        console.log(`WSL distribution ${distribution} is not registered.`);
+        logToDevTools(`WSL distribution ${distribution} is not registered.`);
         await registerWslDistribution(releaseTag);
     }
 
     // ensure distribution is running on WSL2
     const version = await getDistroWslVersion(distribution);
     if (version !== 2) {
-        console.log(`Setting version of distribution ${distribution} to 2`);
+        logToDevTools(`Setting version of distribution ${distribution} to 2`);
         await wsl.setVersion(distribution, 2);
     } else {
-        console.log(`Distribution ${distribution} is running on WSL2.`);
+        logToDevTools(`Distribution ${distribution} is running on WSL2.`);
     }
 
     // ensure the distribution is running
@@ -313,7 +313,7 @@ export async function initializeDockerBackend(releaseTag: SemanticVersion) {
 }
 
 export async function terminateWslBackend() {
-    console.log(`Terminating WSL distribution ${DISTRIBUTION_NAME}`);
+    logToDevTools(`Terminating WSL distribution ${DISTRIBUTION_NAME}`);
     await wsl.terminate(DISTRIBUTION_NAME);
 }
 
