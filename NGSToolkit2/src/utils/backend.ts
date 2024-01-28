@@ -7,16 +7,14 @@ import {
     IMAGE_ASSET_NAME
 } from "../config";
 import axios from "axios";
+import {byOS, platforms} from "./platform";
+import {getBackend, getImageTag, setImageTag} from "./storage";
 import {getLatestMatchingVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./semver";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
+const Docker = require('dockerode');
 
-import {byOS, platforms} from "./platform";
-import {getBackend, getImageTag, setImageTag} from "./storage";
-import {BrowserWindow} from "electron";
-import jsonStorage from "electron-json-storage";
-import {findHandlerOrDefault} from "./handler";
 
 const DOCKER = {
     name: "Docker",
@@ -240,21 +238,22 @@ export async function getDistroWslVersion(distribution: string) {
     throw new Error(`Distribution ${distribution} not found`);
 }
 
+
 export async function registerWslDistribution(releaseTag: SemanticVersion) {
-    const tarPath = await getImageTarball(releaseTag);
+    const tarBall = await getImageTarball(releaseTag);
     const installLocation = getDistributionInstallLocation(releaseTag);
 
     // import distribution
     const distributionName = getImageName(releaseTag);
-    console.log(`Importing distribution ${distributionName} from ${tarPath} to ${installLocation}`);
-    await wsl.importDistribution(distributionName, installLocation, tarPath);
+    console.log(`Importing distribution ${distributionName} from ${tarBall} to ${installLocation}`);
+    await wsl.importDistribution(distributionName, installLocation, tarBall);
 }
 
 function getImageName(releaseTag: SemanticVersion) {
     const backend = getBackend();
     switch (backend) {
         case DOCKER:
-            return `${DISTRIBUTION_NAME}:${getVersionString(releaseTag)}`;
+            return `ghcr.io/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}:${getVersionString(releaseTag)}`
         case WSL:
             return `${DISTRIBUTION_NAME}_${getVersionString(releaseTag)}`;
         default:
@@ -287,9 +286,26 @@ export async function initializeWslBackend(releaseTag: SemanticVersion) {
     await wsl.waitForRunning(distribution);
 }
 
-export async function initializeDockerBackend() {
+export async function initializeDockerBackend(releaseTag: SemanticVersion) {
     // check if the image is registered
+    const docker = new Docker();  // initialize with defaults; using socket
+    const image = getImageName(releaseTag);
+    const images = await docker.listImages();
+    const imageExists = images.some((imageInfo: any) => {
+        return imageInfo.RepoTags.includes(image);
+    });
 
+    if (imageExists) {
+        console.log(`Image ${image} exists.`);
+        return;
+    } else {
+        console.log(`Image ${image} does not exist.`);
+        // pull the image
+        await docker.pull(image).then((stream: any) => {
+            stream.pipe(process.stdout);
+        });
+        return;
+    }
 }
 
 export async function terminateWslBackend() {
@@ -310,7 +326,7 @@ export async function initializeBackend() {
         releaseTag = await getLatestCompatibleImageReleaseTag();
         console.log(`Latest compatible version: ${getVersionString(releaseTag)}`);
 
-        await setImageTag(releaseTag);
+        // await setImageTag(releaseTag);  // TODO: manage if user wants to update or use a fixed version
     } else {
         console.log(`Expecting image version: ${getVersionString(releaseTag)}`);
     }
@@ -321,7 +337,7 @@ export async function initializeBackend() {
     switch (backend) {
         case DOCKER:
             console.log(`Initializing Docker backend`);
-            throw new Error(`Initialization for docker backend is not implemented yet.`); // TODO: implement Docker backend
+            await initializeDockerBackend(releaseTag);
             break;
         case WSL:
             console.log(`Initializing WSL backend`);

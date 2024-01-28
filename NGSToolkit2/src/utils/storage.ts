@@ -77,8 +77,10 @@ export function setImageTag(version: SemanticVersion) {
 export function getImageTag() {
     const imageTag = jsonStorage.getSync('imageTag');
     if (isEmpty(imageTag)) {
+        console.debug(`No image tag found in storage at ${jsonStorage.getDataPath()}`);
         return null;
     } else {
+        console.debug(`Resolving image tag from storage at ${jsonStorage.getDataPath()}`);
         return imageTag as SemanticVersion;
     }
 }

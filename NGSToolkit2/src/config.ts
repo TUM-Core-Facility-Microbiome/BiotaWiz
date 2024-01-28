@@ -11,9 +11,6 @@ export const IMAGE_REPOSITORY = {
 // allow any patch version of the same minor version
 export const COMPATIBLE_IMAGE_VERSIONS: SemanticVersionMatcher = {
     major: 0,
-    minor: null,  // allow any minor version
-    patch: {
-        min: null,
-        max: null,
-    },
+    minor: 1,
+    patch: null,  // allow any patch version
 }
