@@ -50,6 +50,7 @@
     "@endevr-io/wsl-api": "^1.0.4",
     "@heroicons/vue": "^2.0.18",
     "axios": "^1.6.7",
+    "dockerode": "^4.0.2",
     "electron-json-storage": "^4.6.0",
     "electron-squirrel-startup": "^1.0.0",
     "vue": "^3.3.8",
