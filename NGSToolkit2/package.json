@@ -53,6 +53,7 @@
     "dockerode": "^4.0.2",
     "electron-json-storage": "^4.6.0",
     "electron-squirrel-startup": "^1.0.0",
+    "semver": "^7.5.4",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5",
     "yaml": "^2.3.4"

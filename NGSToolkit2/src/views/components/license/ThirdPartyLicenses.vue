@@ -698,6 +698,25 @@ const thirdPartyLicenses = [
         "   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
         "   See the License for the specific language governing permissions and\n" +
         "   limitations under the License.\n"
+  },
+  {
+    name: "semver",
+    license: "ISC",
+    licenseText: "The ISC License\n" +
+        "\n" +
+        "Copyright (c) Isaac Z. Schlueter and Contributors\n" +
+        "\n" +
+        "Permission to use, copy, modify, and/or distribute this software for any\n" +
+        "purpose with or without fee is hereby granted, provided that the above\n" +
+        "copyright notice and this permission notice appear in all copies.\n" +
+        "\n" +
+        "THE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\n" +
+        "WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\n" +
+        "MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\n" +
+        "ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\n" +
+        "WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\n" +
+        "ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR\n" +
+        "IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE."
   }
 ].sort((a, b) => {
   if (a.name < b.name) {
