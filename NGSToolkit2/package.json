@@ -1,7 +1,7 @@
 {
   "name": "ngstoolkit2",
   "productName": "NGSToolkit2",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Analyse 16S rRNA amplicons for microbiome studies using the TIC pipeline",
   "main": ".vite/build/main.js",
   "scripts": {
