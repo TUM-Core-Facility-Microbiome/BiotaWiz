@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {getBackend, getImageTag, setImageTag} from "./storage";
-import {getLatestMatchingVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./semver";
+import {getLatestMatchingVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
 import {logToDevTools, updateProgress} from "./logHandler";
 
 const {app} = require('electron');
