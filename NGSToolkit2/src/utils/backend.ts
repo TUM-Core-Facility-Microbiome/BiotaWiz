@@ -10,7 +10,7 @@ import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {getBackend, getImageTag, setImageTag} from "./storage";
 import {getLatestMatchingVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./semver";
-import {logToDevTools} from "./logHandler";
+import {logToDevTools, updateProgress} from "./logHandler";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
@@ -291,6 +291,10 @@ export async function initializeDockerBackend(releaseTag: SemanticVersion) {
     const docker = new Docker();  // initialize with defaults; using socket
     const image = getImageName(releaseTag);
 
+    updateProgress({
+        step: "Initializing backend",
+        message: "Checking Docker image tag",
+    });
     // check if the image is registered
     const images = await docker.listImages();
     const imageExists = images.some((imageInfo: any) => {
@@ -299,17 +303,25 @@ export async function initializeDockerBackend(releaseTag: SemanticVersion) {
 
     if (imageExists) {
         logToDevTools(`Image ${image} exists.`);
-        return;
     } else {
         logToDevTools(`Image ${image} does not exist.`);
         // pull the image
+        updateProgress({
+            step: "Initializing backend",
+            message: `Pulling v${getVersionString(releaseTag)} image`,
+        });
         await docker.pull(image).then((stream: any) => {
             stream.on('finish', () => {
                 logToDevTools(`Image ${image} pulled.`);
             });
         });
-        return;
     }
+
+    updateProgress({
+        step: "Initializing backend",
+        message: "Finished initializing Docker backend",
+    });
+    return;
 }
 
 export async function terminateWslBackend() {
@@ -322,11 +334,19 @@ export async function terminateDockerBackend() {
 }
 
 export async function initializeBackend() {
+    updateProgress({
+        step: "Initializing backend",
+        message: "Initializing backend",
+    });
     // get the version of the image
     let releaseTag = getImageTag();
     if (releaseTag === null) {
         logToDevTools("No image version specified in storage, querying GitHub for latest version");
 
+        updateProgress({
+            step: "Initializing backend",
+            message: "Checking for new pipeline releases",
+        });
         releaseTag = await getLatestCompatibleImageReleaseTag();
         logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
 

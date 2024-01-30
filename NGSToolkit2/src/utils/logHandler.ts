@@ -18,3 +18,9 @@ export function logToDevTools(message: string, level = 'info') {
         console.log(message);
     }
 }
+
+
+export function updateProgress(progress: Progress) {
+    const window = BrowserWindow.getFocusedWindow();
+    window.webContents.send('progressUpdate', progress);
+}

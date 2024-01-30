@@ -73,6 +73,11 @@ const indexBridge = {
             callback(log, level);
         });
     },
+    handleProgressUpdate: (callback: (progress: Progress) => void) => {
+        ipcRenderer.on('progressUpdate', (event, progress: Progress) => {
+            callback(progress);
+        });
+    },
 }
 
 contextBridge.exposeInMainWorld('indexBridge', indexBridge);

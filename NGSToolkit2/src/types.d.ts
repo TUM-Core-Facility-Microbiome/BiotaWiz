@@ -170,3 +170,8 @@ interface SemanticVersionMatcher {
     minor: number | NumberRange | null;
     patch: number | NumberRange | null;
 }
+
+interface Progress {
+    step: string;
+    message: string;
+}
