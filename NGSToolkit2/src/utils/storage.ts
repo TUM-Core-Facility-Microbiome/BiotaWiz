@@ -1,7 +1,6 @@
 import {getDefaultBackend} from "./backend";
 import jsonStorage from "electron-json-storage";
 import {SemVer} from "semver";
-import {options} from "./command-line-arguments";
 
 function isEmpty(obj: object) {
     for (const prop in obj) {

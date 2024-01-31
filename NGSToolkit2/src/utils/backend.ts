@@ -3,7 +3,6 @@ import * as fs from "fs";
 import {
     COMPATIBLE_IMAGE_VERSIONS,
     DISTRIBUTION_NAME,
-    IMAGE_REPOSITORY,
     IMAGE_ASSET_NAME
 } from "../config";
 import axios from "axios";
@@ -12,11 +11,19 @@ import {getBackend, getImageTag, setImageTag} from "./storage";
 import {getLatestVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
 import {logToDevTools, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
+import {cmArgs} from "./command-line-arguments";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
 const Docker = require('dockerode');
 
+
+const GITHUB_API_BASE_URL = cmArgs['github-api-base-url'];
+const CONTAINER_REGISTRY = cmArgs['container-registry'];
+const IMAGE_REPOSITORY = {
+    owner: cmArgs['tic-pipeline-repository-owner'],
+    repo: cmArgs['tic-pipeline-repository-name'],
+}
 
 const DOCKER = {
     name: "Docker",
@@ -66,7 +73,7 @@ function checkTarExists(path: string) {
 async function getCurrentImageReleaseTag() {
     return new Promise<SemVer>((resolve, reject) => {
         axios.get<GitHubRelease>(
-            `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/latest`,
+            `${GITHUB_API_BASE_URL}/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/latest`,
             {
                 headers: {
                     'X-GitHub-Api-Version': '2022-11-28'
@@ -87,7 +94,7 @@ async function queryAvailableReleaseTags() {
     return new Promise<SemVer[]>((resolve, reject) => {
         // query GitHub for available releases
         axios.get<GitHubRelease[]>(
-            `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
+            `${GITHUB_API_BASE_URL}/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
             {
                 headers: {
                     'X-GitHub-Api-Version': '2022-11-28'
@@ -132,7 +139,7 @@ async function getLatestCompatibleImageReleaseTag() {
 async function getImageReleaseAssetUrl(releaseTag: SemVer) {
     return new Promise<string>((resolve, reject) => {
         // load specified release and find the tarball
-        const RELEASE_URL = `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/tags/v${getVersionString(releaseTag)}`;
+        const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/tags/v${getVersionString(releaseTag)}`;
         logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
         axios.get<GitHubRelease>(
             RELEASE_URL,
@@ -265,7 +272,7 @@ function getImageName(releaseTag: SemVer) {
     const backend = getBackend();
     switch (backend) {
         case DOCKER:
-            return `ghcr.io/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}:${getVersionString(releaseTag)}`
+            return `${CONTAINER_REGISTRY}/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}:${getVersionString(releaseTag)}`
         case WSL:
             return `${DISTRIBUTION_NAME}_${getVersionString(releaseTag)}`;
         default:

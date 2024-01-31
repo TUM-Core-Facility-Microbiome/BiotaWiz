@@ -1,5 +1,5 @@
 import semver, {SemVer} from "semver";
-import {options} from "./command-line-arguments";
+import {cmArgs} from "./command-line-arguments";
 
 export function getVersionString(version: SemVer) {
     return version.format();
@@ -12,6 +12,7 @@ export function getVersionString(version: SemVer) {
 export function semVerFromGitHubTag(tag: string): SemVer {
     // matcher defined in https://semver.org/ v2.0.0 but prefixed with v as we expect the GitHub tag to be prefixed with v
     // see https://regex101.com/r/MlEVLu/1
+    console.debug(`Matching ${tag}`);
     const match = tag.match(/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/);
     if (!match) {
         throw new Error(`Invalid semantic version tag ${tag}. Tags are expected to be prefixed with v`);
@@ -25,13 +26,12 @@ export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
     if (!range) {
         throw new Error(`Invalid semantic version range ${allowedRange}`);
     }
-    console.debug(`Command line args: ${JSON.stringify(options)}`);
-    if (options['force-tag'] !== "") {
-        return [semVerFromGitHubTag(options['force-tag'])];
+    if (cmArgs['force-tag'] !== "") {
+        return [semVerFromGitHubTag(cmArgs['force-tag'])];
     }
     return tags.filter((version: SemVer) =>
         semver.satisfies(version, range, {
-            includePrerelease: options['allow-prerelease-tags']  // default: false; set by command line argument
+            includePrerelease: cmArgs['allow-prerelease-tags']  // default: false; set by command line argument
         })
     );
 }

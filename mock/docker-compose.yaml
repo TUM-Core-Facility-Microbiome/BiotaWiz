@@ -1,0 +1,30 @@
+# The application assumes that there is a public repository, where the pipeline is 
+# available in a container registry and releases are listed.
+# Bringing up this docker-compose mocks the required endpoints.
+services:
+  container-registry:
+    image: registry # docker provides an official image of the distribution implementation for storing and distributing of container images and artifacts
+    ports:
+      - 5000:5000
+    networks:
+      - default
+  container-registry-setup:
+    build: ./container-registry-setup
+    volumes:
+      - ./images:/images
+      - /var/run/docker.sock:/var/run/docker.sock  # Mount Docker socket from host
+    depends_on:
+      - container-registry
+    restart: "no"
+    networks:
+      - default
+  github-release-api:
+    build: ./mock-github-release-api
+    ports:
+      - 5001:5001
+    environment:
+      - EXPOSED_PORT=5001  # The port the mock server is exposed on; must match the port defined above
+    volumes:
+      - ./images:/images
+    networks:
+      - default
