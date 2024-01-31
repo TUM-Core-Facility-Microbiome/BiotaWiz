@@ -4,6 +4,8 @@ import {SemVer} from "semver";
 
 function isEmpty(obj: object) {
     for (const prop in obj) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (Object.hasOwn(obj, prop)) {
             return false;
         }
