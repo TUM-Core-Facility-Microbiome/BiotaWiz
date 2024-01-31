@@ -13,7 +13,7 @@
 
 ## IMNGS2 CLI
 NGSToolkit2 has [www.imngs2.org](https://www.imngs2.org) preprocessing and analysis pipeline as the main pipeline. One could use the docker image serving as workhorse of NGSToolkit and use it directly. IMNGS2 pipeline can be accessed via a command named `run_imngs2` which is providing the user a CLI for setting  arguments and analyis parameters inside the docker image. The running container from IMNGS2 pipline docker image should have a volume set to `/base/inputs` path inside the container from the host 
-machine to let pipline have access to host machines file system. For example: this command `docker run --rm /home/howard/projects/:/base/inputs imngs2_pipeline run_imngs2 -h` will mount `/home/howard/projects` to `/base/inputs` dirctory in docker container serving as default `<INPUT_DIRECTORY>` (explained below). 
+machine to let pipline have access to host machines file system. For example: this command `docker run --rm -v /home/howard/projects/:/base/inputs imngs2_pipeline run_imngs2 -h` will mount `/home/howard/projects` to `/base/inputs` dirctory in docker container serving as default `<INPUT_DIRECTORY>` (explained below). 
 
 **Arguments:**
   - -h, --help            Shows help message and exit. For example: `docker run --rm imngs2_pipeline run_imngs2 -h`
@@ -24,7 +24,7 @@ machine to let pipline have access to host machines file system. For example: th
                         direcotries in this path is visible to pipeline through `/base/inputs`.
                         **Note:** your local machine input directory must always be set as a
                         volume to `/base/inputs` in the docker. For example:
-                          `docker run --rm /home/howard/projects/:/base/inputs imngs2_pipeline run_imngs2 -h`
+                          `docker run --rm -v /home/howard/projects/:/base/inputs imngs2_pipeline run_imngs2 -h`
                         
   - -d FASTQ_DIRECTORY, --fastq-directory FASTQ_DIRECTORY
                         The directory to find recursively all fastq files
