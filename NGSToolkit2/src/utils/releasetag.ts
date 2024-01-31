@@ -1,83 +1,42 @@
-export function getVersionString(version: SemanticVersion) {
-    return `${version.major}.${version.minor}.${version.patch}`;
+import semver, {SemVer} from "semver";
+import {INCLUDE_PRERELEASE_TAGS} from "../config";
+
+export function getVersionString(version: SemVer) {
+    return version.format();
 }
 
 /**
  * Parse a GitHub tag into a semver object
  * @param tag
  */
-export function semVerFromGitHubTag(tag: string) {
-    const match = tag.match(/^v(\d+)\.(\d+)\.(\d+)$/);
+export function semVerFromGitHubTag(tag: string): SemVer {
+    // matcher defined in https://semver.org/ v2.0.0 but prefixed with v as we expect the GitHub tag to be prefixed with v
+    // see https://regex101.com/r/MlEVLu/1
+    const match = tag.match(/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/);
     if (!match) {
-        throw new Error(`Invalid tag ${tag}`);
+        throw new Error(`Invalid semantic version tag ${tag}`);
     }
-    return {
-        major: parseInt(match[1]),
-        minor: parseInt(match[2]),
-        patch: parseInt(match[3]),
-    };
+    return new SemVer(tag);
+}
+
+
+export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
+    const range: string | null = semver.validRange(allowedRange);
+    if (!range) {
+        throw new Error(`Invalid semantic version range ${allowedRange}`);
+    }
+    return tags.filter((version: SemVer) =>
+        semver.satisfies(version, range, {includePrerelease: INCLUDE_PRERELEASE_TAGS})
+    );
 }
 
 /**
- * Check if the given version number matches the number or range.
- * @param versionNumber
- * @param matcher
+ * Return the latest version.
+ * @param tags
  */
-function matchesLevel(versionNumber: number, matcher: number | NumberRange | null) {
-    if (matcher === null) {
-        return true;
-    }
-    if (typeof matcher === 'object') {
-        const min = matcher.min;
-        const max = matcher.max;
-        // check if the version number is in the range
-        // bounds can be null, which means an open interval
-        if (min !== null && versionNumber < min) {
-            return false;
-        }
-        if (max !== null && versionNumber > max) {
-            return false;
-        }
-        return true;
-    } else {
-        return versionNumber === matcher;
-    }
-}
-
-export function getMatchingVersions(versions: SemanticVersion[], matcher: SemanticVersionMatcher) {
-    return versions.filter((version) => {
-        if (!matchesLevel(version.major, matcher.major)) {
-            return false;
-        }
-        if (!matchesLevel(version.minor, matcher.minor)) {
-            return false;
-        }
-        return matchesLevel(version.patch, matcher.patch);
-    });
-}
-
-/**
- * Return the latest version matching the given matcher.
- * @param versions
- * @param matcher
- */
-export function getLatestMatchingVersion(versions: SemanticVersion[], matcher: SemanticVersionMatcher) {
-    const matchingVersions = getMatchingVersions(versions, matcher);
-    if (matchingVersions.length === 0) {
-        return null;
-    }
-    console.debug(`Found ${matchingVersions.length} compatible versions: ${matchingVersions.map((version) => `${version.major}.${version.minor}.${version.patch}`).join(', ')}`);
-
-    return matchingVersions.reduce((prev, curr) => {
-        if (prev.major > curr.major) {
-            return prev;
-        }
-        if (prev.minor > curr.minor) {
-            return prev;
-        }
-        if (prev.patch > curr.patch) {
-            return prev;
-        }
-        return curr;
-    });
+export function getLatestVersion(tags: SemVer[]) {
+    // sort by descending version
+    tags.sort((a, b) => semver.rcompare(a, b));
+    console.debug(`Sorted: ${tags.map(getVersionString).join(', ')}`);
+    return tags[0];
 }

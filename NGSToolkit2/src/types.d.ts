@@ -154,12 +154,6 @@ interface GitHubRelease {
     "url": string;
 }
 
-interface SemanticVersion {
-    major: number;
-    minor: number;
-    patch: number;
-}
-
 interface NumberRange {
     min: number | null;
     max: number | null;

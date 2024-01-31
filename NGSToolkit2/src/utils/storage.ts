@@ -1,5 +1,6 @@
 import {getDefaultBackend} from "./backend";
 import jsonStorage from "electron-json-storage";
+import {SemVer} from "semver";
 
 function isEmpty(obj: object) {
     for (const prop in obj) {
@@ -59,7 +60,7 @@ export function getTicBaseDirectory() {
     });
 }
 
-export function setImageTag(version: SemanticVersion) {
+export function setImageTag(version: SemVer) {
     return new Promise<void>((resolve, reject) => {
         if (version == null) {
             reject("Version cannot be null");
@@ -81,6 +82,6 @@ export function getImageTag() {
         return null;
     } else {
         console.debug(`Resolving image tag from storage at ${jsonStorage.getDataPath()}`);
-        return imageTag as SemanticVersion;
+        return imageTag as SemVer;
     }
 }

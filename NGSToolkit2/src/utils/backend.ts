@@ -9,8 +9,9 @@ import {
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {getBackend, getImageTag, setImageTag} from "./storage";
-import {getLatestMatchingVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
+import {getLatestVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
 import {logToDevTools, updateProgress} from "./logHandler";
+import {SemVer} from "semver";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
@@ -63,7 +64,7 @@ function checkTarExists(path: string) {
  * Query GitHub for the latest release tag of the image.
  */
 async function getCurrentImageReleaseTag() {
-    return new Promise<SemanticVersion>((resolve, reject) => {
+    return new Promise<SemVer>((resolve, reject) => {
         axios.get<GitHubRelease>(
             `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/latest`,
             {
@@ -74,7 +75,7 @@ async function getCurrentImageReleaseTag() {
         ).then((response) => {
             const data = response.data;
             const tag = data.tag_name;
-            const semver: SemanticVersion = semVerFromGitHubTag(tag);
+            const semver: SemVer = semVerFromGitHubTag(tag);
             resolve(semver);
         }).catch((error) => {
             reject(error);
@@ -82,30 +83,8 @@ async function getCurrentImageReleaseTag() {
     });
 }
 
-async function getCompatibleImageReleaseTags() {
-    return new Promise<SemanticVersion[]>((resolve, reject) => {
-        axios.get<GitHubRelease[]>(
-            `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
-            {
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28'
-                },
-            }
-        ).then((response) => {
-            const data = response.data;
-            const tags = data.map((release) => {
-                return semVerFromGitHubTag(release.tag_name);
-            });
-            const compatibleTags = getMatchingVersions(tags, COMPATIBLE_IMAGE_VERSIONS);
-            resolve(compatibleTags);
-        }).catch((error) => {
-            reject(error);
-        });
-    });
-}
-
-async function getLatestCompatibleImageReleaseTag() {
-    return new Promise<SemanticVersion>((resolve, reject) => {
+async function queryAvailableReleaseTags() {
+    return new Promise<SemVer[]>((resolve, reject) => {
         // query GitHub for available releases
         axios.get<GitHubRelease[]>(
             `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
@@ -116,18 +95,41 @@ async function getLatestCompatibleImageReleaseTag() {
             }
         ).then((response) => {
             const data = response.data;
-            const availableVersions = data.map((release) => {
+            const availableTags = data.map((release) => {
                 return semVerFromGitHubTag(release.tag_name);
             });
-            const latestCompatibleVersion = getLatestMatchingVersion(availableVersions, COMPATIBLE_IMAGE_VERSIONS);
-            resolve(latestCompatibleVersion);
+            console.debug(`Repo offers ${availableTags.length} releases: ${availableTags.map((version: SemVer) => getVersionString(version)).join(', ')}`);
+            resolve(availableTags);
         }).catch((error) => {
             reject(error);
         });
     });
 }
 
-async function getImageReleaseAssetUrl(releaseTag: SemanticVersion) {
+async function getCompatibleImageReleaseTags() {
+    return new Promise<SemVer[]>((resolve, reject) => {
+        queryAvailableReleaseTags().then((availableTags) => {
+            const compatibleVersions = getMatchingVersions(availableTags, COMPATIBLE_IMAGE_VERSIONS);
+            console.debug(`Found ${compatibleVersions.length} compatible versions: ${compatibleVersions.map((version: SemVer) => getVersionString(version)).join(', ')}`);
+            resolve(compatibleVersions);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+async function getLatestCompatibleImageReleaseTag() {
+    return new Promise<SemVer>((resolve, reject) => {
+        getCompatibleImageReleaseTags().then((compatibleTags) => {
+            const latestTag = getLatestVersion(compatibleTags);
+            resolve(latestTag);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+async function getImageReleaseAssetUrl(releaseTag: SemVer) {
     return new Promise<string>((resolve, reject) => {
         // load specified release and find the tarball
         const RELEASE_URL = `https://api.github.com/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/tags/v${getVersionString(releaseTag)}`;
@@ -157,7 +159,7 @@ async function getImageReleaseAssetUrl(releaseTag: SemanticVersion) {
 /**
  * Download the distribution tarball and places it to the expected path.
  */
-async function downloadDistributionTar(releaseTag: SemanticVersion, path: string) {
+async function downloadDistributionTar(releaseTag: SemVer, path: string) {
     return new Promise<void>((resolve, reject) => {
         // get tarball URL
         getImageReleaseAssetUrl(releaseTag).then((tarballUrl) => {
@@ -184,12 +186,12 @@ async function downloadDistributionTar(releaseTag: SemanticVersion, path: string
     });
 }
 
-function getExpectedDistributionTarPath(releaseTag: SemanticVersion) {
+function getExpectedDistributionTarPath(releaseTag: SemVer) {
     const appDataDirectory = app.getPath('temp');
     return path.join(appDataDirectory, `${getImageName(releaseTag)}.tar.gz`);
 }
 
-function getDistributionInstallLocation(releaseTag: SemanticVersion) {
+function getDistributionInstallLocation(releaseTag: SemVer) {
     const appDataDirectory = byOS({
         [platforms.WINDOWS]: () => {
             // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
@@ -217,7 +219,7 @@ function getDistributionInstallLocation(releaseTag: SemanticVersion) {
  *
  * @returns The path of the distribution tarball.
  */
-export async function getImageTarball(releaseTag: SemanticVersion) {
+export async function getImageTarball(releaseTag: SemVer) {
     const expectedPath = getExpectedDistributionTarPath(releaseTag);
 
     if (!fs.existsSync(expectedPath)) {
@@ -240,7 +242,7 @@ export async function getDistroWslVersion(distribution: string) {
 }
 
 
-export async function registerWslDistribution(releaseTag: SemanticVersion) {
+export async function registerWslDistribution(releaseTag: SemVer) {
     const tarBall = await getImageTarball(releaseTag);
     const installLocation = getDistributionInstallLocation(releaseTag);
 
@@ -250,7 +252,7 @@ export async function registerWslDistribution(releaseTag: SemanticVersion) {
     await wsl.importDistribution(distributionName, installLocation, tarBall);
 }
 
-function getImageName(releaseTag: SemanticVersion) {
+function getImageName(releaseTag: SemVer) {
     const backend = getBackend();
     switch (backend) {
         case DOCKER:
@@ -262,7 +264,7 @@ function getImageName(releaseTag: SemanticVersion) {
     }
 }
 
-export async function initializeWslBackend(releaseTag: SemanticVersion) {
+export async function initializeWslBackend(releaseTag: SemVer) {
     // check if the distribution is registered
     const distribution = getImageName(releaseTag);
     const installed = await wsl.isInstalled(distribution);
@@ -287,7 +289,7 @@ export async function initializeWslBackend(releaseTag: SemanticVersion) {
     await wsl.waitForRunning(distribution);
 }
 
-export async function initializeDockerBackend(releaseTag: SemanticVersion) {
+export async function initializeDockerBackend(releaseTag: SemVer) {
     const docker = new Docker();  // initialize with defaults; using socket
     const image = getImageName(releaseTag);
 

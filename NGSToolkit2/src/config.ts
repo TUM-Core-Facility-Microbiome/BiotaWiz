@@ -8,9 +8,5 @@ export const IMAGE_REPOSITORY = {
     'repo': 'docker-action-test',
 };
 
-// allow any patch version of the same minor version
-export const COMPATIBLE_IMAGE_VERSIONS: SemanticVersionMatcher = {
-    major: 0,
-    minor: 1,
-    patch: null,  // allow any patch version
-}
+export const COMPATIBLE_IMAGE_VERSIONS = '^0.1.*';  // semantic versioning range
+export const INCLUDE_PRERELEASE_TAGS = true;
