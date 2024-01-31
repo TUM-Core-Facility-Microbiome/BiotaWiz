@@ -222,6 +222,11 @@ function getDistributionInstallLocation(releaseTag: SemVer) {
 export async function getImageTarball(releaseTag: SemVer) {
     const expectedPath = getExpectedDistributionTarPath(releaseTag);
 
+    updateProgress({
+        step: "Initializing backend",
+        message: `Downloading distribution files`,
+    });
+
     if (!fs.existsSync(expectedPath)) {
         await downloadDistributionTar(releaseTag, expectedPath);
     }
@@ -249,6 +254,10 @@ export async function registerWslDistribution(releaseTag: SemVer) {
     // import distribution
     const distributionName = getImageName(releaseTag);
     logToDevTools(`Importing distribution ${distributionName} from ${tarBall} to ${installLocation}`);
+    updateProgress({
+        step: "Initializing backend",
+        message: `Registering WSL distribution v${getVersionString(releaseTag)}`,
+    });
     await wsl.importDistribution(distributionName, installLocation, tarBall);
 }
 
@@ -270,12 +279,20 @@ export async function initializeWslBackend(releaseTag: SemVer) {
     const installed = await wsl.isInstalled(distribution);
     if (installed) {
         logToDevTools(`WSL distribution ${distribution} is registered.`);
+        updateProgress({
+            step: "Initializing backend",
+            message: `WSL distribution v${getVersionString(releaseTag)} is registered`,
+        });
     } else {
         logToDevTools(`WSL distribution ${distribution} is not registered.`);
         await registerWslDistribution(releaseTag);
     }
 
     // ensure distribution is running on WSL2
+    updateProgress({
+        step: "Initializing backend",
+        message: `Ensuring distribution is running on WSL2`,
+    });
     const version = await getDistroWslVersion(distribution);
     if (version !== 2) {
         logToDevTools(`Setting version of distribution ${distribution} to 2`);
@@ -285,8 +302,17 @@ export async function initializeWslBackend(releaseTag: SemVer) {
     }
 
     // ensure the distribution is running
+    updateProgress({
+        step: "Initializing backend",
+        message: `Starting distribution`,
+    });
     await wsl.runDistribution(distribution);
     await wsl.waitForRunning(distribution);
+
+    updateProgress({
+        step: "Initializing backend",
+        message: `Finished initializing WSL backend`,
+    });
 }
 
 export async function initializeDockerBackend(releaseTag: SemVer) {
