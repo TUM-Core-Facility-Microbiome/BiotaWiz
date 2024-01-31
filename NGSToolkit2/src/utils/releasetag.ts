@@ -1,5 +1,5 @@
 import semver, {SemVer} from "semver";
-import {INCLUDE_PRERELEASE_TAGS} from "../config";
+import {options} from "./command-line-arguments";
 
 export function getVersionString(version: SemVer) {
     return version.format();
@@ -14,7 +14,7 @@ export function semVerFromGitHubTag(tag: string): SemVer {
     // see https://regex101.com/r/MlEVLu/1
     const match = tag.match(/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/);
     if (!match) {
-        throw new Error(`Invalid semantic version tag ${tag}`);
+        throw new Error(`Invalid semantic version tag ${tag}. Tags are expected to be prefixed with v`);
     }
     return new SemVer(tag);
 }
@@ -25,8 +25,14 @@ export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
     if (!range) {
         throw new Error(`Invalid semantic version range ${allowedRange}`);
     }
+    console.debug(`Command line args: ${JSON.stringify(options)}`);
+    if (options['force-tag'] !== "") {
+        return [semVerFromGitHubTag(options['force-tag'])];
+    }
     return tags.filter((version: SemVer) =>
-        semver.satisfies(version, range, {includePrerelease: INCLUDE_PRERELEASE_TAGS})
+        semver.satisfies(version, range, {
+            includePrerelease: options['allow-prerelease-tags']  // default: false; set by command line argument
+        })
     );
 }
 

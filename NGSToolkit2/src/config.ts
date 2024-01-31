@@ -9,4 +9,3 @@ export const IMAGE_REPOSITORY = {
 };
 
 export const COMPATIBLE_IMAGE_VERSIONS = '^0.1.*';  // semantic versioning range
-export const INCLUDE_PRERELEASE_TAGS = true;
