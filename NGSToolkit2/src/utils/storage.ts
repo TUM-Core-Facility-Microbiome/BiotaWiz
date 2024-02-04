@@ -14,26 +14,35 @@ function isEmpty(obj: object) {
     return true;
 }
 
-export function getBackend() {
-    console.debug("getBackend");
-    let backendInStorage = null;
-    jsonStorage.get('backend', (error, data) => {
-        if (data) {
-            backendInStorage = data;
-        }
-    });
+export async function getBackend() {
+    return new Promise<IBackend>((resolve, reject) => {
+        console.debug("getBackend");
 
-    if (backendInStorage != null && backendInStorage != {}) {
-        console.debug("Resolving backend from storage");
-        return backendInStorage;
-    } else {
-        console.debug("Resolving default backend");
-        const defaultBackend = getDefaultBackend();
-        jsonStorage.set('backend', defaultBackend, (error) => {
-            console.error(error);
+        jsonStorage.get('backend', (error, data) => {
+            if (error) {
+                console.error(error);
+                reject("Could not get backend from storage or default");
+            }
+
+            let backendInStorage = null;
+            if (data) {
+                backendInStorage = data;
+                console.debug("backendInStorage infunc", backendInStorage);
+            }
+
+            if (backendInStorage != null && backendInStorage != {}) {
+                console.debug("Resolving backend from storage");
+                resolve(backendInStorage as IBackend);
+            } else {
+                console.debug("Resolving default backend");
+                const defaultBackend = getDefaultBackend();
+                jsonStorage.set('backend', defaultBackend, (error) => {
+                    console.error(error);
+                });
+                resolve(defaultBackend);
+            }
         });
-        return getDefaultBackend();
-    }
+    });
 }
 
 export function setTicBaseDirectory(baseDirectory: string) {

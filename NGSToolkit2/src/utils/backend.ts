@@ -198,7 +198,7 @@ function getExpectedDistributionTarPath(releaseTag: SemVer) {
     return path.join(appDataDirectory, `${getImageName(releaseTag)}.tar.gz`);
 }
 
-function getDistributionInstallLocation(releaseTag: SemVer) {
+async function getDistributionInstallLocation(releaseTag: SemVer) {
     const appDataDirectory = byOS({
         [platforms.WINDOWS]: () => {
             // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
@@ -210,7 +210,7 @@ function getDistributionInstallLocation(releaseTag: SemVer) {
         },
         default: () => app.getPath('userData'),
     })();
-    const installDir = path.join(appDataDirectory, 'wsl-distro', getImageName(releaseTag));
+    const installDir = path.join(appDataDirectory, 'wsl-distro', await getImageName(releaseTag));
 
     // make sure the path exists
     if (!fs.existsSync(installDir)) {
@@ -256,7 +256,7 @@ export async function getDistroWslVersion(distribution: string) {
 
 export async function registerWslDistribution(releaseTag: SemVer) {
     const tarBall = await getImageTarball(releaseTag);
-    const installLocation = getDistributionInstallLocation(releaseTag);
+    const installLocation = await getDistributionInstallLocation(releaseTag);
 
     // import distribution
     const distributionName = getImageName(releaseTag);
@@ -268,12 +268,12 @@ export async function registerWslDistribution(releaseTag: SemVer) {
     await wsl.importDistribution(distributionName, installLocation, tarBall);
 }
 
-function getImageName(releaseTag: SemVer) {
-    const backend = getBackend();
-    switch (backend) {
-        case DOCKER:
+async function getImageName(releaseTag: SemVer) {
+    const backend = await getBackend();
+    switch (backend.name) {
+        case DOCKER.name:
             return `${CONTAINER_REGISTRY}/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}:${getVersionString(releaseTag)}`
-        case WSL:
+        case WSL.name:
             return `${DISTRIBUTION_NAME}_${getVersionString(releaseTag)}`;
         default:
             throw new Error(`Backend ${backend.name} not supported`);
@@ -282,7 +282,7 @@ function getImageName(releaseTag: SemVer) {
 
 export async function initializeWslBackend(releaseTag: SemVer) {
     // check if the distribution is registered
-    const distribution = getImageName(releaseTag);
+    const distribution = await getImageName(releaseTag);
     const installed = await wsl.isInstalled(distribution);
     if (installed) {
         logToDevTools(`WSL distribution ${distribution} is registered.`);
@@ -324,7 +324,7 @@ export async function initializeWslBackend(releaseTag: SemVer) {
 
 export async function initializeDockerBackend(releaseTag: SemVer) {
     const docker = new Docker();  // initialize with defaults; using socket
-    const image = getImageName(releaseTag);
+    const image = await getImageName(releaseTag);
 
     updateProgress({
         step: "Initializing backend",
@@ -392,13 +392,13 @@ export async function initializeBackend() {
 
     // run initialization
     // this will download and register the image if necessary
-    const backend = getBackend();
-    switch (backend) {
-        case DOCKER:
+    const backend = await getBackend();
+    switch (backend.name) {
+        case DOCKER.name:
             logToDevTools(`Initializing Docker backend`);
             await initializeDockerBackend(releaseTag);
             break;
-        case WSL:
+        case WSL.name:
             logToDevTools(`Initializing WSL backend`);
             await initializeWslBackend(releaseTag);
             break;

@@ -72,23 +72,24 @@ export function runMockProcess(): Promise<number> {
 
 export function getBackendVersion(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        const backend = getBackend();
+        getBackend().then((backend) => {
+            console.log(`Getting version for backend ${backend.name}`);
+            const subprocess = child_process.spawn(
+                backend.command,
+                ["--version"],
+            );
 
-        const subprocess = child_process.spawn(
-            backend.command,
-            ["--version"],
-        );
-
-        subprocess.stdout.on('data', (data) => {
-            if (data instanceof Buffer) {
-                const msg = data.toString();
-                console.log(msg);
-                resolve(msg);
-            }
-        });
-        subprocess.on('close', (code, signal) => {
-            console.log(`Child closed with code ${code} and signal ${signal}`);
-            reject(code);
+            subprocess.stdout.on('data', (data) => {
+                if (data instanceof Buffer) {
+                    const msg = data.toString();
+                    console.log(msg);
+                    resolve(msg);
+                }
+            });
+            subprocess.on('close', (code, signal) => {
+                console.log(`Child closed with code ${code} and signal ${signal}`);
+                reject(code);
+            });
         });
     });
 }
