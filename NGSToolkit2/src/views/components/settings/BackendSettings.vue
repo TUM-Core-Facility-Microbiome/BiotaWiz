@@ -39,12 +39,17 @@
 import {reactive} from "vue";
 
 const state = reactive({
-  platform: "unknown",
-  backendName: "unknown",
-  backendVersion: "loading",
+  platform: null,
+  backendName: null,
+  backendVersion: null,
 });
 
 function updateState() {
+  // reset displayed outputs
+  state.platform = null;
+  state.backendName = null;
+  state.backendVersion = null;
+
   // get platform name
   indexBridge.getPlatformName().then((platform: string) => {
     state.platform = platform;
