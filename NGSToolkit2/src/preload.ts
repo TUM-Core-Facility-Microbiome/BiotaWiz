@@ -1,6 +1,8 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import {contextBridge, ipcRenderer} from "electron";
+import {SemVer} from "semver";
+import {getCompatibleReleaseTagStrings, getFixedImageTagString} from "./utils/backend";
 
 
 const indexBridge = {
@@ -61,6 +63,15 @@ const indexBridge = {
     },
     initializeBackend: async () => {
         return ipcRenderer.invoke('initializeBackend');
+    },
+    getCompatibleReleaseTagStrings: async (): Promise<string[]> => {
+        return ipcRenderer.invoke('getCompatibleReleaseTagStrings');
+    },
+    getFixedImageTagString: async (): Promise<string> => {
+        return ipcRenderer.invoke('getFixedImageTagString');
+    },
+    setFixedImageTagString: async (tag: string) => {
+        return ipcRenderer.invoke('setFixedImageTagString', tag);
     },
     publishTicBaseDirectory: async (baseDirectory: string) => {
         return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);

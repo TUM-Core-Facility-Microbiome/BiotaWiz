@@ -7,7 +7,7 @@ import {
 } from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {getBackend, getImageTag, setBackend, setImageTag} from "./storage";
+import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
 import {getLatestVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
 import {logToDevTools, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
@@ -105,6 +105,20 @@ async function getCurrentImageReleaseTag() {
             const tag = data.tag_name;
             const semver: SemVer = semVerFromGitHubTag(tag);
             resolve(semver);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+export async function getCompatibleReleaseTagStrings() {
+    return new Promise<string[]>((resolve, reject) => {
+        getCompatibleImageReleaseTags().then((tags) => {
+            // sort tags
+            tags.sort((a, b) => {
+                return a.compare(b);
+            });
+            resolve(tags.map((tag) => getVersionString(tag)));
         }).catch((error) => {
             reject(error);
         });
@@ -389,12 +403,35 @@ export async function terminateDockerBackend() {
     throw new Error("Not implemented yet");
 }
 
-export async function initializeBackend() {
-    updateProgress({
-        step: "Initializing backend",
-        message: "Initializing backend",
-    });
-    // get the version of the image
+export async function getFixedImageTagString() {
+    // is null if not fixed, this implies a strategy where the latest compatible version is used
+    const releaseTag = getImageTag();
+    console.debug(`Fixed image version: ${JSON.stringify(releaseTag)}`);
+    if (releaseTag == null) {
+        return null;
+    } else {
+        return getVersionString(releaseTag);
+    }
+}
+
+export async function setFixedImageTagString(tag: string) {
+    // might be null when latest compatible version strategy is selected
+    console.log(`Setting fixed image version to ${tag}`)
+    if (tag == null) {
+        console.log(`Deleting fixed image version`);
+        // delete any previously set fixed version
+        await deleteImageTag();
+    } else {
+        console.log(`Setting fixed image version to ${tag}`)
+        // prefix with "v" if not already
+        if (!tag.startsWith("v")) {
+            tag = `v${tag}`;
+        }
+        await setImageTag(tag);
+    }
+}
+
+async function getImageTagOrLatestCompatible() {
     let releaseTag = getImageTag();
     if (releaseTag === null) {
         logToDevTools("No image version specified in storage, querying GitHub for latest version");
@@ -405,11 +442,19 @@ export async function initializeBackend() {
         });
         releaseTag = await getLatestCompatibleImageReleaseTag();
         logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
-
-        // await setImageTag(releaseTag);  // TODO: manage if user wants to update or use a fixed version
     } else {
         logToDevTools(`Expecting image version: ${getVersionString(releaseTag)}`);
     }
+    return releaseTag;
+}
+
+export async function initializeBackend() {
+    updateProgress({
+        step: "Initializing backend",
+        message: "Initializing backend",
+    });
+    // get the version of the image
+    const releaseTag = await getImageTagOrLatestCompatible();
 
     // run initialization
     // this will download and register the image if necessary

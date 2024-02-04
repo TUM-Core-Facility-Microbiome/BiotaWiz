@@ -1,6 +1,11 @@
 import {BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
-import {getImageTarball, initializeBackend, resetToDefaultBackend, setBackendByType} from "../utils/backend";
+import {
+    getCompatibleReleaseTagStrings, getFixedImageTagString,
+    initializeBackend,
+    resetToDefaultBackend,
+    setBackendByType, setFixedImageTagString
+} from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
@@ -33,6 +38,18 @@ ipcMain.handle("setBackendByType", async (event, backend) => {
 
 ipcMain.handle("resetBackend", async () => {
     return resetToDefaultBackend();
+});
+
+ipcMain.handle("getCompatibleReleaseTagStrings", async (): Promise<string[]> => {
+    return await getCompatibleReleaseTagStrings();
+});
+
+ipcMain.handle("getFixedImageTagString", async () => {
+    return await getFixedImageTagString();
+});
+
+ipcMain.handle("setFixedImageTagString", async (event, tag: string) => {
+    return await setFixedImageTagString(tag);
 });
 
 ipcMain.handle("runMockProcess", async () => {
