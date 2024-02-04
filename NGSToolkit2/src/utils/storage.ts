@@ -27,7 +27,6 @@ export async function getBackend() {
             let backendInStorage = null;
             if (data) {
                 backendInStorage = data;
-                console.debug("backendInStorage infunc", backendInStorage);
             }
 
             if (backendInStorage != null && backendInStorage != {}) {
