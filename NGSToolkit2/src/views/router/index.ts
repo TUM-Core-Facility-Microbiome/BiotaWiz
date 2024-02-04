@@ -70,8 +70,17 @@ const index = createRouter({
                     component: () => import('../components/settings/Settings.vue'),
                 },
                 {
-                    path: '/settings/driver',
-                    component: () => import('../components/settings/DriverSettings.vue'),
+                    path: '/settings/images',
+                    children: [
+                        {
+                            path: '/settings/images/tic-pipeline',
+                            component: () => import('../components/settings/images/TicPipelineImageSettings.vue'),
+                        },
+                        {
+                            path: '/settings/images/shiny-rhea',
+                            component: () => import('../components/settings/images/ShinyRheaImageSettings.vue'),
+                        },
+                    ]
                 },
                 {
                     path: '/settings/backend',
