@@ -7,7 +7,7 @@ import {
 } from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {getBackend, getImageTag, setImageTag} from "./storage";
+import {getBackend, getImageTag, setBackend, setImageTag} from "./storage";
 import {getLatestVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
 import {logToDevTools, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
@@ -56,6 +56,25 @@ export function getDefaultBackend(): IBackend {
     })();
 }
 
+export async function setBackendByType(type: string) {
+    switch (type) {
+        case DOCKER.type:
+            await setBackend(DOCKER);
+            break;
+        case WSL.type:
+            await setBackend(WSL);
+            break;
+        case "default":
+            await resetToDefaultBackend();
+            break;
+        default:
+            throw new Error(`Backend type ${type} not supported`);
+    }
+}
+
+export async function resetToDefaultBackend() {
+    await setBackend(getDefaultBackend());
+}
 
 /**
  * Ensure that the distribution tarball exists.

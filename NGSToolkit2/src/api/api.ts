@@ -1,6 +1,6 @@
 import {BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
-import {getImageTarball, initializeBackend} from "../utils/backend";
+import {getImageTarball, initializeBackend, resetToDefaultBackend, setBackendByType} from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
@@ -25,6 +25,14 @@ ipcMain.handle("getBackend", () => {
 
 ipcMain.handle("getBackendVersion", async () => {
     return getBackendVersion();
+});
+
+ipcMain.handle("setBackendByType", async (event, backend) => {
+    return await setBackendByType(backend);
+});
+
+ipcMain.handle("resetBackend", async () => {
+    return resetToDefaultBackend();
 });
 
 ipcMain.handle("runMockProcess", async () => {

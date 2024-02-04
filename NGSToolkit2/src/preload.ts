@@ -47,6 +47,12 @@ const indexBridge = {
     getBackend: async (): Promise<IBackend> => {
         return ipcRenderer.invoke('getBackend');
     },
+    setBackendByType: async (backendType: string) => {
+        return ipcRenderer.invoke('setBackendByType', backendType);
+    },
+    resetBackend: async () => {
+        return ipcRenderer.invoke('resetBackend');
+    },
     getBackendVersion: async (): Promise<string> => {
         return ipcRenderer.invoke('getBackendVersion');
     },
