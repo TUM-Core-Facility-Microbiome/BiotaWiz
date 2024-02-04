@@ -81,7 +81,9 @@ export function getBackendVersion(): Promise<string> {
 
             subprocess.stdout.on('data', (data) => {
                 if (data instanceof Buffer) {
-                    const msg = data.toString();
+                    // remove null bytes as WSL likes to output them
+                    // eslint-disable-next-line no-control-regex
+                    const msg = data.toString('utf8').replace(/\x00/g, '');
                     console.log(msg);
                     resolve(msg);
                 }
