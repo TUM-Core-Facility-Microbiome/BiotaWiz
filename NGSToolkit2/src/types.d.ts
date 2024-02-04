@@ -9,6 +9,7 @@ interface IDictionary<T> {
 }
 
 interface IBackend {
+    type: string;
     name: string;
     command: string;
     argsPrefix: string[];

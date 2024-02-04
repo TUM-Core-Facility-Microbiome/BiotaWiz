@@ -25,13 +25,15 @@ const IMAGE_REPOSITORY = {
     repo: cmArgs['tic-pipeline-repository-name'],
 }
 
-const DOCKER = {
+const DOCKER: IBackend = {
+    type: "Docker",
     name: "Docker",
     command: "docker",
     argsPrefix: ["run", "--rm"],
 }
 
-const WSL = {
+const WSL: IBackend = {
+    type: "WSL",
     name: "Windows Subsystem for Linux",
     command: "wsl",
     argsPrefix: ["-l", "-v"],
@@ -270,13 +272,13 @@ export async function registerWslDistribution(releaseTag: SemVer) {
 
 async function getImageName(releaseTag: SemVer) {
     const backend = await getBackend();
-    switch (backend.name) {
-        case DOCKER.name:
+    switch (backend.type) {
+        case DOCKER.type:
             return `${CONTAINER_REGISTRY}/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}:${getVersionString(releaseTag)}`
-        case WSL.name:
+        case WSL.type:
             return `${DISTRIBUTION_NAME}_${getVersionString(releaseTag)}`;
         default:
-            throw new Error(`Backend ${backend.name} not supported`);
+            throw new Error(`Backend ${backend.type} not supported`);
     }
 }
 
@@ -393,16 +395,16 @@ export async function initializeBackend() {
     // run initialization
     // this will download and register the image if necessary
     const backend = await getBackend();
-    switch (backend.name) {
-        case DOCKER.name:
+    switch (backend.type) {
+        case DOCKER.type:
             logToDevTools(`Initializing Docker backend`);
             await initializeDockerBackend(releaseTag);
             break;
-        case WSL.name:
+        case WSL.type:
             logToDevTools(`Initializing WSL backend`);
             await initializeWslBackend(releaseTag);
             break;
         default:
-            throw new Error(`Backend ${backend.name} not supported`);
+            throw new Error(`Backend ${backend.type} not supported`);
     }
 }
