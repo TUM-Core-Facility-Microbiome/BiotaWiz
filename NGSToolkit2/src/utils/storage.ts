@@ -88,7 +88,8 @@ export function setImageTag(version: string) {
         if (version == null) {
             reject("Version cannot be null");
         }
-        jsonStorage.set('imageTag', {'version': version}, (error) => {
+        const imageTag: IImageTag = {version: version};
+        jsonStorage.set('imageTag', imageTag, (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -118,10 +119,10 @@ export function getImageTag() {
         return null;
     } else {
         console.debug(`Resolving image tag from storage at ${jsonStorage.getDataPath()}`);
-        if (imageTag.version == null) {
+        if ((imageTag as IImageTag).version == null) {
             return null;
         }
         // reconstruct the SemVer object
-        return semVerFromGitHubTag(imageTag.version);
+        return semVerFromGitHubTag((imageTag as IImageTag).version);
     }
 }

@@ -15,6 +15,10 @@ interface IBackend {
     argsPrefix: string[];
 }
 
+interface IImageTag {
+    version: string;
+}
+
 interface IFileSystemNode {
     name: string;
     type: string;
