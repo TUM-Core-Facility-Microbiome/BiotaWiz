@@ -18,7 +18,7 @@ const wsl = require('@endevr-io/wsl-api');
 const Docker = require('dockerode');
 
 
-const GITHUB_API_BASE_URL = cmArgs['github-api-base-url'];
+const GITHUB_API_BASE_URL = cmArgs['api-url'];
 const CONTAINER_REGISTRY = cmArgs['container-registry'];
 const IMAGE_REPOSITORY = {
     owner: cmArgs['tic-pipeline-repository-owner'],
