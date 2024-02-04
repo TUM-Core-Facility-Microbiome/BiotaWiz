@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div class="flex">
+    <MainNavigation></MainNavigation>
     <router-view></router-view>
   </div>
 </template>
@@ -7,6 +8,7 @@
 <script setup lang="ts">
 // listen to the main process 'changeRouteTo' event to allow navigation from Menu click events
 import router from "./router";
+import MainNavigation from "./components/default/navigation/MainNavigation.vue";
 
 // on router changes log
 router.afterEach((to, from) => {

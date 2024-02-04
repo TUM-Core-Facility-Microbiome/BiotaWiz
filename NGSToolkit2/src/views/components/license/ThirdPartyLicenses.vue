@@ -1,5 +1,4 @@
 <template>
-  <div class="container">
     <div class="text-lg">We thank the authors of the following packages.</div>
 
     <div class="mt-4" v-for="thirdPartyLicense in thirdPartyLicenses">
@@ -7,7 +6,7 @@
       <small class="text-gray-700">Licensed under <code>{{ thirdPartyLicense.license }}</code> license</small>
       <pre class="font-mono text-xs">{{ thirdPartyLicense.licenseText }}</pre>
     </div>
-  </div>
+
 </template>
 
 <script setup lang="ts">

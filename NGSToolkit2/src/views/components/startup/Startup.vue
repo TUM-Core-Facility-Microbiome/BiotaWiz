@@ -64,30 +64,6 @@ const filteredMessages = ref([]);
 
 const updates: Progress[] = [];
 
-// get platform name
-indexBridge.getPlatformName().then((platform: string) => {
-  state.platform = platform;
-}).catch(() => {
-  console.log("Could not determine platform");
-  state.platform = "unknown";
-});
-
-indexBridge.getBackend().then((backend: IBackend) => {
-  console.log("Backend: ", backend);
-  state.backendName = backend.name;
-}).catch(() => {
-  console.log("Could not determine backend");
-  state.backendName = "unknown";
-});
-
-indexBridge.getBackendVersion().then((version: string) => {
-  console.log("Backend version: ", version);
-  state.backendVersion = version;
-}).catch(() => {
-  console.log("Could not determine backend version");
-  state.backendVersion = "communication failed";
-});
-
 indexBridge.initializeBackend().then(() => {
   console.log("Backend initialized");
   // router.push('/base-selection');  // TODO: uncomment

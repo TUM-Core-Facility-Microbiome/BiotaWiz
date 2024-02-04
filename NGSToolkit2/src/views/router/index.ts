@@ -4,56 +4,80 @@ const index = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
-            path: '/',
-            redirect: '/startup',
-        },
-        {
-            path: '/startup',
-            component: () => import('../components/startup/Startup.vue'),
-        },
-        {
-            path: '/application-shell',
-            component: () => import('../components/ApplicationShell.vue'),
+            path: '',
+            component: () => import('../components/DefaultShell.vue'),
             children: [
                 {
                     path: '/',
-                    redirect: '/base-selection',
+                    redirect: '/startup',
                 },
                 {
-                    path: '/tic',
-                    component: () => import('../components/tic/TicPipelineWizard.vue'),
+                    path: '/startup',
+                    component: () => import('../components/startup/Startup.vue'),
+                },
+                {
+                    path: '/application-shell',
+                    component: () => import('../components/ApplicationShell.vue'),
                     children: [
                         {
-                            path: '/base-selection',
-                            component: () => import('../components/tic/steps/BaseSelection.vue'),
+                            path: '/',
+                            redirect: '/base-selection',
                         },
                         {
-                            path: '/study-selection',
-                            component: () => import('../components/tic/steps/StudySelection.vue'),
+                            path: '/tic',
+                            component: () => import('../components/tic/TicPipelineWizard.vue'),
+                            children: [
+                                {
+                                    path: '/base-selection',
+                                    component: () => import('../components/tic/steps/BaseSelection.vue'),
+                                },
+                                {
+                                    path: '/study-selection',
+                                    component: () => import('../components/tic/steps/StudySelection.vue'),
+                                },
+                                {
+                                    path: '/params',
+                                    component: () => import('../components/tic/steps/Parameters.vue'),
+                                },
+                                {
+                                    path: '/spike-mode',
+                                    component: () => import('../components/tic/steps/SpikeMode.vue'),
+                                }
+                            ]
                         },
                         {
-                            path: '/params',
-                            component: () => import('../components/tic/steps/Parameters.vue'),
+                            path: '/rhea',
+                            component: () => import('../components/rhea/RheaOutLink.vue'),
                         },
-                        {
-                            path: '/spike-mode',
-                            component: () => import('../components/tic/steps/SpikeMode.vue'),
-                        }
                     ]
                 },
                 {
-                    path: '/rhea',
-                    component: () => import('../components/rhea/RheaOutLink.vue'),
+                    path: '/third-party-licenses',
+                    component: () => import('../components/license/ThirdPartyLicenses.vue'),
                 },
             ]
         },
         {
             path: '/settings',
-            component: () => import('../components/settings/Settings.vue'),
-        },
-        {
-            path: '/third-party-licenses',
-            component: () => import('../components/license/ThirdPartyLicenses.vue'),
+            component: () => import('../components/settings/SettingsShell.vue'),
+            children: [
+                {
+                    path: '',
+                    redirect: '/settings/general',
+                },
+                {
+                    path: '/settings/general',
+                    component: () => import('../components/settings/Settings.vue'),
+                },
+                {
+                    path: '/settings/driver',
+                    component: () => import('../components/settings/DriverSettings.vue'),
+                },
+                {
+                    path: '/settings/backend',
+                    component: () => import('../components/settings/BackendSettings.vue'),
+                },
+            ]
         },
         {
             path: "/:catchAll(.*)",
