@@ -16,8 +16,6 @@ function isEmpty(obj: object) {
 
 export async function getBackend() {
     return new Promise<IBackend>((resolve, reject) => {
-        console.debug("getBackend");
-
         jsonStorage.get('backend', (error, data) => {
             if (error) {
                 console.error(error);
