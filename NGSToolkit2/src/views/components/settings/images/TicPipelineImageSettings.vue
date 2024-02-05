@@ -1,6 +1,14 @@
 <template>
   <div class="container">
     <div>
+      <h1>Manage Images for TIC pipeline</h1>
+      <p class="text-sm text-gray-800">
+        The image holds the software that is used to run the TIC pipeline and a copy of the TIC pipeline itself.
+        Changes in the image can affect the results of the pipeline. You can specify a fixed version of the image to use
+        to ensure reproducibility of the pipeline results.
+      </p>
+    </div>
+    <div>
       <label for="ImageTag" class="block text-sm font-medium text-gray-900">Image Tag</label>
 
       <select
@@ -9,7 +17,7 @@
           class="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
           v-model="selectedTag"
       >
-        <option :value="null">use latest compatible release</option>
+        <option :value="null">update to latest v. at every pipeline start</option>
         <option v-for="option in compatibleTagStrings" :value="option" :key="option">{{ option }}</option>
       </select>
     </div>
