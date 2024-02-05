@@ -57,7 +57,7 @@
               </table>
             </div>
             <p id="ImageTag" class="text-xs text-muted-foreground">
-              You can manage images for the TIC pipeline here.
+              You can manage images for the TIC pipeline here. Only images using the current backend are shown.
             </p>
           </div>
         </div>
