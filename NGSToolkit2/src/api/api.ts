@@ -1,6 +1,8 @@
 import {BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
+    deleteImage,
+    getAssociatedImages,
     getCompatibleReleaseTagStrings, getFixedImageTagString,
     initializeBackend,
     resetToDefaultBackend,
@@ -50,6 +52,16 @@ ipcMain.handle("getFixedImageTagString", async () => {
 
 ipcMain.handle("setFixedImageTagString", async (event, tag: string) => {
     return await setFixedImageTagString(tag);
+});
+
+ipcMain.handle("getAssociatedImages", async (): Promise<IImage[]> => {
+    const res = await getAssociatedImages();
+    console.log(res);
+    return res;
+});
+
+ipcMain.handle("deleteImage", async (event, name: string, tag: string) => {
+    return await deleteImage(name, tag);
 });
 
 ipcMain.handle("runMockProcess", async () => {

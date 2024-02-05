@@ -61,7 +61,7 @@
       </div>
     </div>
   </div>
-  <router-view class="container relative m-3"></router-view>
+  <router-view class="container relative m-3 left-16"></router-view>
 </template>
 <script setup lang="ts">
 </script>

@@ -19,6 +19,11 @@ interface IImageTag {
     version: string;
 }
 
+interface IImage {
+    name: string;
+    tag: string;
+}
+
 interface IFileSystemNode {
     name: string;
     type: string;

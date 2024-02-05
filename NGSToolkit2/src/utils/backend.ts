@@ -1,10 +1,6 @@
 import path from "path";
 import * as fs from "fs";
-import {
-    COMPATIBLE_IMAGE_VERSIONS,
-    DISTRIBUTION_NAME,
-    IMAGE_ASSET_NAME
-} from "../config";
+import {COMPATIBLE_IMAGE_VERSIONS, DISTRIBUTION_NAME, IMAGE_ASSET_NAME} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
@@ -204,10 +200,10 @@ async function getImageReleaseAssetUrl(releaseTag: SemVer) {
 async function downloadDistributionTar(releaseTag: SemVer, path: string) {
     return new Promise<void>((resolve, reject) => {
         // get tarball URL
-        getImageReleaseAssetUrl(releaseTag).then((tarballUrl) => {
+        getImageReleaseAssetUrl(releaseTag).then(async (tarballUrl) => {
             // download tarball
             logToDevTools(`Downloading tarball from ${tarballUrl} to ${path}`);
-            const expectedPath = getExpectedDistributionTarPath(releaseTag);
+            const expectedPath = await getExpectedDistributionTarPath(releaseTag);
             const writer = fs.createWriteStream(expectedPath);
             axios.get(
                 tarballUrl,
@@ -228,9 +224,9 @@ async function downloadDistributionTar(releaseTag: SemVer, path: string) {
     });
 }
 
-function getExpectedDistributionTarPath(releaseTag: SemVer) {
+async function getExpectedDistributionTarPath(releaseTag: SemVer) {
     const appDataDirectory = app.getPath('temp');
-    return path.join(appDataDirectory, `${getImageName(releaseTag)}.tar.gz`);
+    return path.join(appDataDirectory, `${await getImageName(releaseTag)}.tar.gz`);
 }
 
 async function getDistributionInstallLocation(releaseTag: SemVer) {
@@ -262,7 +258,7 @@ async function getDistributionInstallLocation(releaseTag: SemVer) {
  * @returns The path of the distribution tarball.
  */
 export async function getImageTarball(releaseTag: SemVer) {
-    const expectedPath = getExpectedDistributionTarPath(releaseTag);
+    const expectedPath = await getExpectedDistributionTarPath(releaseTag);
 
     updateProgress({
         step: "Initializing backend",
@@ -294,7 +290,7 @@ export async function registerWslDistribution(releaseTag: SemVer) {
     const installLocation = await getDistributionInstallLocation(releaseTag);
 
     // import distribution
-    const distributionName = getImageName(releaseTag);
+    const distributionName = await getImageName(releaseTag);
     logToDevTools(`Importing distribution ${distributionName} from ${tarBall} to ${installLocation}`);
     updateProgress({
         step: "Initializing backend",
@@ -303,13 +299,33 @@ export async function registerWslDistribution(releaseTag: SemVer) {
     await wsl.importDistribution(distributionName, installLocation, tarBall);
 }
 
-async function getImageName(releaseTag: SemVer) {
+/**
+ * Get the name of the image excluding the version tag.
+ */
+async function getImageBaseName() {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
-            return `${CONTAINER_REGISTRY}/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}:${getVersionString(releaseTag)}`
+            return `${CONTAINER_REGISTRY}/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}`;
         case WSL.type:
-            return `${DISTRIBUTION_NAME}_${getVersionString(releaseTag)}`;
+            return DISTRIBUTION_NAME;
+        default:
+            throw new Error(`Backend ${backend.type} not supported`);
+    }
+}
+
+/**
+ * Get the full name of the image including the version tag. This is dependent on the passed release tag.
+ * @param releaseTag The version tag of the image.
+ */
+async function getImageName(releaseTag: SemVer) {
+    const backend = await getBackend();
+    const baseName = await getImageBaseName();
+    switch (backend.type) {
+        case DOCKER.type:
+            return `${baseName}:${getVersionString(releaseTag)}`
+        case WSL.type:
+            return `${baseName}_${getVersionString(releaseTag)}`;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
@@ -367,7 +383,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
     });
     // check if the image is registered
     const images = await docker.listImages();
-    const imageExists = images.some((imageInfo: any) => {
+    const imageExists = images.some((imageInfo: { RepoTags: string[] }) => {
         return imageInfo.RepoTags.includes(image);
     });
 
@@ -471,4 +487,124 @@ export async function initializeBackend() {
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
+}
+
+async function getNameAndTagFromImageName(image: string): Promise<IImage> {
+    const backend = await getBackend();
+    let separator;
+    switch (backend.type) {
+        case DOCKER.type:
+            separator = ":";
+            break;
+        case WSL.type:
+            separator = "_";
+            break;
+        default:
+            throw new Error(`Backend ${backend.type} not supported`);
+    }
+
+    // split only on last occurrence of separator as the name might contain it (e.g. port number for docker)
+    const parts = image.split(separator);
+    const name = parts.slice(0, -1).join(separator);
+    const tag = parts.slice(-1)[0];
+
+    return {name, tag};
+}
+
+export async function getAssociatedImages(): Promise<IImage[]> {
+    const backend = await getBackend();
+    switch (backend.type) {
+        case DOCKER.type:
+            return await getAssociatedImagesDocker();
+        case WSL.type:
+            return await getAssociatedImagesWsl();
+        default:
+            throw new Error(`Backend ${backend.type} not supported`);
+    }
+}
+
+/**
+ * Identify images associated with the application for the Docker backend.
+ */
+async function getAssociatedImagesDocker(): Promise<IImage[]> {
+    return new Promise<IImage[]>((resolve, reject) => {
+        const docker = new Docker();
+        getImageBaseName().then((baseName) => {
+            // filter for images where the name starts with the base name
+            docker.listImages().then(async (images: any) => {
+                const associatedImages = images.filter((imageInfo: { RepoTags: string[] }) => {
+                    return imageInfo.RepoTags.some((imageName: string) => {
+                        return imageName.startsWith(baseName);
+                    });
+                });
+                // convert to IImage using the first tag
+                const ret = [];
+                for (const imageInfo of associatedImages) {
+                    const imageName = imageInfo.RepoTags[0];
+                    const image: IImage = await getNameAndTagFromImageName(imageName);
+                    ret.push(image);
+                    console.debug(`Found associated image: ${JSON.stringify(image)}`);
+                }
+                resolve(ret);
+            });
+        });
+    });
+}
+
+async function getAssociatedImagesWsl(): Promise<IImage[]> {
+    return new Promise<IImage[]>((resolve, reject) => {
+        getImageBaseName().then((baseName) => {
+            wsl.listVerbose().then(async (distributions: { name: string }[]) => {
+                // filter for distributions where the name starts with the base name
+                const associatedImages = distributions.filter((distro: { name: string }) => {
+                    return distro.name.startsWith(baseName);
+                });
+                // convert to IImage using the first tag
+                const ret = [];
+                for (const distro of associatedImages) {
+                    const distroName = distro.name;
+                    const image: IImage = await getNameAndTagFromImageName(distroName);
+                    ret.push(image);
+                    console.debug(`Found associated image: ${JSON.stringify(image)}`);
+                }
+                resolve(ret);
+            });
+        });
+    });
+}
+
+export async function deleteImage(name: string, tag: string) {
+    const image: IImage = {name, tag};
+    const backend = await getBackend();
+    switch (backend.type) {
+        case DOCKER.type:
+            return await deleteImageDocker(image);
+        case WSL.type:
+            return await deleteImageWsl(image);
+        default:
+            throw new Error(`Backend ${backend.type} not supported`);
+    }
+}
+
+async function deleteImageDocker(image: IImage) {
+    const docker = new Docker();
+    const imageFullName = `${image.name}:${image.tag}`;
+    logToDevTools(`Deleting image ${imageFullName}`);
+    const dImage = docker.getImage(imageFullName);
+    await dImage.remove();
+}
+
+async function deleteImageWsl(image: IImage) {
+    return new Promise<void>((resolve, reject) => {
+        logToDevTools(`Deleting WSL distribution ${image.name}`);
+        const distroName = `${image.name}_${image.tag}`;
+        wsl.unregister(distroName).then(() => {
+            logToDevTools(`WSL distribution ${distroName} deleted`);
+            resolve();
+        }).catch((error: Error) => {
+            logToDevTools(`Error deleting WSL distribution ${distroName}: ${error}`);
+            // somehow this fails even if the distribution is deleted
+            resolve();
+        });
+    });
 }

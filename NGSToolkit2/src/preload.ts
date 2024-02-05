@@ -2,7 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import {contextBridge, ipcRenderer} from "electron";
 import {SemVer} from "semver";
-import {getCompatibleReleaseTagStrings, getFixedImageTagString} from "./utils/backend";
+import {getAssociatedImages, getCompatibleReleaseTagStrings, getFixedImageTagString} from "./utils/backend";
 
 
 const indexBridge = {
@@ -72,6 +72,12 @@ const indexBridge = {
     },
     setFixedImageTagString: async (tag: string) => {
         return ipcRenderer.invoke('setFixedImageTagString', tag);
+    },
+    getAssociatedImages: async (): Promise<IImage[]> => {
+        return ipcRenderer.invoke('getAssociatedImages');
+    },
+    deleteImage: async (name: string, tag: string) => {
+        return ipcRenderer.invoke('deleteImage', name, tag);
     },
     publishTicBaseDirectory: async (baseDirectory: string) => {
         return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);
