@@ -58,6 +58,5 @@
   </div>
 </template>
 <script setup lang="ts">
-import Cog8Tooth from "../icons/Cog8Tooth.vue";
 import SettingsIcon from "../icons/SettingsIcon.vue";
 </script>
