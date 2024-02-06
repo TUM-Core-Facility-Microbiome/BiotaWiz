@@ -67,7 +67,6 @@ function matchFastqFile(fileName: string): RegExpExecArray | null {
             console.log(match);
             return match;
         }
-    } else {
-        return null;
     }
+    return null;
 }
