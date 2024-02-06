@@ -491,6 +491,10 @@ export async function initializeBackend() {
         case DOCKER.type:
             logToDevTools(`Initializing Docker backend`);
             await initializeDockerBackend(releaseTag);
+            updateProgress({
+                step: "Initializing backend",
+                message: "Finished initializing Docker backend",
+            });
             break;
         case WSL.type:
             logToDevTools(`Initializing WSL backend`);
