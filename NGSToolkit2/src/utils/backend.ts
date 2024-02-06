@@ -374,40 +374,52 @@ export async function initializeWslBackend(releaseTag: SemVer) {
 }
 
 export async function initializeDockerBackend(releaseTag: SemVer) {
-    const docker = new Docker();  // initialize with defaults; using socket
-    const image = await getImageName(releaseTag);
-
-    updateProgress({
-        step: "Initializing backend",
-        message: "Checking Docker image tag",
-    });
-    // check if the image is registered
-    const images = await docker.listImages();
-    const imageExists = images.some((imageInfo: { RepoTags: string[] }) => {
-        return imageInfo.RepoTags.includes(image);
-    });
-
-    if (imageExists) {
-        logToDevTools(`Image ${image} exists.`);
-    } else {
-        logToDevTools(`Image ${image} does not exist.`);
-        // pull the image
-        updateProgress({
-            step: "Initializing backend",
-            message: `Pulling v${getVersionString(releaseTag)} image`,
-        });
-        await docker.pull(image).then((stream: any) => {
-            stream.on('finish', () => {
-                logToDevTools(`Image ${image} pulled.`);
+    return new Promise<void>((resolve, reject) => {
+        const docker = new Docker();  // initialize with defaults; using socket
+        getImageName(releaseTag).then(async (image) => {
+            updateProgress({
+                step: "Initializing backend",
+                message: "Checking Docker image tag",
             });
-        });
-    }
+            // check if the image is registered
+            const images = await docker.listImages();
+            const imageExists = images.some((imageInfo: { RepoTags: string[] }) => {
+                return imageInfo.RepoTags.includes(image);
+            });
 
-    updateProgress({
-        step: "Initializing backend",
-        message: "Finished initializing Docker backend",
+            if (imageExists) {
+                logToDevTools(`Image ${image} exists.`);
+                resolve();
+            } else {
+                logToDevTools(`Image ${image} does not exist.`);
+                // pull the image
+                updateProgress({
+                    step: "Initializing backend",
+                    message: `Pulling v${getVersionString(releaseTag)} image`,
+                });
+                await docker.pull(image).then((stream: any) => {
+                    docker.modem.followProgress(stream, onFinished, onProgress);
+                    let currentStatus = "";
+
+                    function onFinished(err, output) {
+                        logToDevTools(`Image ${image} pulled.`);
+                        resolve();
+                    }
+                    function onProgress(event: { status: string, proressDetail: { current: number, total: number }, progress: string, id: string }) {
+                        // console.debug(event.progress);
+                        if (event.status !== currentStatus) {
+                            currentStatus = event.status;
+                            logToDevTools(`Image pull: ${event.status}`);
+                            updateProgress({
+                                step: "Initializing backend",
+                                message: `Pulling image (${event.status})`,
+                            });
+                        }
+                    }
+                });
+            }
+        });
     });
-    return;
 }
 
 export async function terminateWslBackend() {
