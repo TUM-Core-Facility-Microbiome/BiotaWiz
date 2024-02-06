@@ -18,6 +18,7 @@ const index = createRouter({
                         {
                             path: '/tic',
                             component: () => import('../components/tic/TicPipelineWizard.vue'),
+                            redirect: '/base-selection',
                             children: [
                                 {
                                     path: '/base-selection',

@@ -11,6 +11,9 @@
 <script setup lang="ts">
 import StudyBrowser from "../../default/StudyBrowser.vue";
 import { reactive } from "vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 const state = reactive({
   baseDir: null as string | null,
@@ -22,6 +25,9 @@ const selectBaseDir = () => {
     state.baseDir = baseDir;
 
     await indexBridge.publishTicBaseDirectory(baseDir);
+
+    // navigate to the next step
+    await router.push("/study-selection");
   }).catch(() => {
     console.log("Could not select base dir");
   });

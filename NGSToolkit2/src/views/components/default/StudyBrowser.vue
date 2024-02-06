@@ -16,6 +16,9 @@
 
 <script setup lang="ts">
 import {reactive, watch} from "vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps({
   baseDir: {
@@ -61,6 +64,9 @@ async function publishSelectedSamples() {
   // as selected items are reactive this was causing issues (non-cloneable objects); a deep copy is a workaround
   const deepCopy = JSON.parse(JSON.stringify(state.selectedItems));
   await indexBridge.publishSamples(deepCopy);
+
+  // navigate to the next step
+  await router.push("/spike-mode");
 }
 </script>
 

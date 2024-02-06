@@ -96,11 +96,15 @@
 
 <script setup lang="ts">
 import {ref} from "vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 let spikeMode = ref("spiked");
 
 async function publishSpikeMode() {
   await indexBridge.publishSpikeMode(spikeMode.value);
+  await router.push("/params");
 }
 </script>
 
