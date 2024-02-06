@@ -106,9 +106,9 @@ ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
 
     // save prefilled mapping file to baseDirectory
     const baseDirectory = await getTicBaseDirectory();
-    const path = `${baseDirectory}/mapping.tsv`;
+    const path = `${baseDirectory}/mapping.csv`;
     const fs = require('fs');
-    const content = "#SampleID\ttotal_weight_in_g\tamount_spike\tparent_path\n"; // TODO: fill with selected samples
+    const content = "#SampleID,total_weight_in_g,amount_spike,parent_path\n"; // TODO: fill with selected samples
     fs.writeFile(path, content, (err: string) => {
         console.error(err);
     });
