@@ -1,7 +1,7 @@
 import {BrowserWindow} from "electron";
 
 export function logToDevTools(message: string, level = 'info') {
-    const window = BrowserWindow.getFocusedWindow();
+    const window = BrowserWindow.fromId(1);
     window.webContents.send('logRequest', message, level);
     // also log to console
     if (level == 'trace') {
@@ -21,6 +21,6 @@ export function logToDevTools(message: string, level = 'info') {
 
 
 export function updateProgress(progress: Progress) {
-    const window = BrowserWindow.getFocusedWindow();
+    const window = BrowserWindow.fromId(1);
     window.webContents.send('progressUpdate', progress);
 }

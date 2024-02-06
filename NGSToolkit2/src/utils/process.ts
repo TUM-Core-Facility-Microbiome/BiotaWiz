@@ -23,8 +23,6 @@ function wslHelloWorld(): Promise<number> {
 
 export function runSubprocess(command: string, args: string[]): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-        const window = BrowserWindow.getFocusedWindow();
-
         const subprocess = child_process.spawn(command, args);
         console.log(`Spawned child with pid ${subprocess.pid}`);
 
