@@ -33,7 +33,7 @@ class TicConfiguration {
 
     private writeMappingFile() {
         // save prefilled mapping file to baseDirectory
-        this.mappingFile = path.join(this.baseDirectory, 'mapping.csv');
+        this.mappingFile = path.join(this.baseDirectory, 'mapping.tsv');
         const content = this.generateMappingFileContent();
         writeFile(this.mappingFile, content, (err) => {
             console.error(err);
@@ -50,21 +50,20 @@ class TicConfiguration {
     }
 
     private generateMappingFileContent() {
-        let content = "#SampleID,total_weight_in_g,amount_spike,parent_path\n";
+        const delimiter = "\t";
+        let content = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path'].join(delimiter) + "\n";
 
-        let spikeDefaults = ",";  // keep empty if no spike
+        let spikeDefaults = ['', ''];  // keep empty if no spike
         if (this.spikeMode == SpikeMode.SPIKED) {
-            spikeDefaults = "1,1";  // set to dummy values
+            spikeDefaults = ['1', '1'];  // set to dummy values
         }
 
         this.samples.forEach((sample) => {
             const baseName = sample.name;
 
-            // path relative to baseDirectory
-            const baseWithTailingSep = this.baseDirectory.endsWith(path.sep) ? this.baseDirectory : this.baseDirectory + path.sep;
-            const parentPath = path.dirname(sample.path).replace(baseWithTailingSep, '');
-
-            content += `${baseName},${spikeDefaults},${parentPath}\n`;
+            // parent path relative to baseDirectory
+            const parentPath = this.relativePathToBaseDirectory(path.dirname(sample.path));
+            content += [baseName, ...spikeDefaults, parentPath].join(delimiter) + "\n";
         });
         return content;
     }
@@ -82,6 +81,10 @@ class TicConfiguration {
     }
 
     public runPipeline() {
+        console.log(this.yamlFile);
+        const yamlFile = this.relativePathToBaseDirectory(this.yamlFile);
+        const mappingFile = this.relativePathToBaseDirectory(this.mappingFile);
+
         console.log(`Running pipeline`);
         // add to task queue
         taskQueue.defer(async () => {
@@ -92,7 +95,7 @@ class TicConfiguration {
             });
 
             await run(
-                ["run_imngs2"],
+                ["run_imngs2", "--yml-file", yamlFile, "--mapping-file", mappingFile],
                 {
                     binds: [
                         `${this.baseDirectory}:/base/inputs`,
@@ -113,6 +116,7 @@ class TicConfiguration {
                     });
                 }
             }).catch((error: string) => {
+                console.error(error);
                 updateProgress({
                     step: "Running TIC",
                     message: "Could not start pipeline",
@@ -120,6 +124,13 @@ class TicConfiguration {
                 });
             });
         });
+    }
+
+    private relativePathToBaseDirectory(absolutePath: string) {
+        // path relative to baseDirectory
+        const baseWithTailingSep = this.baseDirectory.endsWith(path.sep) ? this.baseDirectory : this.baseDirectory + path.sep;
+        console.log(`baseWithTailingSep: ${baseWithTailingSep}`);
+        return absolutePath.replace(baseWithTailingSep, '');
     }
 }
 
