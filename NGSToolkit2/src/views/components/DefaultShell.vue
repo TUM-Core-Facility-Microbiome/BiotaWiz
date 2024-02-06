@@ -9,17 +9,17 @@
       <div class="pl-16">
         <div class="justify-between pl-4 pr-4 w-full">
           <div>
-            <div class="max-h-40 overflow-y-auto">
+            <div class="max-h-40 overflow-y-auto min-h-[22px]">
               <div v-for="(message, index) in filteredMessages.reverse()" :key="index">
-                <div v-if="index === 0" class="text-sm text-white"><span class="font-semibold">{{ message.step }}</span>: {{ message.message }}</div>
+                <div v-if="index === 0" class="text-xs text-white"><span class="font-semibold">{{ message.step }}</span>: {{ message.message }}</div>
                 <div v-if="message.step === currentStep" class="flex items-center ml-4">
                   <div class="flex-grow"></div>
                 </div>
               </div>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-1 dark:bg-gray-700">
+            <div class="w-full bg-gray-200 rounded-full h-[3px] dark:bg-gray-700">
               <div
-                  class="bg-tic h-1 rounded-full"
+                  class="bg-tic h-[3px] rounded-full"
                   style="transition: width 1s ease-in;"
                   :style="{width: `${state.pct}%`}"></div>
             </div>
