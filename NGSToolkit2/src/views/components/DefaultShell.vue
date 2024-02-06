@@ -98,5 +98,5 @@ setInterval(() => {
     state.pct += 10;
     i++;
   }
-}, 500);
+}, 100);
 </script>

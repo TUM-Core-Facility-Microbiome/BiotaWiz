@@ -400,13 +400,13 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                 await docker.pull(image).then((stream: any) => {
                     docker.modem.followProgress(stream, onFinished, onProgress);
                     let currentStatus = "";
+                    let lastUpdateTimeStamp = 0;
 
                     function onFinished(err, output) {
                         logToDevTools(`Image ${image} pulled.`);
                         resolve();
                     }
-                    function onProgress(event: { status: string, proressDetail: { current: number, total: number }, progress: string, id: string }) {
-                        // console.debug(event.progress);
+                    function onProgress(event: { status: string, progressDetail: { current: number, total: number }, progress: string, id: string }) {
                         if (event.status !== currentStatus) {
                             currentStatus = event.status;
                             logToDevTools(`Image pull: ${event.status}`);
@@ -414,6 +414,19 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                                 step: "Initializing backend",
                                 message: `Pulling image (${event.status})`,
                             });
+                        }
+                        if (event.status == "Downloading" || event.status == "Extracting") {
+                            const now = Date.now();
+                            if (now - lastUpdateTimeStamp > 1000) {
+                                if (event.progressDetail) {
+                                    const pct = Math.round((event.progressDetail.current / event.progressDetail.total) * 100);
+                                    lastUpdateTimeStamp = now;
+                                    updateProgress({
+                                        step: "Initializing backend",
+                                        message: `Pulling image (${event.status} [${pct}%])`,
+                                    });
+                                }
+                            }
                         }
                     }
                 });
