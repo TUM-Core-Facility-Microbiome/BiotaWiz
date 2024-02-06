@@ -650,3 +650,32 @@ async function deleteImageWsl(image: IImage) {
         });
     });
 }
+
+export async function run(command: string[], options: { binds: string[] }) {
+    const backend = await getBackend();
+    switch (backend.type) {
+        case DOCKER.type:
+            return await runWithDocker(command, options);
+        case WSL.type:
+            throw new Error("Not implemented yet");
+        default:
+            throw new Error(`Backend ${backend.type} not supported`);
+    }
+}
+
+export async function runWithDocker(command: string[], options: { binds: string[] } = { binds: [] }) {
+const docker = new Docker();
+    const image = await getImageName(await getImageTagOrLatestCompatible());
+    const container = await docker.createContainer({
+        Image: image,
+        Cmd: command,
+        HostConfig: {
+            AutoRemove: true,
+            Binds: options.binds,
+        },
+        CpuShares: 768,  // limit CPU usage
+    });
+    await container.start();
+    const data = await container.wait();
+    return data.StatusCode;
+}

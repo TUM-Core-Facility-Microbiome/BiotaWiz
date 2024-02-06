@@ -5,6 +5,7 @@ import {writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {updateProgress} from "./logHandler";
+import {run} from "./backend";
 
 class TicConfiguration {
     private baseDirectory = "";
@@ -58,7 +59,11 @@ class TicConfiguration {
 
         this.samples.forEach((sample) => {
             const baseName = sample.name;
-            const parentPath = path.dirname(sample.path);
+
+            // path relative to baseDirectory
+            const baseWithTailingSep = this.baseDirectory.endsWith(path.sep) ? this.baseDirectory : this.baseDirectory + path.sep;
+            const parentPath = path.dirname(sample.path).replace(baseWithTailingSep, '');
+
             content += `${baseName},${spikeDefaults},${parentPath}\n`;
         });
         return content;
@@ -70,7 +75,7 @@ class TicConfiguration {
     }
 
     private writeParameterFile() {
-        this.yamlFile = path.join(this.baseDirectory, 'parameters.yaml');
+        this.yamlFile = path.join(this.baseDirectory, 'IMNGS2Pipeline_args.yml');
         writeFile(this.yamlFile, stringify(this.parameters), (err) => {
             console.error(err);
         });
@@ -82,18 +87,32 @@ class TicConfiguration {
         taskQueue.defer(async () => {
             updateProgress({
                 step: "Running TIC",
-                message: "This is a mock process. It will take 10 seconds.",
+                message: "Running Analysis...",
                 state: "running",
             });
 
-            // mock
-            setTimeout(() => {
-                updateProgress({
-                    step: "Running TIC",
-                    message: "TIC finished",
-                    state: "done",
-                });
-            }, 10000);
+            await run(
+                ["run_imngs2"],
+                {
+                    binds: [
+                        `${this.baseDirectory}:/base/inputs`,
+                    ],
+                }
+            ).then((statusCode: number) => {
+                if (statusCode == 0) {
+                    updateProgress({
+                        step: "Running TIC",
+                        message: "TIC finished",
+                        state: "done",
+                    });
+                } else {
+                    updateProgress({
+                        step: "Running TIC",
+                        message: "Pipeline returned unexpected with failure code",
+                        state: "error",
+                    });
+                }
+            });
         });
     }
 }
