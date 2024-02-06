@@ -82,7 +82,7 @@ class TicConfiguration {
     }
 
     public runPipeline() {
-        console.log(`Running pipeline with parameters: ${this.parameters}`);
+        console.log(`Running pipeline`);
         // add to task queue
         taskQueue.defer(async () => {
             updateProgress({

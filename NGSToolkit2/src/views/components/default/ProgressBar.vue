@@ -50,6 +50,7 @@ const state = reactive({
 });
 
 indexBridge.handleProgressUpdate((progress: Progress) => {
+  console.log(`Progress: ${JSON.stringify(progress)}`);
   state.status = progress.state;
   state.step = progress.step;
   state.progress = progress.message;
