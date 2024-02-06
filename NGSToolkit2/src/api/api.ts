@@ -13,6 +13,8 @@ import {handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "./file-explorer";
 import {SpikeMode} from "../enums";
+import {taskQueue} from '../utils/taskQueue';
+
 
 ipcMain.handle('openExternal', async (event, url: string) => {
     return await shell.openExternal(url);
@@ -78,8 +80,10 @@ ipcMain.handle("loadStudiesFromBaseDirectory", async (event): Promise<IFileSyste
 });
 
 ipcMain.handle("initializeBackend", async () => {
-    initializeBackend().then(() => {
-        console.log(`Backend initialized`);
+    return await taskQueue.defer(async () => {
+        initializeBackend().then(() => {
+            console.log(`Backend initialized`);
+        });
     });
 });
 
