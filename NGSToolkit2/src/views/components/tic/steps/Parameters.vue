@@ -355,14 +355,13 @@
     <br>
   </div>
   <div>
-    <button class="btn" @click="generateYaml()">Generate YAML</button>
+    <button class="btn" @click="publishParameters()">Run</button>
   </div>
 
 </template>
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import {stringify} from "yaml";
 
 let stripleft = ref(15);
 let stripright = ref(15);
@@ -478,11 +477,9 @@ function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
   return args;
 }
 
-function generateYaml() {
+async function publishParameters() {
   const args = generateTicPipelineArgumentsObj();
-
-  console.log(args);
-  console.log(stringify(args));
+  await indexBridge.publishTicParameters(args);
 }
 </script>
 

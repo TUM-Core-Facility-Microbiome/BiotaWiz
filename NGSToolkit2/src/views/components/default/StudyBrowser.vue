@@ -4,6 +4,7 @@
   <div class="study-browser">
     <StudyBrowserElement :items="state.tree" @selection-changed="handleSelect" />
   </div>
+  <button @click="publishSelectedSamples()">Apply</button>
 </template>
 
 <style scoped>
@@ -47,13 +48,19 @@ watch(() => props.baseDir, () => {
 
 const handleSelect = (selectedItems: any[]) => {
   state.selectedItems = selectedItems;
-  console.log(selectedItems);
+  console.log(`selectedItems: ${JSON.stringify(selectedItems)}`);
   // remove studies from the selected items
   const files = selectedItems.filter((item) => item.type !== 'study');
-  console.log(files)
+  console.log(`files: ${JSON.stringify(files)}`)
   // get the name of the selected files
   const fileNames = files.map((file) => file.name);
-  console.log(fileNames);
+  console.log(`fileNames: ${fileNames}`);
+}
+
+async function publishSelectedSamples() {
+  // as selected items are reactive this was causing issues (non-cloneable objects); a deep copy is a workaround
+  const deepCopy = JSON.parse(JSON.stringify(state.selectedItems));
+  await indexBridge.publishSamples(deepCopy);
 }
 </script>
 

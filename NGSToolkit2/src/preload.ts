@@ -82,8 +82,14 @@ const indexBridge = {
     publishTicBaseDirectory: async (baseDirectory: string) => {
         return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);
     },
+    publishSamples: async (samples: IFileSystemNode[]) => {
+        return ipcRenderer.invoke('publish:ticSamples', samples);
+    },
     publishSpikeMode: async (spikeModeName: string) => {
         return ipcRenderer.invoke('publish:spikeMode', spikeModeName);
+    },
+    publishTicParameters: async (parameters: ITicPipelineArguments) => {
+        return ipcRenderer.invoke('publish:ticParameters', parameters);
     },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {

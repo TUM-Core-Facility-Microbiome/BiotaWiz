@@ -14,6 +14,7 @@ import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/sto
 import {detectStudyFolders} from "./file-explorer";
 import {SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
+import {ticConfiguration} from "../utils/ticConfiguration";
 
 
 ipcMain.handle('openExternal', async (event, url: string) => {
@@ -89,7 +90,15 @@ ipcMain.handle("initializeBackend", async () => {
 
 ipcMain.handle("publish:ticBaseDirectory", async (event, baseDirectory: string) => {
     console.log(`Setting TIC base directory to ${baseDirectory}`);
+    ticConfiguration.setBaseDirectory(baseDirectory);
+    console.log(ticConfiguration);
     await setTicBaseDirectory(baseDirectory);
+});
+
+ipcMain.handle("publish:ticSamples", async (event, samples: IFileSystemNode[]) => {
+    console.log(`Setting TIC samples to ${JSON.stringify(samples)}`);
+    ticConfiguration.setSamples(samples);
+    console.log(ticConfiguration);
 });
 
 ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
@@ -103,22 +112,12 @@ ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
         mode = SpikeMode.NONE;
     }
     console.log(`Selected spike mode: ${mode}`);
+    ticConfiguration.setSpikeMode(mode);
+    console.log(ticConfiguration);
+});
 
-    // save prefilled mapping file to baseDirectory
-    const baseDirectory = await getTicBaseDirectory();
-    const path = `${baseDirectory}/mapping.csv`;
-    const fs = require('fs');
-    const content = "#SampleID,total_weight_in_g,amount_spike,parent_path\n"; // TODO: fill with selected samples
-    fs.writeFile(path, content, (err: string) => {
-        console.error(err);
-    });
-
-    // open mapping file in default editor
-    if (mode == SpikeMode.SPIKED) {
-        shell.openPath(path).then(() => {
-            console.log(`Opened mapping file in default editor`);
-        }).catch((err: string) => {
-            console.error(err);
-        });
-    }
+ipcMain.handle("publish:ticParameters", async (event, parameters: ITicPipelineArguments) => {
+    ticConfiguration.setParameters(parameters);
+    console.log(ticConfiguration);
+    ticConfiguration.runPipeline();
 });
