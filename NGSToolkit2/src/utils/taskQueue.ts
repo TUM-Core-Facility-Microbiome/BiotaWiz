@@ -1,10 +1,9 @@
-import {updateProgress} from "./logHandler";
-
 class TaskQueue {
     private queue: (() => Promise<void>)[] = [];
     private isProcessing = false;
 
     defer<T>(task: () => Promise<T>): Promise<T> {
+        console.debug(`Adding task to queue. Waiting: ${this.queue.length}`);
         return new Promise<T>((resolve, reject) => {
             const taskWrapper = async () => {
                 try {
@@ -27,6 +26,7 @@ class TaskQueue {
             const task = this.queue.shift();
             if (task) {
                 try {
+                    console.debug(`Picking new task from queue. Waiting: ${this.queue.length}`);
                     await task();
                 } catch (error) {
                     console.error('Error processing task:', error);

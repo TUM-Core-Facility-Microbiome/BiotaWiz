@@ -83,7 +83,6 @@ function checkTarExists(path: string) {
     }
 }
 
-
 /**
  * Query GitHub for the latest release tag of the image.
  */
