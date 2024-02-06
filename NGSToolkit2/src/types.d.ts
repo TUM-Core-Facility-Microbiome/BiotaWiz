@@ -178,4 +178,6 @@ interface SemanticVersionMatcher {
 interface Progress {
     step: string;
     message: string;
+    state: string;
+    error?: string;
 }

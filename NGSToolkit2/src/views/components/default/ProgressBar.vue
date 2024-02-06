@@ -1,23 +1,38 @@
 <template>
-  <footer class="fixed bottom-0 bg-gray-800 py-4 w-full z-40 border-t">
+  <footer class="fixed bottom-0 bg-gray-800 w-full z-40 border-t transition-all">
     <div class="pl-16">
-      <div class="justify-between pl-4 pr-4 w-full">
+      <div class="justify-between pl-5 pr-5 w-full">
         <div>
-          <div class="max-h-40 overflow-y-auto min-h-[22px]">
-            <div v-for="(message, index) in filteredMessages.reverse()" :key="index">
-              <div v-if="index === 0" class="text-xs text-white"><span class="font-semibold">{{ message.step }}</span>:
-                {{ message.message }}
+          <div class="">
+            <div class="text-xs text-white pt-5 pb-5">
+              <span class="flex absolute h-3 w-3 pt-0.5">
+                <span
+                    class="absolute inline-flex h-full w-full rounded-full opacity-75"
+                    :class="{
+                      'bg-sky-400 animate-ping' : state.status === 'running',
+                      'bg-green-400' : state.status === 'done',
+                      'bg-gray-400' : state.status === 'idle',
+                      'bg-red-400' : state.status === 'error',
+                    }"
+                ></span>
+                <span
+                    class="relative inline-flex rounded-full h-3 w-3"
+                    :class="{
+                      'bg-sky-500' : state.status === 'running',
+                      'bg-green-500' : state.status === 'done',
+                      'bg-gray-500' : state.status === 'idle',
+                      'bg-red-500' : state.status === 'error',
+                    }"
+                ></span>
+              </span>
+              <div class="pl-7" v-if="state.status !== 'idle'">
+                <span class="font-semibold">{{ state.step }}</span>:
+                {{ state.progress }}
               </div>
-              <div v-if="message.step === currentStep" class="flex items-center ml-4">
-                <div class="flex-grow"></div>
+              <div class="pl-7" v-else>
+                <span class="font-semibold">Idle</span>
               </div>
             </div>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-[3px] dark:bg-gray-700">
-            <div
-                class="bg-tic h-[3px] rounded-full"
-                style="transition: width 1s ease-in;"
-                :style="{width: `${state.pct}%`}"></div>
           </div>
         </div>
       </div>
@@ -26,66 +41,18 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {reactive} from "vue";
 
 const state = reactive({
+  status: "idle", // "idle" | "running" | "done" | "error
   step: null,
   progress: null,
-  pct: 0,
 });
-
-const messages = ref([]);
-const currentStep = ref(null);
-const filteredMessages = ref([]);
-const updates: Progress[] = [];
 
 indexBridge.handleProgressUpdate((progress: Progress) => {
-  // save update
-  updates.push(progress);
+  state.status = progress.state;
+  state.step = progress.step;
+  state.progress = progress.message;
 });
 
-const updateProgress = (update: Progress) => {
-  const lastMessage = messages.value[messages.value.length - 1];
-  messages.value.push(update);
-
-  // Update current step
-  currentStep.value = update.step;
-
-  // Limit messages to 2 latest steps and 2 substeps for the latest step
-  const stepCounts: { [step: string]: number } = {}; // Change type to string
-  filteredMessages.value = messages.value.slice().reverse().filter(message => {
-    if (message.step !== currentStep.value) {
-      return false;
-    }
-    if (!stepCounts[message.step]) {
-      stepCounts[message.step] = 0;
-    }
-    if (stepCounts[message.step] < 1) {
-      stepCounts[message.step]++;
-      return true;
-    }
-    return false;
-  });
-
-  console.log(stepCounts)
-
-  // Scroll to bottom
-  const messageBox = document.querySelector('.overflow-y-auto');
-  messageBox.scrollTop = messageBox.scrollHeight;
-};
-
-// display updates but delay between each update
-let i = 0;
-setInterval(() => {
-  if (i < updates.length) {
-    const update = updates[i];
-    state.step = update.step;
-    state.progress = update.message;
-
-    updateProgress(update);
-
-    state.pct += 10;
-    i++;
-  }
-}, 100);
 </script>

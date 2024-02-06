@@ -263,6 +263,7 @@ export async function getImageTarball(releaseTag: SemVer) {
     updateProgress({
         step: "Initializing backend",
         message: `Downloading distribution files`,
+        state: "running",
     });
 
     if (!fs.existsSync(expectedPath)) {
@@ -295,6 +296,7 @@ export async function registerWslDistribution(releaseTag: SemVer) {
     updateProgress({
         step: "Initializing backend",
         message: `Registering WSL distribution v${getVersionString(releaseTag)}`,
+        state: "running",
     });
     await wsl.importDistribution(distributionName, installLocation, tarBall);
 }
@@ -340,6 +342,7 @@ export async function initializeWslBackend(releaseTag: SemVer) {
         updateProgress({
             step: "Initializing backend",
             message: `WSL distribution v${getVersionString(releaseTag)} is registered`,
+            state: "running",
         });
     } else {
         logToDevTools(`WSL distribution ${distribution} is not registered.`);
@@ -350,6 +353,7 @@ export async function initializeWslBackend(releaseTag: SemVer) {
     updateProgress({
         step: "Initializing backend",
         message: `Ensuring distribution is running on WSL2`,
+        state: "running",
     });
     const version = await getDistroWslVersion(distribution);
     if (version !== 2) {
@@ -363,6 +367,7 @@ export async function initializeWslBackend(releaseTag: SemVer) {
     updateProgress({
         step: "Initializing backend",
         message: `Starting distribution`,
+        state: "running",
     });
     await wsl.runDistribution(distribution);
     await wsl.waitForRunning(distribution);
@@ -370,6 +375,7 @@ export async function initializeWslBackend(releaseTag: SemVer) {
     updateProgress({
         step: "Initializing backend",
         message: `Finished initializing WSL backend`,
+        state: "done",
     });
 }
 
@@ -380,6 +386,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
             updateProgress({
                 step: "Initializing backend",
                 message: "Checking Docker image tag",
+                state: "running",
             });
             // check if the image is registered
             const images = await docker.listImages();
@@ -396,6 +403,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                 updateProgress({
                     step: "Initializing backend",
                     message: `Pulling v${getVersionString(releaseTag)} image`,
+                    state: "running",
                 });
                 await docker.pull(image).then((stream: any) => {
                     docker.modem.followProgress(stream, onFinished, onProgress);
@@ -413,6 +421,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                             updateProgress({
                                 step: "Initializing backend",
                                 message: `Pulling image (${event.status})`,
+                                state: "running",
                             });
                         }
                         if (event.status == "Downloading" || event.status == "Extracting") {
@@ -423,7 +432,8 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                                     lastUpdateTimeStamp = now;
                                     updateProgress({
                                         step: "Initializing backend",
-                                        message: `Pulling image (${event.status} [${pct}%])`,
+                                        message: `${event.status} image v${getVersionString(releaseTag)} (${pct}%)`,
+                                        state: "running",
                                     });
                                 }
                             }
@@ -480,6 +490,7 @@ async function getImageTagOrLatestCompatible() {
         updateProgress({
             step: "Initializing backend",
             message: "Checking for new pipeline releases",
+            state: "running",
         });
         releaseTag = await getLatestCompatibleImageReleaseTag();
         logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
@@ -493,6 +504,7 @@ export async function initializeBackend() {
     updateProgress({
         step: "Initializing backend",
         message: "Initializing backend",
+        state: "running",
     });
     // get the version of the image
     const releaseTag = await getImageTagOrLatestCompatible();
@@ -507,6 +519,7 @@ export async function initializeBackend() {
             updateProgress({
                 step: "Initializing backend",
                 message: "Finished initializing Docker backend",
+                state: "done",
             });
             break;
         case WSL.type:
