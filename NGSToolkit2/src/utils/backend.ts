@@ -410,7 +410,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                     let currentStatus = "";
                     let lastUpdateTimeStamp = 0;
 
-                    function onFinished(err, output) {
+                    function onFinished(err: any, output: any) {
                         logToDevTools(`Image ${image} pulled.`);
                         resolve();
                     }
