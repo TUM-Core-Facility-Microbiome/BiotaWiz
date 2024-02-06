@@ -657,7 +657,8 @@ export async function run(command: string[], options: { binds: string[] }) {
 }
 
 export async function runWithDocker(command: string[], options: { binds: string[] } = { binds: [] }) {
-const docker = new Docker();
+    const docker = new Docker();
+    console.log(`Running command with Docker: ${command}`);
     const image = await getImageName(await getImageTagOrLatestCompatible());
     const container = await docker.createContainer({
         Image: image,
