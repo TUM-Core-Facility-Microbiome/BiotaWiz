@@ -112,6 +112,12 @@ class TicConfiguration {
                         state: "error",
                     });
                 }
+            }).catch((error: string) => {
+                updateProgress({
+                    step: "Running TIC",
+                    message: "Could not start pipeline",
+                    state: "error",
+                });
             });
         });
     }
