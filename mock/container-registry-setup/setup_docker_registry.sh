@@ -12,6 +12,7 @@ for tarball_path in /images/*/*/*/image.tar.gz; do
   owner=$(basename $(dirname $(dirname $(dirname "${tarball_path}"))))
   repo=$(basename $(dirname $(dirname "${tarball_path}")))
   image="${CONTAINER_REGISTRY}/${owner}/${repo}:${tag}"
+  echo "Found ${image}. Importing and pushing to local registry. This may take a while for bigger images..."
   # load the image into docker
   docker image import "${tarball_path}" "${image}"
   # push the image to the registry
