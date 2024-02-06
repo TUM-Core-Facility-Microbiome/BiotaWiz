@@ -77,3 +77,15 @@ npm start -- -- --api-url http://localhost:5001 --container-registry localhost:5
 ```
 
 The GUI will then use the mocked APIs images provided at the `images` directory.
+
+## How to build a new image for the mock API
+The mock API requires a filesystem image exported to a tarball. This can be
+achieved by using the tar exporter. The following command will create a tarball from a
+`Dockerfile`:
+```bash
+docker buildx build --output type=tar,dest=<imageName>.tar .
+gzip <imageName>.tar
+```
+where `<imageName>` is the name of the tar file.
+The resulting file will be a tarball (`tar.gz` file) that can be placed in the `images` directory.
+You should use `image` as the `<imageName>` when building for the mock API.
