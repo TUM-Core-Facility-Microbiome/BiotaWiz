@@ -8,14 +8,6 @@ const index = createRouter({
             component: () => import('../components/DefaultShell.vue'),
             children: [
                 {
-                    path: '/',
-                    redirect: '/startup',
-                },
-                {
-                    path: '/startup',
-                    component: () => import('../components/startup/Startup.vue'),
-                },
-                {
                     path: '/application-shell',
                     component: () => import('../components/ApplicationShell.vue'),
                     children: [

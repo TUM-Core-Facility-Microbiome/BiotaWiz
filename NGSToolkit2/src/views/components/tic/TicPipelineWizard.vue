@@ -16,6 +16,16 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from "vue";
+
+onMounted(() => {
+  // prepare the environment
+  indexBridge.initializeBackend().then(() => {
+    console.log("Backend initialized 2");
+  }).catch(() => {
+    console.log("Backend initialization failed");
+  });
+});
 </script>
 
 <script lang="ts">

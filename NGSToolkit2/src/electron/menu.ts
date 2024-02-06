@@ -193,12 +193,6 @@ export default class MenuBuilder {
             {
                 label: '&Window',
                 submenu: [
-                    {
-                        label: '&Run startup checks',
-                        click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/startup');
-                        }
-                    },
                     {type: 'separator'},
                     {
                         label: '&TIC pipeline',
