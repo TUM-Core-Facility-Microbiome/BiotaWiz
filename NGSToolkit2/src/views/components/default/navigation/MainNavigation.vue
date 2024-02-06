@@ -5,7 +5,7 @@
         <div class="inline-flex h-16 w-16 items-center justify-center">
           <img
               class="grid h-10 w-10 place-content-center rounded-lg bg-gray-100 text-xs text-gray-600"
-              src="assets/icons/icon.png" alt="Logo"
+              src="/assets/icons/icon.png" alt="Logo"
           />
         </div>
 
