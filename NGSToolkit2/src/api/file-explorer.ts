@@ -17,43 +17,49 @@ export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
 }
 
 function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path: string) {
-    const files = readdirSync(path);
-    files.forEach((nodeName) => {
-        if (fs.statSync(join(path, nodeName)).isDirectory()) {
-            const currentNode: IFileSystemNode = {
-                name: nodeName,
-                type: "directory",
-                path: join(path, nodeName),
-                children: [],
-            }
-            currentRoot.children.push(currentNode);
-            listDirectory(baseDirectory, currentNode, join(path, nodeName));
-        } else {
-            let match;
-            if ((match = matchFastqFile(nodeName)) !== null) {
-                const sampleId = match[1];
-                const forward = match[2] === "1";
-                const extension = match[3];
-                const currentNode: IFileSystemSample = {
-                    name: sampleId,
+    try {
+        const files = readdirSync(path);
+
+        files.forEach((nodeName) => {
+            if (fs.statSync(join(path, nodeName)).isDirectory()) {
+                const currentNode: IFileSystemNode = {
+                    name: nodeName,
+                    type: "directory",
                     path: join(path, nodeName),
-                    type: "sample",
-                    isPaired: false,
-                    isCompressed: extension.endsWith(".gz"),
-                    metadataAvailable: false,
+                    children: [],
                 }
-                if (forward) {
-                    currentRoot.children.push(currentNode);
-                } else {
-                    // check for node with same sampleId and modify it
-                    let forwardNode;
-                    if ((forwardNode = currentRoot.children.find((node) => node.name === sampleId)) !== undefined) {
-                        (forwardNode as IFileSystemSample).isPaired = true;
+                currentRoot.children.push(currentNode);
+                listDirectory(baseDirectory, currentNode, join(path, nodeName));
+            } else {
+                let match;
+                if ((match = matchFastqFile(nodeName)) !== null) {
+                    const sampleId = match[1];
+                    const forward = match[2] === "1";
+                    const extension = match[3];
+                    const currentNode: IFileSystemSample = {
+                        name: sampleId,
+                        path: join(path, nodeName),
+                        type: "sample",
+                        isPaired: false,
+                        isCompressed: extension.endsWith(".gz"),
+                        metadataAvailable: false,
+                    }
+                    if (forward) {
+                        currentRoot.children.push(currentNode);
+                    } else {
+                        // check for node with same sampleId and modify it
+                        let forwardNode;
+                        if ((forwardNode = currentRoot.children.find((node) => node.name === sampleId)) !== undefined) {
+                            (forwardNode as IFileSystemSample).isPaired = true;
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error(`Error reading directory ${path}: ${error}`);
+        return;
+    }
 }
 
 function matchFastqFile(fileName: string): RegExpExecArray | null {
