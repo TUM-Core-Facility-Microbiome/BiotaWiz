@@ -486,12 +486,6 @@ async function getImageTagOrLatestCompatible() {
     let releaseTag = getImageTag();
     if (releaseTag === null) {
         logToDevTools("No image version specified in storage, querying GitHub for latest version");
-
-        updateProgress({
-            step: "Initializing backend",
-            message: "Checking for new pipeline releases",
-            state: "running",
-        });
         releaseTag = await getLatestCompatibleImageReleaseTag();
         logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
     } else {
