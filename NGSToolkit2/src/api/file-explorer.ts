@@ -53,8 +53,6 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                 }
             }
         }
-        const relativePath = join(path, nodeName).replace(baseDirectory, ".");
-        console.log(relativePath, nodeName);
     });
 }
 
