@@ -8,6 +8,7 @@ import {getLatestVersion, getMatchingVersions, getVersionString, semVerFromGitHu
 import {logToDevTools, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
+import {runSubprocess} from "./process";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
@@ -16,9 +17,29 @@ const Docker = require('dockerode');
 
 const GITHUB_API_BASE_URL = cmArgs['api-url'];
 const CONTAINER_REGISTRY = cmArgs['container-registry'];
-const IMAGE_REPOSITORY = {
+const IMAGE_REPOSITORY: Repository = {
     owner: cmArgs['tic-pipeline-repository-owner'],
     repo: cmArgs['tic-pipeline-repository-name'],
+}
+
+enum Environment {
+    TIC = "TIC",
+    SHINY_RHEA = "SHINY_RHEA",
+}
+
+function getRepository(environment: Environment): Repository {
+    switch (environment) {
+        case Environment.TIC:
+            return {
+                owner: cmArgs['tic-pipeline-repository-owner'],
+                repo: cmArgs['tic-pipeline-repository-name'],
+            }
+        case Environment.SHINY_RHEA:
+            return {
+                owner: cmArgs['shiny-rhea-repository-owner'],
+                repo: cmArgs['shiny-rhea-repository-name'],
+            }
+    }
 }
 
 const DOCKER: IBackend = {
@@ -644,32 +665,54 @@ async function deleteImageWsl(image: IImage) {
     });
 }
 
-export async function run(command: string[], options: { binds: string[] }) {
+export async function run(command: string[], options: IRunOptions = { binds: [] }) {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
             return await runWithDocker(command, options);
         case WSL.type:
-            throw new Error("Not implemented yet");
+            return await runWithWsl(command, options);
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
 }
 
-export async function runWithDocker(command: string[], options: { binds: string[] } = { binds: [] }) {
+function getDockerBindFormat(binds: IBind[]) {
+    return binds.map((bind: IBind) => {
+        return `${bind.source}:${bind.target}`;
+    });
+}
+
+async function runWithDocker(command: string[], options: IRunOptions) {
     const docker = new Docker();
     console.log(`Running command with Docker: ${command}`);
     const image = await getImageName(await getImageTagOrLatestCompatible());
+    console.log(`Running command ${command.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
     const container = await docker.createContainer({
         Image: image,
         Cmd: command,
         HostConfig: {
             AutoRemove: true,
-            Binds: options.binds,
+            Binds: getDockerBindFormat(options.binds),
         },
-        CpuShares: 768,  // limit CPU usage
     });
+    // start and get the stdout
     await container.start();
-    const data = await container.wait();
-    return data.StatusCode;
+    container.attach({stream: true, stdout: true, stderr: true}, function (err: any, stream: any) {
+        stream.on('data', (data: Buffer) => {
+            const msg = data.toString();
+            logToDevTools(msg);
+        });
+    });
+    const statusCode = await container.wait();
+    return statusCode;
+}
+
+async function runWithWsl(command: string[], options: IRunOptions) {
+    const backend = await getBackend();
+    console.log(`Running command with WSL: ${command}`);
+    const distribution = await getImageName(await getImageTagOrLatestCompatible());
+    const args = ["--distribution", distribution, "--", ...command];
+    const statusCode = await runSubprocess(backend.command, args);
+    return statusCode;
 }

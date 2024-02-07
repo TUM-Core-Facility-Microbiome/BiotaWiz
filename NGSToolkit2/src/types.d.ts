@@ -181,3 +181,17 @@ interface Progress {
     state: string;
     error?: string;
 }
+
+interface Repository {
+    owner: string;
+    repo: string;
+}
+
+interface IBind {
+    source: string;
+    target: string;
+}
+
+interface IRunOptions {
+    binds?: IBind[];
+}

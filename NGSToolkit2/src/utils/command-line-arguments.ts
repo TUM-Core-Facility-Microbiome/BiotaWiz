@@ -30,14 +30,24 @@ const optionDefinitions = [
     },
     {
         name: 'tic-pipeline-repository-owner',
-        alias: 'o',
         type: String,
         defaultValue: 'zsewa',
         description: 'GitHub repository owner.'
     },
     {
         name: 'tic-pipeline-repository-name',
-        alias: 'n',
+        type: String,
+        defaultValue: 'docker-action-test',
+        description: 'GitHub repository name.'
+    },
+    {
+        name: 'shiny-rhea-repository-owner',
+        type: String,
+        defaultValue: 'zsewa',
+        description: 'GitHub repository owner.'
+    },
+    {
+        name: 'shiny-rhea-repository-name',
         type: String,
         defaultValue: 'docker-action-test',
         description: 'GitHub repository name.'

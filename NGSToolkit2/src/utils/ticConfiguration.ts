@@ -98,7 +98,10 @@ class TicConfiguration {
                 ["run_imngs2", "--yml-file", yamlFile, "--mapping-file", mappingFile],
                 {
                     binds: [
-                        `${this.baseDirectory}:/base/inputs`,
+                        {
+                            source: this.baseDirectory,
+                            target: "/base/inputs",
+                        },
                     ],
                 }
             ).then((statusCode: number) => {

@@ -12,7 +12,6 @@ export function getVersionString(version: SemVer) {
 export function semVerFromGitHubTag(tag: string): SemVer {
     // matcher defined in https://semver.org/ v2.0.0 but prefixed with v as we expect the GitHub tag to be prefixed with v
     // see https://regex101.com/r/MlEVLu/1
-    console.debug(`Matching ${tag}`);
     const match = tag.match(/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/);
     if (!match) {
         throw new Error(`Invalid semantic version tag ${tag}. Tags are expected to be prefixed with v`);
