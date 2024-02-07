@@ -12,6 +12,7 @@ import {runSubprocess} from "./process";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
+const { windowsToWsl } = require('@endevr-io/wsl-path');
 const Docker = require('dockerode');
 
 
@@ -712,6 +713,18 @@ async function runWithWsl(command: string[], options: IRunOptions) {
     const backend = await getBackend();
     console.log(`Running command with WSL: ${command}`);
     const distribution = await getImageName(await getImageTagOrLatestCompatible());
+
+    // run command to make bind mounts
+    for (const bind of options.binds) {
+        const source = windowsToWsl(bind.source);
+        const target = bind.target;
+        console.log(`Mounting ${source} to ${target}`);
+        const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target]);
+        if (exitCode !== 0) {
+            throw new Error(`Failed to mount ${source} to ${target}`);
+        }
+    }
+
     const args = ["--distribution", distribution, "--", ...command];
     const statusCode = await runSubprocess(backend.command, args);
     return statusCode;
