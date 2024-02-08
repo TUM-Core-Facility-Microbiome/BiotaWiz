@@ -724,6 +724,10 @@ async function runWithWsl(command: string[], options: IRunOptions) {
     for (const bind of options.binds) {
         const source = windowsToWsl(bind.source);
         const target = bind.target;
+
+        console.log(`Clearing mount point ${target}`);
+        await runSubprocess(backend.command, ["--distribution", distribution, "--", "umount", target]);  // might return non-zero if the mount point is not used
+
         console.log(`Mounting ${source} to ${target}`);
         const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target]);
         if (exitCode !== 0) {
