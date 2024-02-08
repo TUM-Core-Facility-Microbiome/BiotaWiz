@@ -63,15 +63,15 @@ const index = createRouter({
                     component: () => import('../components/settings/Settings.vue'),
                 },
                 {
-                    path: '/settings/images',
+                    path: '/settings/environment',
                     children: [
                         {
-                            path: '/settings/images/tic-pipeline',
-                            component: () => import('../components/settings/images/TicPipelineImageSettings.vue'),
+                            path: '/settings/environment/tic-pipeline',
+                            component: () => import('../components/settings/environments/TicPipelineEnvironmentSettings.vue'),
                         },
                         {
-                            path: '/settings/images/shiny-rhea',
-                            component: () => import('../components/settings/images/ShinyRheaImageSettings.vue'),
+                            path: '/settings/environment/shiny-rhea',
+                            component: () => import('../components/settings/environments/ShinyRheaEnvironmentSettings.vue'),
                         },
                     ]
                 },
