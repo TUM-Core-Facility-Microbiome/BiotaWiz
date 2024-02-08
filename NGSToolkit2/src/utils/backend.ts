@@ -435,7 +435,13 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                         logToDevTools(`Image ${image} pulled.`);
                         resolve();
                     }
-                    function onProgress(event: { status: string, progressDetail: { current: number, total: number }, progress: string, id: string }) {
+
+                    function onProgress(event: {
+                        status: string,
+                        progressDetail: { current: number, total: number },
+                        progress: string,
+                        id: string
+                    }) {
                         if (event.status !== currentStatus) {
                             currentStatus = event.status;
                             logToDevTools(`Image pull: ${event.status}`);
@@ -666,7 +672,7 @@ async function deleteImageWsl(image: IImage) {
     });
 }
 
-export async function run(command: string[], options: IRunOptions = { binds: [] }) {
+export async function run(command: string[], options: IRunOptions = {binds: []}) {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
@@ -705,7 +711,7 @@ async function runWithDocker(command: string[], options: IRunOptions) {
             logToDevTools(msg);
         });
     });
-    const statusCode = await container.wait();
+    const statusCode: number = await container.wait();
     return statusCode;
 }
 
