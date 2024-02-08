@@ -13,7 +13,15 @@
 </template>
 
 <script setup lang="ts">
+import {Environment} from "../../../enums";
+
 async function openInDefaultBrowser(url: string) {
   await indexBridge.openExternal(url);
 }
+
+indexBridge.initializeEnvironment(Environment.SHINY_RHEA).then(() => {
+  console.log("Backend initialized");
+}).catch(() => {
+  console.log("Backend initialization failed");
+});
 </script>

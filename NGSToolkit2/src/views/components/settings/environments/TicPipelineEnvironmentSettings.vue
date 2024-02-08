@@ -74,8 +74,10 @@ const compatibleTagStrings = ref([]);
 const selectedTag = ref(null);
 const associatedImages = ref([]);
 
+const environment = Environment.TIC;
+
 function loadFixedReleaseTag() {
-  indexBridge.getFixedImageTagString(Environment.TIC).then((tag: string) => {
+  indexBridge.getFixedImageTagString(environment).then((tag: string) => {
     console.log('Got fixed tag', tag);
     // might be null if not fixed
     selectedTag.value = tag;
@@ -84,7 +86,7 @@ function loadFixedReleaseTag() {
 
 function loadReleaseTags() {
   loadFixedReleaseTag();
-  indexBridge.getCompatibleReleaseTagStrings(Environment.TIC).then((tags: string[]) => {
+  indexBridge.getCompatibleReleaseTagStrings(environment).then((tags: string[]) => {
     // reverse to get the latest release first
     tags.reverse();
     compatibleTagStrings.value = tags;
@@ -108,14 +110,14 @@ watch(selectedTag, (newValue, oldValue) => {
     submitTag = null;
   }
   // inform the backend of the updated choice
-  indexBridge.setFixedImageTagString(Environment.TIC, submitTag).then(() => {
+  indexBridge.setFixedImageTagString(environment, submitTag).then(() => {
     loadReleaseTags();
   });
 });
 
 
 function loadAssociatedImages() {
-  indexBridge.getAssociatedImages(Environment.TIC).then((images: IImage[]) => {
+  indexBridge.getAssociatedImages(environment).then((images: IImage[]) => {
     associatedImages.value = images;
   });
 }
