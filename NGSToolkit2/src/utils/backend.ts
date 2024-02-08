@@ -9,6 +9,7 @@ import {logToDevTools, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
 import {runSubprocess} from "./process";
+import {Environment} from "../enums";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
@@ -23,11 +24,11 @@ const IMAGE_REPOSITORY: Repository = {
     repo: cmArgs['tic-pipeline-repository-name'],
 }
 
-enum Environment {
-    TIC = "TIC",
-    SHINY_RHEA = "SHINY_RHEA",
-}
 
+/**
+ * Get repository information for the specified environment.
+ * @param environment The environment for which to get the repository.
+ */
 function getRepository(environment: Environment): Repository {
     switch (environment) {
         case Environment.TIC:
@@ -108,10 +109,11 @@ function checkTarExists(path: string) {
 /**
  * Query GitHub for the latest release tag of the image.
  */
-async function getCurrentImageReleaseTag() {
+async function getCurrentImageReleaseTag(environment: Environment) {
     return new Promise<SemVer>((resolve, reject) => {
+        const repo = getRepository(environment);
         axios.get<GitHubRelease>(
-            `${GITHUB_API_BASE_URL}/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/latest`,
+            `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/latest`,
             {
                 headers: {
                     'X-GitHub-Api-Version': '2022-11-28'
@@ -128,9 +130,9 @@ async function getCurrentImageReleaseTag() {
     });
 }
 
-export async function getCompatibleReleaseTagStrings() {
+export async function getCompatibleReleaseTagStrings(environment: Environment) {
     return new Promise<string[]>((resolve, reject) => {
-        getCompatibleImageReleaseTags().then((tags) => {
+        getCompatibleImageReleaseTags(environment).then((tags) => {
             // sort tags
             tags.sort((a, b) => {
                 return a.compare(b);
@@ -142,11 +144,12 @@ export async function getCompatibleReleaseTagStrings() {
     });
 }
 
-async function queryAvailableReleaseTags() {
+async function queryAvailableReleaseTags(environment: Environment) {
     return new Promise<SemVer[]>((resolve, reject) => {
+        const repo = getRepository(environment);
         // query GitHub for available releases
         axios.get<GitHubRelease[]>(
-            `${GITHUB_API_BASE_URL}/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases`,
+            `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases`,
             {
                 headers: {
                     'X-GitHub-Api-Version': '2022-11-28'
@@ -165,9 +168,9 @@ async function queryAvailableReleaseTags() {
     });
 }
 
-async function getCompatibleImageReleaseTags() {
+async function getCompatibleImageReleaseTags(environment: Environment) {
     return new Promise<SemVer[]>((resolve, reject) => {
-        queryAvailableReleaseTags().then((availableTags) => {
+        queryAvailableReleaseTags(environment).then((availableTags) => {
             const compatibleVersions = getMatchingVersions(availableTags, COMPATIBLE_IMAGE_VERSIONS);
             console.debug(`Found ${compatibleVersions.length} compatible versions: ${compatibleVersions.map((version: SemVer) => getVersionString(version)).join(', ')}`);
             resolve(compatibleVersions);
@@ -177,9 +180,9 @@ async function getCompatibleImageReleaseTags() {
     });
 }
 
-async function getLatestCompatibleImageReleaseTag() {
+async function getLatestCompatibleImageReleaseTag(environment: Environment) {
     return new Promise<SemVer>((resolve, reject) => {
-        getCompatibleImageReleaseTags().then((compatibleTags) => {
+        getCompatibleImageReleaseTags(environment).then((compatibleTags) => {
             const latestTag = getLatestVersion(compatibleTags);
             resolve(latestTag);
         }).catch((error) => {
@@ -188,10 +191,11 @@ async function getLatestCompatibleImageReleaseTag() {
     });
 }
 
-async function getImageReleaseAssetUrl(releaseTag: SemVer) {
+async function getImageReleaseAssetUrl(environment: Environment, releaseTag: SemVer) {
     return new Promise<string>((resolve, reject) => {
+        const repo = getRepository(environment);
         // load specified release and find the tarball
-        const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}/releases/tags/v${getVersionString(releaseTag)}`;
+        const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/tags/v${getVersionString(releaseTag)}`;
         logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
         axios.get<GitHubRelease>(
             RELEASE_URL,
@@ -218,13 +222,13 @@ async function getImageReleaseAssetUrl(releaseTag: SemVer) {
 /**
  * Download the distribution tarball and places it to the expected path.
  */
-async function downloadDistributionTar(releaseTag: SemVer, path: string) {
+async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, path: string) {
     return new Promise<void>((resolve, reject) => {
         // get tarball URL
-        getImageReleaseAssetUrl(releaseTag).then(async (tarballUrl) => {
+        getImageReleaseAssetUrl(environment, releaseTag).then(async (tarballUrl) => {
             // download tarball
             logToDevTools(`Downloading tarball from ${tarballUrl} to ${path}`);
-            const expectedPath = await getExpectedDistributionTarPath(releaseTag);
+            const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
             const writer = fs.createWriteStream(expectedPath);
             axios.get(
                 tarballUrl,
@@ -245,12 +249,12 @@ async function downloadDistributionTar(releaseTag: SemVer, path: string) {
     });
 }
 
-async function getExpectedDistributionTarPath(releaseTag: SemVer) {
+async function getExpectedDistributionTarPath(environment: Environment, releaseTag: SemVer) {
     const appDataDirectory = app.getPath('temp');
-    return path.join(appDataDirectory, `${await getImageName(releaseTag)}.tar.gz`);
+    return path.join(appDataDirectory, `${await getImageName(environment, releaseTag)}.tar.gz`);
 }
 
-async function getDistributionInstallLocation(releaseTag: SemVer) {
+async function getDistributionInstallLocation(environment: Environment, releaseTag: SemVer) {
     const appDataDirectory = byOS({
         [platforms.WINDOWS]: () => {
             // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
@@ -262,7 +266,7 @@ async function getDistributionInstallLocation(releaseTag: SemVer) {
         },
         default: () => app.getPath('userData'),
     })();
-    const installDir = path.join(appDataDirectory, 'wsl-distro', await getImageName(releaseTag));
+    const installDir = path.join(appDataDirectory, 'wsl-distro', await getImageName(environment, releaseTag));
 
     // make sure the path exists
     if (!fs.existsSync(installDir)) {
@@ -278,17 +282,17 @@ async function getDistributionInstallLocation(releaseTag: SemVer) {
  *
  * @returns The path of the distribution tarball.
  */
-export async function getImageTarball(releaseTag: SemVer) {
-    const expectedPath = await getExpectedDistributionTarPath(releaseTag);
+export async function getImageTarball(environment: Environment, releaseTag: SemVer) {
+    const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
 
     updateProgress({
-        step: "Initializing backend",
+        step: `Initializing ${environment} environment`,
         message: `Downloading distribution files`,
         state: "running",
     });
 
     if (!fs.existsSync(expectedPath)) {
-        await downloadDistributionTar(releaseTag, expectedPath);
+        await downloadDistributionTar(environment, releaseTag, expectedPath);
     }
 
     checkTarExists(expectedPath);
@@ -307,16 +311,16 @@ export async function getDistroWslVersion(distribution: string) {
 }
 
 
-export async function registerWslDistribution(releaseTag: SemVer) {
-    const tarBall = await getImageTarball(releaseTag);
-    const installLocation = await getDistributionInstallLocation(releaseTag);
+export async function registerWslDistribution(environment: Environment, releaseTag: SemVer) {
+    const tarBall = await getImageTarball(environment, releaseTag);
+    const installLocation = await getDistributionInstallLocation(environment, releaseTag);
 
     // import distribution
-    const distributionName = await getImageName(releaseTag);
+    const distributionName = await getImageName(environment, releaseTag);
     logToDevTools(`Importing distribution ${distributionName} from ${tarBall} to ${installLocation}`);
     updateProgress({
-        step: "Initializing backend",
-        message: `Registering WSL distribution v${getVersionString(releaseTag)}`,
+        step: `Initializing ${environment} environment`,
+        message: `Registering ${environment} WSL distribution v${getVersionString(releaseTag)}`,
         state: "running",
     });
     await wsl.importDistribution(distributionName, installLocation, tarBall);
@@ -325,13 +329,14 @@ export async function registerWslDistribution(releaseTag: SemVer) {
 /**
  * Get the name of the image excluding the version tag.
  */
-async function getImageBaseName() {
+async function getImageBaseName(environment: Environment) {
     const backend = await getBackend();
+    const repo = getRepository(environment);
     switch (backend.type) {
         case DOCKER.type:
-            return `${CONTAINER_REGISTRY}/${IMAGE_REPOSITORY.owner}/${IMAGE_REPOSITORY.repo}`;
+            return `${CONTAINER_REGISTRY}/${repo.owner}/${repo.repo}`;
         case WSL.type:
-            return DISTRIBUTION_NAME;
+            return `${repo.repo}.${repo.owner}`;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
@@ -339,11 +344,12 @@ async function getImageBaseName() {
 
 /**
  * Get the full name of the image including the version tag. This is dependent on the passed release tag.
+ * @param environment The environment for which to get the image name.
  * @param releaseTag The version tag of the image.
  */
-async function getImageName(releaseTag: SemVer) {
+async function getImageName(environment: Environment, releaseTag: SemVer) {
     const backend = await getBackend();
-    const baseName = await getImageBaseName();
+    const baseName = await getImageBaseName(environment);
     switch (backend.type) {
         case DOCKER.type:
             return `${baseName}:${getVersionString(releaseTag)}`
@@ -354,25 +360,25 @@ async function getImageName(releaseTag: SemVer) {
     }
 }
 
-export async function initializeWslBackend(releaseTag: SemVer) {
+export async function initializeWslBackend(environment: Environment, releaseTag: SemVer) {
     // check if the distribution is registered
-    const distribution = await getImageName(releaseTag);
+    const distribution = await getImageName(environment, releaseTag);
     const installed = await wsl.isInstalled(distribution);
     if (installed) {
         logToDevTools(`WSL distribution ${distribution} is registered.`);
         updateProgress({
-            step: "Initializing backend",
+            step: `Initializing ${environment} environment`,
             message: `WSL distribution v${getVersionString(releaseTag)} is registered`,
             state: "running",
         });
     } else {
         logToDevTools(`WSL distribution ${distribution} is not registered.`);
-        await registerWslDistribution(releaseTag);
+        await registerWslDistribution(environment, releaseTag);
     }
 
     // ensure distribution is running on WSL2
     updateProgress({
-        step: "Initializing backend",
+        step: `Initializing ${environment} environment`,
         message: `Ensuring distribution is running on WSL2`,
         state: "running",
     });
@@ -386,7 +392,7 @@ export async function initializeWslBackend(releaseTag: SemVer) {
 
     // ensure the distribution is running
     updateProgress({
-        step: "Initializing backend",
+        step: `Initializing ${environment} environment`,
         message: `Starting distribution`,
         state: "running",
     });
@@ -394,18 +400,18 @@ export async function initializeWslBackend(releaseTag: SemVer) {
     await wsl.waitForRunning(distribution);
 
     updateProgress({
-        step: "Initializing backend",
+        step: `Initializing ${environment} environment`,
         message: `Finished initializing WSL backend`,
         state: "done",
     });
 }
 
-export async function initializeDockerBackend(releaseTag: SemVer) {
+export async function initializeDockerBackend(environment: Environment, releaseTag: SemVer) {
     return new Promise<void>((resolve, reject) => {
         const docker = new Docker();  // initialize with defaults; using socket
-        getImageName(releaseTag).then(async (image) => {
+        getImageName(environment, releaseTag).then(async (image) => {
             updateProgress({
-                step: "Initializing backend",
+                step: `Initializing ${environment} environment`,
                 message: "Checking Docker image tag",
                 state: "running",
             });
@@ -422,7 +428,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                 logToDevTools(`Image ${image} does not exist.`);
                 // pull the image
                 updateProgress({
-                    step: "Initializing backend",
+                    step: `Initializing ${environment} environment`,
                     message: `Pulling v${getVersionString(releaseTag)} image`,
                     state: "running",
                 });
@@ -446,7 +452,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                             currentStatus = event.status;
                             logToDevTools(`Image pull: ${event.status}`);
                             updateProgress({
-                                step: "Initializing backend",
+                                step: `Initializing ${environment} environment`,
                                 message: `Pulling image (${event.status})`,
                                 state: "running",
                             });
@@ -458,7 +464,7 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
                                     const pct = Math.round((event.progressDetail.current / event.progressDetail.total) * 100);
                                     lastUpdateTimeStamp = now;
                                     updateProgress({
-                                        step: "Initializing backend",
+                                        step: `Initializing ${environment} environment`,
                                         message: `${event.status} image v${getVersionString(releaseTag)} (${pct}%)`,
                                         state: "running",
                                     });
@@ -472,21 +478,22 @@ export async function initializeDockerBackend(releaseTag: SemVer) {
     });
 }
 
-export async function terminateWslBackend() {
-    logToDevTools(`Terminating WSL distribution ${DISTRIBUTION_NAME}`);
-    await wsl.terminate(DISTRIBUTION_NAME);
+export async function terminateWslBackend(environment: Environment) {
+    const distribution = await getImageBaseName(environment);
+    logToDevTools(`Terminating WSL distribution ${distribution}`);
+    await wsl.terminate(distribution);
 }
 
-export async function terminateDockerBackend() {
+export async function terminateDockerBackend(environment: Environment) {
     throw new Error("Not implemented yet");
 }
 
 /**
  * Get the version of the image from storage. Returns null if no fixed version is set.
  */
-export async function getFixedImageTagString() {
+export async function getFixedImageTagString(environment: Environment) {
     // is null if not fixed, this implies a strategy where the latest compatible version is used
-    const releaseTag = getImageTag();
+    const releaseTag = getImageTag(environment);
     console.debug(`Fixed image version: ${JSON.stringify(releaseTag)}`);
     if (releaseTag == null) {
         return null;
@@ -497,33 +504,34 @@ export async function getFixedImageTagString() {
 
 /**
  * Set a fixed version of the image.
+ * @param environment The environment for which to set the image version.
  * @param tag The version tag to set. If null, the latest compatible version strategy is used.
  */
-export async function setFixedImageTagString(tag: string) {
+export async function setFixedImageTagString(environment: Environment, tag: string) {
     // might be null when latest compatible version strategy is selected
     console.log(`Setting fixed image version to ${tag}`)
     if (tag == null) {
         console.log(`Deleting fixed image version`);
         // delete any previously set fixed version
-        await deleteImageTag();
+        await deleteImageTag(environment);
     } else {
         console.log(`Setting fixed image version to ${tag}`)
         // prefix with "v" if not already
         if (!tag.startsWith("v")) {
             tag = `v${tag}`;
         }
-        await setImageTag(tag);
+        await setImageTag(environment, tag);
     }
 }
 
 /**
  * Get a fixed version of the image from storage or query GitHub for the latest compatible version.
  */
-async function getImageTagOrLatestCompatible() {
-    let releaseTag = getImageTag();
+async function getImageTagOrLatestCompatible(environment: Environment) {
+    let releaseTag = getImageTag(environment);
     if (releaseTag === null) {
         logToDevTools("No image version specified in storage, querying GitHub for latest version");
-        releaseTag = await getLatestCompatibleImageReleaseTag();
+        releaseTag = await getLatestCompatibleImageReleaseTag(environment);
         logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
     } else {
         logToDevTools(`Expecting image version: ${getVersionString(releaseTag)}`);
@@ -534,14 +542,14 @@ async function getImageTagOrLatestCompatible() {
 /**
  * Prepare the backend by downloading and registering the image if necessary.
  */
-export async function initializeBackend() {
+export async function initializeBackend(environment: Environment) {
     updateProgress({
-        step: "Initializing backend",
-        message: "Initializing backend",
+        step: `Initializing ${environment} environment`,
+        message: `Initializing ${environment} environment`,
         state: "running",
     });
     // get the version of the image
-    const releaseTag = await getImageTagOrLatestCompatible();
+    const releaseTag = await getImageTagOrLatestCompatible(environment);
 
     // run initialization
     // this will download and register the image if necessary
@@ -549,16 +557,16 @@ export async function initializeBackend() {
     switch (backend.type) {
         case DOCKER.type:
             logToDevTools(`Initializing Docker backend`);
-            await initializeDockerBackend(releaseTag);
+            await initializeDockerBackend(environment, releaseTag);
             updateProgress({
-                step: "Initializing backend",
+                step: `Initializing ${environment} environment`,
                 message: "Finished initializing Docker backend",
                 state: "done",
             });
             break;
         case WSL.type:
             logToDevTools(`Initializing WSL backend`);
-            await initializeWslBackend(releaseTag);
+            await initializeWslBackend(environment, releaseTag);
             break;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
@@ -592,15 +600,15 @@ async function getNameAndTagFromImageName(image: string): Promise<IImage> {
 }
 
 /**
- * List images associated with the application using the currently set backend.
+ * List images associated with the environment using the currently set backend.
  */
-export async function getAssociatedImages(): Promise<IImage[]> {
+export async function getAssociatedImages(environment: Environment): Promise<IImage[]> {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
-            return await getAssociatedImagesDocker();
+            return await getAssociatedImagesDocker(environment);
         case WSL.type:
-            return await getAssociatedImagesWsl();
+            return await getAssociatedImagesWsl(environment);
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
@@ -609,10 +617,10 @@ export async function getAssociatedImages(): Promise<IImage[]> {
 /**
  * Identify images associated with the application at the Docker backend.
  */
-async function getAssociatedImagesDocker(): Promise<IImage[]> {
+async function getAssociatedImagesDocker(environment: Environment): Promise<IImage[]> {
     return new Promise<IImage[]>((resolve, reject) => {
         const docker = new Docker();
-        getImageBaseName().then((baseName) => {
+        getImageBaseName(environment).then((baseName) => {
             // filter for images where the name starts with the base name
             docker.listImages().then(async (images: any) => {
                 const associatedImages = images.filter((imageInfo: { RepoTags: string[] }) => {
@@ -637,9 +645,9 @@ async function getAssociatedImagesDocker(): Promise<IImage[]> {
 /**
  * Identify images associated with the application at the WSL backend.
  */
-async function getAssociatedImagesWsl(): Promise<IImage[]> {
+async function getAssociatedImagesWsl(environment: Environment): Promise<IImage[]> {
     return new Promise<IImage[]>((resolve, reject) => {
-        getImageBaseName().then((baseName) => {
+        getImageBaseName(environment).then((baseName) => {
             wsl.listVerbose().then(async (distributions: { name: string }[]) => {
                 // filter for distributions where the name starts with the base name
                 const associatedImages = distributions.filter((distro: { name: string }) => {
@@ -710,16 +718,17 @@ async function deleteImageWsl(image: IImage) {
 
 /**
  * Run a command using the backend.
+ * @param environment The environment for which to run the command.
  * @param command The command to run as an array of strings.
  * @param options Options may include bind mounts.
  */
-export async function run(command: string[], options: IRunOptions = {binds: []}) {
+export async function run(environment: Environment, command: string[], options: IRunOptions = {binds: []}) {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
-            return await runWithDocker(command, options);
+            return await runWithDocker(environment, command, options);
         case WSL.type:
-            return await runWithWsl(command, options);
+            return await runWithWsl(environment, command, options);
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
@@ -737,13 +746,14 @@ function getDockerBindFormat(binds: IBind[]) {
 
 /**
  * Run a command using Docker as the backend.
+ * @param environment The environment for which to run the command.
  * @param command The command to run as an array of strings.
  * @param options Options may include bind mounts.
  */
-async function runWithDocker(command: string[], options: IRunOptions) {
+async function runWithDocker(environment: Environment, command: string[], options: IRunOptions) {
     const docker = new Docker();
     console.log(`Running command with Docker: ${command}`);
-    const image = await getImageName(await getImageTagOrLatestCompatible());
+    const image = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
     console.log(`Running command ${command.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
     const container = await docker.createContainer({
         Image: image,
@@ -768,13 +778,14 @@ async function runWithDocker(command: string[], options: IRunOptions) {
 
 /**
  * Run a command using WSL as the backend.
+ * @param environment The environment for which to run the command.
  * @param command The command to run as an array of strings.
  * @param options Options may include bind mounts.
  */
-async function runWithWsl(command: string[], options: IRunOptions) {
+async function runWithWsl(environment: Environment, command: string[], options: IRunOptions) {
     const backend = await getBackend();
     console.log(`Running command with WSL: ${command}`);
-    const distribution = await getImageName(await getImageTagOrLatestCompatible());
+    const distribution = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
 
     // run command to make bind mounts
     for (const bind of options.binds) {

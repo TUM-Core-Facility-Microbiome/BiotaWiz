@@ -1,4 +1,4 @@
-import {SpikeMode} from "../enums";
+import {Environment, SpikeMode} from "../enums";
 import {shell} from "electron";
 import path from "path";
 import {writeFile} from "fs";
@@ -94,17 +94,14 @@ class TicConfiguration {
                 state: "running",
             });
 
-            await run(
-                ["run_imngs2", "--yml-file", yamlFile, "--mapping-file", mappingFile],
-                {
-                    binds: [
-                        {
-                            source: this.baseDirectory,
-                            target: "/base/inputs",
-                        },
-                    ],
-                }
-            ).then((statusCode: number) => {
+            await run(Environment.TIC, ["run_imngs2", "--yml-file", yamlFile, "--mapping-file", mappingFile], {
+                binds: [
+                    {
+                        source: this.baseDirectory,
+                        target: "/base/inputs",
+                    },
+                ],
+            }).then((statusCode: number) => {
                 if (statusCode == 0) {
                     updateProgress({
                         step: "Running TIC",

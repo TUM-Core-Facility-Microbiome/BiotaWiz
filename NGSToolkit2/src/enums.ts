@@ -3,3 +3,8 @@ export enum SpikeMode {
     PARTIAL = 'partial',
     NONE = 'none',
 }
+
+export enum Environment {
+    TIC = "TIC",
+    SHINY_RHEA = "SHINY_RHEA",
+}

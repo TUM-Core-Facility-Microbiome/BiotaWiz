@@ -17,10 +17,11 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { Environment } from "../../../enums";
 
 onMounted(() => {
   // prepare the environment
-  indexBridge.initializeBackend().then(() => {
+  indexBridge.initializeEnvironment(Environment.TIC).then(() => {
     console.log("Backend initialized 2");
   }).catch(() => {
     console.log("Backend initialization failed");

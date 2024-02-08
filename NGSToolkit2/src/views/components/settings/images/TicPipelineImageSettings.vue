@@ -68,13 +68,14 @@
 
 <script setup lang="ts">
 import {ref, watch} from 'vue'
+import {Environment} from "../../../../enums";
 
 const compatibleTagStrings = ref([]);
 const selectedTag = ref(null);
 const associatedImages = ref([]);
 
 function loadFixedReleaseTag() {
-  indexBridge.getFixedImageTagString().then((tag: string) => {
+  indexBridge.getFixedImageTagString(Environment.TIC).then((tag: string) => {
     console.log('Got fixed tag', tag);
     // might be null if not fixed
     selectedTag.value = tag;
@@ -83,7 +84,7 @@ function loadFixedReleaseTag() {
 
 function loadReleaseTags() {
   loadFixedReleaseTag();
-  indexBridge.getCompatibleReleaseTagStrings().then((tags: string[]) => {
+  indexBridge.getCompatibleReleaseTagStrings(Environment.TIC).then((tags: string[]) => {
     // reverse to get the latest release first
     tags.reverse();
     compatibleTagStrings.value = tags;
@@ -107,14 +108,14 @@ watch(selectedTag, (newValue, oldValue) => {
     submitTag = null;
   }
   // inform the backend of the updated choice
-  indexBridge.setFixedImageTagString(submitTag).then(() => {
+  indexBridge.setFixedImageTagString(Environment.TIC, submitTag).then(() => {
     loadReleaseTags();
   });
 });
 
 
 function loadAssociatedImages() {
-  indexBridge.getAssociatedImages().then((images: IImage[]) => {
+  indexBridge.getAssociatedImages(Environment.TIC).then((images: IImage[]) => {
     associatedImages.value = images;
   });
 }

@@ -3,7 +3,7 @@
 import {contextBridge, ipcRenderer} from "electron";
 import {SemVer} from "semver";
 import {getAssociatedImages, getCompatibleReleaseTagStrings, getFixedImageTagString} from "./utils/backend";
-
+import {Environment} from "./enums";
 
 const indexBridge = {
     // renderer to main
@@ -61,20 +61,20 @@ const indexBridge = {
     loadStudiesFromBaseDirectory: async (): Promise<IFileSystemNode[]> => {
         return ipcRenderer.invoke('loadStudiesFromBaseDirectory');
     },
-    initializeBackend: async () => {
-        return ipcRenderer.invoke('initializeBackend');
+    initializeEnvironment: async (environment: Environment) => {
+        return ipcRenderer.invoke('initializeEnvironment', environment);
     },
-    getCompatibleReleaseTagStrings: async (): Promise<string[]> => {
-        return ipcRenderer.invoke('getCompatibleReleaseTagStrings');
+    getCompatibleReleaseTagStrings: async (environment: Environment): Promise<string[]> => {
+        return ipcRenderer.invoke('getCompatibleReleaseTagStrings', environment);
     },
-    getFixedImageTagString: async (): Promise<string> => {
-        return ipcRenderer.invoke('getFixedImageTagString');
+    getFixedImageTagString: async (environment: Environment): Promise<string> => {
+        return ipcRenderer.invoke('getFixedImageTagString', environment);
     },
-    setFixedImageTagString: async (tag: string) => {
-        return ipcRenderer.invoke('setFixedImageTagString', tag);
+    setFixedImageTagString: async (environment: Environment, tag: string) => {
+        return ipcRenderer.invoke('setFixedImageTagString', environment, tag);
     },
-    getAssociatedImages: async (): Promise<IImage[]> => {
-        return ipcRenderer.invoke('getAssociatedImages');
+    getAssociatedImages: async (environment: Environment): Promise<IImage[]> => {
+        return ipcRenderer.invoke('getAssociatedImages', environment);
     },
     deleteImage: async (name: string, tag: string) => {
         return ipcRenderer.invoke('deleteImage', name, tag);

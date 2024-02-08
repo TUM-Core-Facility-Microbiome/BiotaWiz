@@ -2,6 +2,7 @@ import {getDefaultBackend} from "./backend";
 import jsonStorage from "electron-json-storage";
 import {SemVer} from "semver";
 import {semVerFromGitHubTag} from "./releasetag";
+import {Environment} from "../enums";
 
 function isEmpty(obj: object) {
     for (const prop in obj) {
@@ -83,13 +84,13 @@ export function getTicBaseDirectory() {
     });
 }
 
-export function setImageTag(version: string) {
+export function setImageTag(environment: Environment, version: string) {
     return new Promise<void>((resolve, reject) => {
         if (version == null) {
             reject("Version cannot be null");
         }
         const imageTag: IImageTag = {version: version};
-        jsonStorage.set('imageTag', imageTag, (error) => {
+        jsonStorage.set(`imageTag-${environment}`, imageTag, (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -99,9 +100,9 @@ export function setImageTag(version: string) {
     });
 }
 
-export function deleteImageTag() {
+export function deleteImageTag(environment: Environment) {
     return new Promise<void>((resolve, reject) => {
-        jsonStorage.remove('imageTag', (error) => {
+        jsonStorage.remove(`imageTag-${environment}`, (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -111,8 +112,8 @@ export function deleteImageTag() {
     });
 }
 
-export function getImageTag() {
-    const imageTag = jsonStorage.getSync('imageTag');
+export function getImageTag(environment: Environment) {
+    const imageTag = jsonStorage.getSync(`imageTag-${environment}`);
     console.log(`In storage: ${JSON.stringify(imageTag)}`);
     if (isEmpty(imageTag)) {
         console.debug(`No image tag found in storage at ${jsonStorage.getDataPath()}`);

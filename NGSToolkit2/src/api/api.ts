@@ -1,18 +1,20 @@
-import {BrowserWindow, ipcMain, shell} from 'electron';
+import {ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
     deleteImage,
     getAssociatedImages,
-    getCompatibleReleaseTagStrings, getFixedImageTagString,
+    getCompatibleReleaseTagStrings,
+    getFixedImageTagString,
     initializeBackend,
     resetToDefaultBackend,
-    setBackendByType, setFixedImageTagString
+    setBackendByType,
+    setFixedImageTagString
 } from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "./file-explorer";
-import {SpikeMode} from "../enums";
+import {Environment, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
 import {ticConfiguration} from "../utils/ticConfiguration";
 
@@ -45,20 +47,20 @@ ipcMain.handle("resetBackend", async () => {
     return resetToDefaultBackend();
 });
 
-ipcMain.handle("getCompatibleReleaseTagStrings", async (): Promise<string[]> => {
-    return await getCompatibleReleaseTagStrings();
+ipcMain.handle("getCompatibleReleaseTagStrings", async (event, environment: Environment): Promise<string[]> => {
+    return await getCompatibleReleaseTagStrings(environment);
 });
 
-ipcMain.handle("getFixedImageTagString", async () => {
-    return await getFixedImageTagString();
+ipcMain.handle("getFixedImageTagString", async (event, environment: Environment) => {
+    return await getFixedImageTagString(environment);
 });
 
-ipcMain.handle("setFixedImageTagString", async (event, tag: string) => {
-    return await setFixedImageTagString(tag);
+ipcMain.handle("setFixedImageTagString", async (event, environment: Environment, tag: string) => {
+    return await setFixedImageTagString(environment, tag);
 });
 
-ipcMain.handle("getAssociatedImages", async (): Promise<IImage[]> => {
-    const res = await getAssociatedImages();
+ipcMain.handle("getAssociatedImages", async (event, environment: Environment): Promise<IImage[]> => {
+    const res = await getAssociatedImages(environment);
     console.log(res);
     return res;
 });
@@ -80,10 +82,10 @@ ipcMain.handle("loadStudiesFromBaseDirectory", async (event): Promise<IFileSyste
     });
 });
 
-ipcMain.handle("initializeBackend", async () => {
+ipcMain.handle("initializeEnvironment", async (event, environment: Environment) => {
     return await taskQueue.defer(async () => {
-        initializeBackend().then(() => {
-            console.log(`Backend initialized`);
+        initializeBackend(environment).then(() => {
+            console.log(`${environment} environment initialized`);
         });
     });
 });

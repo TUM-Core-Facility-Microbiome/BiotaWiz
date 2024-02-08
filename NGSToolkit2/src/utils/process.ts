@@ -4,6 +4,7 @@ import {BrowserWindow} from "electron";
 import {getBackend} from "./storage";
 import {terminateWslBackend} from "./backend";
 import {logToDevTools} from "./logHandler";
+import {Environment} from "../enums";
 
 
 async function dockerHelloWorld(): Promise<number> {
@@ -169,13 +170,13 @@ export async function getChecksum(path: string): Promise<string> {
     });
 }
 
-export async function terminateBackend(): Promise<void> {
+export async function terminateBackend(environment: Environment): Promise<void> {
     return platform.byOS({
         [platform.platforms.LINUX]: () => {
             console.log("Not implemented yet");
         },
         [platform.platforms.WINDOWS]: () => {
-            terminateWslBackend();
+            terminateWslBackend(environment);
         },
         [platform.platforms.MAC]: () => {
             console.log("Not implemented yet");

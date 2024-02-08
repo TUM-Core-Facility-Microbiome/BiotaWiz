@@ -1,6 +1,13 @@
 import {app, BrowserWindow} from 'electron';
 import MenuBuilder from './electron/menu';
 import path from 'path';
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and import them here.
+import "./api/api";
+
+import "./api/file-explorer";
+import {terminateBackend} from "./utils/process";
+import {Environment} from "./enums";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -65,16 +72,10 @@ app.on('will-quit', () => {
     console.log("Application will quit");
     console.log("Running cleanup tasks");
 
-    terminateBackend().then(() => {
+    terminateBackend(Environment.TIC).then(() => {  // TODO: terminate all backends
         console.log("Backend terminated successfully");
     }).catch((err) => {
         console.error("Could not terminate backend", err);
     });
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
-import "./api/api";
-
-import "./api/file-explorer";
-import {terminateBackend} from "./utils/process";
