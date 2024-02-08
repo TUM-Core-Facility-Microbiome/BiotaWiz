@@ -336,7 +336,7 @@ async function getImageBaseName(environment: Environment) {
         case DOCKER.type:
             return `${CONTAINER_REGISTRY}/${repo.owner}/${repo.repo}`;
         case WSL.type:
-            return `${repo.repo}.${repo.owner}`;
+            return `${repo.owner}.${repo.repo}`;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
