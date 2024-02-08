@@ -32,10 +32,10 @@ Example setup for the `images` directory:
 └── tum-core-facility-microbiome
     ├── shiny-rhea
     │   └── v1.0.0
-    │            └── image.tar.gz
+    │       └── image.tar.gz
     └── tic-pipeline
         ├── v0.1.4
-        │        └── image.tar.gz
+        │   └── image.tar.gz
         └── v0.1.5-alpha
             └── image.tar.gz
 ```
