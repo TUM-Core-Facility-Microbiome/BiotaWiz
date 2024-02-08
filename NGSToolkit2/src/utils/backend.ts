@@ -481,6 +481,9 @@ export async function terminateDockerBackend() {
     throw new Error("Not implemented yet");
 }
 
+/**
+ * Get the version of the image from storage. Returns null if no fixed version is set.
+ */
 export async function getFixedImageTagString() {
     // is null if not fixed, this implies a strategy where the latest compatible version is used
     const releaseTag = getImageTag();
@@ -492,6 +495,10 @@ export async function getFixedImageTagString() {
     }
 }
 
+/**
+ * Set a fixed version of the image.
+ * @param tag The version tag to set. If null, the latest compatible version strategy is used.
+ */
 export async function setFixedImageTagString(tag: string) {
     // might be null when latest compatible version strategy is selected
     console.log(`Setting fixed image version to ${tag}`)
@@ -509,6 +516,9 @@ export async function setFixedImageTagString(tag: string) {
     }
 }
 
+/**
+ * Get a fixed version of the image from storage or query GitHub for the latest compatible version.
+ */
 async function getImageTagOrLatestCompatible() {
     let releaseTag = getImageTag();
     if (releaseTag === null) {
@@ -521,6 +531,9 @@ async function getImageTagOrLatestCompatible() {
     return releaseTag;
 }
 
+/**
+ * Prepare the backend by downloading and registering the image if necessary.
+ */
 export async function initializeBackend() {
     updateProgress({
         step: "Initializing backend",
@@ -552,6 +565,10 @@ export async function initializeBackend() {
     }
 }
 
+/**
+ * Get the name and tag of an image from a name including a version tag.
+ * @param image
+ */
 async function getNameAndTagFromImageName(image: string): Promise<IImage> {
     const backend = await getBackend();
     let separator;
@@ -574,6 +591,9 @@ async function getNameAndTagFromImageName(image: string): Promise<IImage> {
     return {name, tag};
 }
 
+/**
+ * List images associated with the application using the currently set backend.
+ */
 export async function getAssociatedImages(): Promise<IImage[]> {
     const backend = await getBackend();
     switch (backend.type) {
@@ -587,7 +607,7 @@ export async function getAssociatedImages(): Promise<IImage[]> {
 }
 
 /**
- * Identify images associated with the application for the Docker backend.
+ * Identify images associated with the application at the Docker backend.
  */
 async function getAssociatedImagesDocker(): Promise<IImage[]> {
     return new Promise<IImage[]>((resolve, reject) => {
@@ -614,6 +634,9 @@ async function getAssociatedImagesDocker(): Promise<IImage[]> {
     });
 }
 
+/**
+ * Identify images associated with the application at the WSL backend.
+ */
 async function getAssociatedImagesWsl(): Promise<IImage[]> {
     return new Promise<IImage[]>((resolve, reject) => {
         getImageBaseName().then((baseName) => {
@@ -636,6 +659,11 @@ async function getAssociatedImagesWsl(): Promise<IImage[]> {
     });
 }
 
+/**
+ * Delete a given image from the backend.
+ * @param name Name of the image excluding the version tag.
+ * @param tag Version tag of the image.
+ */
 export async function deleteImage(name: string, tag: string) {
     const image: IImage = {name, tag};
     const backend = await getBackend();
@@ -649,6 +677,10 @@ export async function deleteImage(name: string, tag: string) {
     }
 }
 
+/**
+ * Delete a given image from Docker.
+ * @param image
+ */
 async function deleteImageDocker(image: IImage) {
     const docker = new Docker();
     const imageFullName = `${image.name}:${image.tag}`;
@@ -657,6 +689,10 @@ async function deleteImageDocker(image: IImage) {
     await dImage.remove();
 }
 
+/**
+ * Delete a given image from WSL.
+ * @param image
+ */
 async function deleteImageWsl(image: IImage) {
     return new Promise<void>((resolve, reject) => {
         logToDevTools(`Deleting WSL distribution ${image.name}`);
@@ -672,6 +708,11 @@ async function deleteImageWsl(image: IImage) {
     });
 }
 
+/**
+ * Run a command using the backend.
+ * @param command The command to run as an array of strings.
+ * @param options Options may include bind mounts.
+ */
 export async function run(command: string[], options: IRunOptions = {binds: []}) {
     const backend = await getBackend();
     switch (backend.type) {
@@ -684,12 +725,21 @@ export async function run(command: string[], options: IRunOptions = {binds: []})
     }
 }
 
+/**
+ * From a list of bind mounts, get the format that Docker expects.
+ * @param binds
+ */
 function getDockerBindFormat(binds: IBind[]) {
     return binds.map((bind: IBind) => {
         return `${bind.source}:${bind.target}`;
     });
 }
 
+/**
+ * Run a command using Docker as the backend.
+ * @param command The command to run as an array of strings.
+ * @param options Options may include bind mounts.
+ */
 async function runWithDocker(command: string[], options: IRunOptions) {
     const docker = new Docker();
     console.log(`Running command with Docker: ${command}`);
@@ -715,6 +765,12 @@ async function runWithDocker(command: string[], options: IRunOptions) {
     return statusCode;
 }
 
+
+/**
+ * Run a command using WSL as the backend.
+ * @param command The command to run as an array of strings.
+ * @param options Options may include bind mounts.
+ */
 async function runWithWsl(command: string[], options: IRunOptions) {
     const backend = await getBackend();
     console.log(`Running command with WSL: ${command}`);
