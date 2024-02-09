@@ -53,9 +53,9 @@ class TicConfiguration {
         const delimiter = "\t";
         let content = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path'].join(delimiter) + "\n";
 
-        let spikeDefaults = ['', ''];  // keep empty if no spike
+        let spikeDefaults = ['NaN', '0'];  // keep empty if no spike
         if (this.spikeMode == SpikeMode.SPIKED) {
-            spikeDefaults = ['1', '1'];  // set to dummy values
+            spikeDefaults = ['0', '0'];  // set to dummy values
         }
 
         this.samples.forEach((sample) => {
