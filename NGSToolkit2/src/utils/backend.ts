@@ -768,7 +768,7 @@ async function runWithDocker(environment: Environment, command: string[], option
     container.attach({stream: true, stdout: true, stderr: true}, function (err: any, stream: any) {
         stream.on('data', (data: Buffer) => {
             const msg = data.toString();
-            streamToEnvironment(environment, msg);
+            logForEnvironment(environment, msg);
         });
     });
     const statusCode: number = await container.wait();
@@ -808,11 +808,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
 
     const args = ["--distribution", distribution, "--", ...command];
     const statusCode = await runSubprocess(backend.command, args, (msg: string, isStderr: boolean) => {
-        streamToEnvironment(environment, msg);
+        logForEnvironment(environment, msg);
     });
     return statusCode;
-}
-
-function streamToEnvironment(environment: Environment, message: string) {
-    logForEnvironment(environment, message);
 }
