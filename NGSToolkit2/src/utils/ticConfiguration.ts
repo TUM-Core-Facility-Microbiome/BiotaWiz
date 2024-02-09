@@ -33,7 +33,7 @@ class TicConfiguration {
 
     private writeMappingFile() {
         // save prefilled mapping file to baseDirectory
-        this.mappingFile = path.join(this.baseDirectory, 'mapping.tsv');
+        this.mappingFile = path.join(this.baseDirectory, 'mapping.csv');  // use file extension .csv to open in Excel but keep TSV format
         const content = this.generateMappingFileContent();
         writeFile(this.mappingFile, content, (err) => {
             console.error(err);
