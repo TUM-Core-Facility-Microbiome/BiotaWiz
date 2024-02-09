@@ -35,7 +35,11 @@ const index = createRouter({
                                 {
                                     path: '/spike-mode',
                                     component: () => import('../components/tic/steps/SpikeMode.vue'),
-                                }
+                                },
+                                {
+                                    path: '/run',
+                                    component: () => import('../components/tic/steps/TicRun.vue'),
+                                },
                             ]
                         },
                         {

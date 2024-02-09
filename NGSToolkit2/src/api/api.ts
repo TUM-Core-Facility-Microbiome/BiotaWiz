@@ -121,5 +121,9 @@ ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
 ipcMain.handle("publish:ticParameters", async (event, parameters: ITicPipelineArguments) => {
     ticConfiguration.setParameters(parameters);
     console.log(ticConfiguration);
+});
+
+ipcMain.handle("tic:run", async () => {
+    console.log("Running TIC pipeline");
     ticConfiguration.runPipeline();
 });

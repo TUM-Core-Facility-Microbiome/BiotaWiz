@@ -1,4 +1,5 @@
 import {BrowserWindow} from "electron";
+import {Environment} from "../enums";
 
 export function logToDevTools(message: string, level = 'info') {
     const window = BrowserWindow.fromId(1);
@@ -23,4 +24,9 @@ export function logToDevTools(message: string, level = 'info') {
 export function updateProgress(progress: Progress) {
     const window = BrowserWindow.fromId(1);
     window.webContents.send('progressUpdate', progress);
+}
+
+export function logForEnvironment(environment: Environment, logMessage: string) {
+    const window = BrowserWindow.fromId(1);
+    window.webContents.send('logsForEnvironment', environment, logMessage);
 }

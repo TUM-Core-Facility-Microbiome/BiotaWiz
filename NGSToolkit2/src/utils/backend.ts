@@ -5,7 +5,7 @@ import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
 import {getLatestVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
-import {logToDevTools, updateProgress} from "./logHandler";
+import {logForEnvironment, logToDevTools, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
 import {runSubprocess} from "./process";
@@ -768,7 +768,7 @@ async function runWithDocker(environment: Environment, command: string[], option
     container.attach({stream: true, stdout: true, stderr: true}, function (err: any, stream: any) {
         stream.on('data', (data: Buffer) => {
             const msg = data.toString();
-            logToDevTools(msg);
+            streamToEnvironment(environment, msg);
         });
     });
     const statusCode: number = await container.wait();
@@ -793,16 +793,26 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         const target = bind.target;
 
         console.log(`Clearing mount point ${target}`);
-        await runSubprocess(backend.command, ["--distribution", distribution, "--", "umount", target]);  // might return non-zero if the mount point is not used
+        await runSubprocess(backend.command, ["--distribution", distribution, "--", "umount", target], (msg, isStderr) => {
+            logToDevTools(msg);
+        });  // might return non-zero if the mount point is not used
 
         console.log(`Mounting ${source} to ${target}`);
-        const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target]);
+        const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target], (msg, isStderr) => {
+            logToDevTools(msg);
+        });
         if (exitCode !== 0) {
             throw new Error(`Failed to mount ${source} to ${target}`);
         }
     }
 
     const args = ["--distribution", distribution, "--", ...command];
-    const statusCode = await runSubprocess(backend.command, args);
+    const statusCode = await runSubprocess(backend.command, args, (msg: string, isStderr: boolean) => {
+        streamToEnvironment(environment, msg);
+    });
     return statusCode;
+}
+
+function streamToEnvironment(environment: Environment, message: string) {
+    logForEnvironment(environment, message);
 }

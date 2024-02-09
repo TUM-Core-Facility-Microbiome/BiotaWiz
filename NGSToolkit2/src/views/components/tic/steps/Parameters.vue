@@ -362,6 +362,9 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
+import {useRouter} from "vue-router";
+
+const router = useRouter();
 
 let stripleft = ref(15);
 let stripright = ref(15);
@@ -479,7 +482,12 @@ function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
 
 async function publishParameters() {
   const args = generateTicPipelineArgumentsObj();
-  await indexBridge.publishTicParameters(args);
+  await indexBridge.publishTicParameters(args).then(() => {
+    console.log("Published TIC pipeline arguments");
+    router.push("/run");
+  }).catch(() => {
+    console.error("Could not publish TIC pipeline arguments");
+  });
 }
 </script>
 

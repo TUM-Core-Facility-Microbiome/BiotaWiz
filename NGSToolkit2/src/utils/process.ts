@@ -22,7 +22,7 @@ function wslHelloWorld(): Promise<number> {
     );
 }
 
-export function runSubprocess(command: string, args: string[]): Promise<number> {
+export function runSubprocess(command: string, args: string[], logHandler: (msg: string, isStderr: boolean) => void = () => {return}): Promise<number> {
     return new Promise<number>((resolve, reject) => {
         const subprocess = child_process.spawn(command, args);
         console.log(`Spawned child with pid ${subprocess.pid}`);
@@ -30,14 +30,13 @@ export function runSubprocess(command: string, args: string[]): Promise<number> 
         subprocess.stdout.on('data', (data) => {
             if (data instanceof Buffer) {
                 const msg = data.toString();
-                console.log(msg);
-                logToDevTools(msg);
+                logHandler(msg, false);
             }
         });
         subprocess.stderr.on('data', (data) => {
             if (data instanceof Buffer) {
                 const msg = data.toString();
-                logToDevTools(msg, 'warn');
+                logHandler(msg, true);
             }
         });
 

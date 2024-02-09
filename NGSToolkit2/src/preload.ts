@@ -91,6 +91,9 @@ const indexBridge = {
     publishTicParameters: async (parameters: ITicPipelineArguments) => {
         return ipcRenderer.invoke('publish:ticParameters', parameters);
     },
+    runTicPipeline: async () => {
+        return ipcRenderer.invoke('tic:run');
+    },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {
         ipcRenderer.on('changeRouteTo', (event, route) => {
@@ -107,6 +110,11 @@ const indexBridge = {
             callback(progress);
         });
     },
+    handleLogsForEnvironment: (callback: (environment: Environment, logMessage: string) => void) => {
+        ipcRenderer.on('logsForEnvironment', (event, environment: Environment, logMessage: string) => {
+            callback(environment, logMessage);
+        });
+    }
 }
 
 contextBridge.exposeInMainWorld('indexBridge', indexBridge);
