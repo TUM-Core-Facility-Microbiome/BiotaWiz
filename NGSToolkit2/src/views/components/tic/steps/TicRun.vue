@@ -21,6 +21,10 @@ onMounted(() => {
 
 indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: string) => {
   if (environment === Environment.TIC) {
+    console.log(logMessage);
+    if (logMessage.startsWith('\r')) {
+      logLines.value.pop();
+    }
     logLines.value.push(logMessage);
     const terminal = document.getElementById("terminal");
     terminal.scrollTop = terminal.scrollHeight;
