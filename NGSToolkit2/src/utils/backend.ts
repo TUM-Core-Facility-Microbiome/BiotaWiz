@@ -762,6 +762,7 @@ async function runWithDocker(environment: Environment, command: string[], option
             AutoRemove: true,
             Binds: getDockerBindFormat(options.binds),
         },
+        Tty: true,  // needed to get clean stdout and stderr
     });
     // start and get the stdout
     await container.start();
