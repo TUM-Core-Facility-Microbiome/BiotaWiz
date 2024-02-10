@@ -6,8 +6,8 @@ import path from 'path';
 import "./api/api";
 
 import "./api/file-explorer";
-import {terminateBackend} from "./utils/process";
 import {Environment} from "./enums";
+import {terminateBackend} from "./utils/backend";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -68,14 +68,17 @@ app.on('activate', () => {
     }
 });
 
-app.on('will-quit', () => {
+app.on('will-quit', async (event) => {
+    event.preventDefault();
     console.log("Application will quit");
     console.log("Running cleanup tasks");
 
-    terminateBackend(Environment.TIC).then(() => {  // TODO: terminate all backends
-        console.log("Backend terminated successfully");
-    }).catch((err) => {
-        console.error("Could not terminate backend", err);
-    });
+    try {
+        await terminateBackend(Environment.TIC);
+    } catch (e) {
+        console.error('Error during cleanup:', e);
+    } finally {
+        app.exit();
+    }
 });
 

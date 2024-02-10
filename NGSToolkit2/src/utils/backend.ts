@@ -10,12 +10,13 @@ import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
 import {runSubprocess} from "./process";
 import {Environment} from "../enums";
+import {docker} from "./makeDockerConnection";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
 const { windowsToWsl } = require('@endevr-io/wsl-path');
-const Docker = require('dockerode');
 
+const runningContainers = new Set();
 
 const GITHUB_API_BASE_URL = cmArgs['api-url'];
 const CONTAINER_REGISTRY = cmArgs['container-registry'];
@@ -408,7 +409,7 @@ export async function initializeWslBackend(environment: Environment, releaseTag:
 
 export async function initializeDockerBackend(environment: Environment, releaseTag: SemVer) {
     return new Promise<void>((resolve, reject) => {
-        const docker = new Docker();  // initialize with defaults; using socket
+          // initialize with defaults; using socket
         getImageName(environment, releaseTag).then(async (image) => {
             updateProgress({
                 step: `Initializing ${environment} environment`,
@@ -478,14 +479,37 @@ export async function initializeDockerBackend(environment: Environment, releaseT
     });
 }
 
-export async function terminateWslBackend(environment: Environment) {
+export async function terminateBackend(environment: Environment) {
+    const backend = await getBackend();
+    switch (backend.type) {
+        case DOCKER.type:
+            await terminateDockerBackend();
+            return;
+        case WSL.type:
+            await terminateWslBackend(environment);
+            return;
+        default:
+            throw new Error(`Backend ${backend.type} not supported`);
+    }
+}
+
+async function terminateWslBackend(environment: Environment) {
     const distribution = await getImageBaseName(environment);
     logToDevTools(`Terminating WSL distribution ${distribution}`);
     await wsl.terminate(distribution);
 }
 
-export async function terminateDockerBackend(environment: Environment) {
-    throw new Error("Not implemented yet");
+async function terminateDockerBackend() {
+    console.log(`Number of running containers: ${runningContainers.size}`)
+    await Promise.all(Array.from(runningContainers).map(async (containerId) => {
+        console.log(`Stopping container ${containerId}`);
+        const container = docker.getContainer(containerId);
+        // try to stop the container for 10 seconds, then kill it
+        await container.stop({t: 10}).catch(() => {
+            console.log(`Killing container ${containerId}`);
+            return container.kill();
+        });
+    }));
 }
 
 /**
@@ -619,7 +643,6 @@ export async function getAssociatedImages(environment: Environment): Promise<IIm
  */
 async function getAssociatedImagesDocker(environment: Environment): Promise<IImage[]> {
     return new Promise<IImage[]>((resolve, reject) => {
-        const docker = new Docker();
         getImageBaseName(environment).then((baseName) => {
             // filter for images where the name starts with the base name
             docker.listImages().then(async (images: any) => {
@@ -690,7 +713,6 @@ export async function deleteImage(name: string, tag: string) {
  * @param image
  */
 async function deleteImageDocker(image: IImage) {
-    const docker = new Docker();
     const imageFullName = `${image.name}:${image.tag}`;
     logToDevTools(`Deleting image ${imageFullName}`);
     const dImage = docker.getImage(imageFullName);
@@ -751,7 +773,6 @@ function getDockerBindFormat(binds: IBind[]) {
  * @param options Options may include bind mounts.
  */
 async function runWithDocker(environment: Environment, command: string[], options: IRunOptions) {
-    const docker = new Docker();
     console.log(`Running command with Docker: ${command}`);
     const image = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
     console.log(`Running command ${command.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
@@ -766,6 +787,7 @@ async function runWithDocker(environment: Environment, command: string[], option
     });
     // start and get the stdout
     await container.start();
+    runningContainers.add(container.id);
     container.attach({stream: true, stdout: true, stderr: true}, function (err: any, stream: any) {
         stream.on('data', (data: Buffer) => {
             const msg = data.toString();
@@ -773,6 +795,7 @@ async function runWithDocker(environment: Environment, command: string[], option
         });
     });
     const statusCode: number = await container.wait();
+    runningContainers.delete(container.id);
     return statusCode;
 }
 

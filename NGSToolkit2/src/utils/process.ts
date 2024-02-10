@@ -2,7 +2,6 @@ import * as child_process from "child_process";
 import * as platform from "./platform";
 import {BrowserWindow} from "electron";
 import {getBackend} from "./storage";
-import {terminateWslBackend} from "./backend";
 import {logToDevTools} from "./logHandler";
 import {Environment} from "../enums";
 
@@ -166,22 +165,5 @@ export async function getChecksum(path: string): Promise<string> {
         ).catch((reason) => {
             reject(reason);
         });
-    });
-}
-
-export async function terminateBackend(environment: Environment): Promise<void> {
-    return platform.byOS({
-        [platform.platforms.LINUX]: () => {
-            console.log("Not implemented yet");
-        },
-        [platform.platforms.WINDOWS]: () => {
-            terminateWslBackend(environment);
-        },
-        [platform.platforms.MAC]: () => {
-            console.log("Not implemented yet");
-        },
-        default: () => {
-            console.log("Not implemented yet");
-        },
     });
 }
