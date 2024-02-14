@@ -34,8 +34,8 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                 let match;
                 if ((match = matchFastqFile(nodeName)) !== null) {
                     const sampleId = match[1];
-                    const forward = match[2] === "1";
-                    const extension = match[3];
+                    const forward = match[3] === "1";
+                    const extension = match[4];
                     const currentNode: IFileSystemSample = {
                         name: sampleId,
                         path: join(path, nodeName),
