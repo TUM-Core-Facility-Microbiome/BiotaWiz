@@ -22,6 +22,11 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
 
         files.forEach((nodeName) => {
             if (fs.statSync(join(path, nodeName)).isDirectory()) {
+                // ignore __processed directories as these store the results of the preprocessing
+                if (nodeName.endsWith("__processed")) {
+                    return;
+                }
+
                 const currentNode: IFileSystemNode = {
                     name: nodeName,
                     type: "directory",
