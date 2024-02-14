@@ -128,9 +128,14 @@ class TicConfiguration {
 
     private relativePathToBaseDirectory(absolutePath: string) {
         // path relative to baseDirectory
-        const baseWithTailingSep = this.baseDirectory.endsWith(path.sep) ? this.baseDirectory : this.baseDirectory + path.sep;
+        const baseWithTailingSep = this.pathWithTailingSep(this.baseDirectory);
+        absolutePath = this.pathWithTailingSep(absolutePath);
         console.log(`baseWithTailingSep: ${baseWithTailingSep}`);
         return absolutePath.replace(baseWithTailingSep, '');
+    }
+
+    private pathWithTailingSep(node: string) {
+        return node.endsWith(path.sep) ? node : node + path.sep;
     }
 }
 
