@@ -25,7 +25,7 @@
               <div>
                 <label for="stripleft">
                   <div class="text-sm font-mono">stripleft</div>
-                  <div class="text-xs text-gray-500">length of 5' primer</div>
+                  <div class="text-xs text-gray-500">Number of nucleotides to be cut from left side of your merged sequence. Depends on length of your reverse primer.</div>
                 </label>
                 <input
                     id="stripleft"
@@ -38,7 +38,7 @@
               <div>
                 <label for="stripright">
                   <div class="text-sm font-mono">stripright</div>
-                  <div class="text-xs text-gray-500">length of 3' primer</div>
+                  <div class="text-xs text-gray-500">Number of nucleotides to be cut from left side of your merged sequence. Depends on length of your forward primer.</div>
                 </label>
                 <input
                     id="stripright"
@@ -59,7 +59,7 @@
               <div>
                 <label for="abund_limit">
                   <div class="text-sm font-mono">abund_limit</div>
-                  <div class="text-xs text-gray-500">abundance limit</div>
+                  <div class="text-xs text-gray-500">Only ZOTUs with abundance more than this value in any of samples will be kept. SOTUs count will get updated according to filtered ZOTUs. This means, ZOTUs which is not abundant more than this value in any samples will get removed from ZOTU table (i.e: SOTU table gets updated).</div>
                 </label>
                 <input
                     id="abund_limit"
@@ -87,7 +87,7 @@
           <div class="pt-6">
             <div class="text-lg font-bold">Sample-wise correction</div>
             <div class="text-sm text-gray-700">
-              Apply sample-wise correction.
+              If set to yes then ZOTUs of one specific sample with abundance below <code>abund_limit</code> argument will be rounded to zero. This means richness of each sample will be equal to 'effective richness'.
             </div>
             <div class="mt-3">
               <fieldset class="flex flex-wrap gap-3">
@@ -150,7 +150,7 @@
 
           <p class="mt-2 text-sm text-orange-700">
             Default values are recommended for most users.
-            Changing these may result in unexpected results.
+            Changing these, might result in unexpected results.
           </p>
         </div>
 
@@ -158,14 +158,13 @@
           <div class="pt-6">
             <div class="text-lg font-bold">Merging of paired reads</div>
             <div class="text-sm text-gray-700">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-              et dolore magna aliquyam erat, sed diam voluptua.
+              Parameters for merging paired reads.
             </div>
             <div class="mt-3">
               <div>
                 <label for="fastq_maxdiffs">
                   <div class="text-sm font-mono">fastq_maxdiffs</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">Maximum number of mismatches when merging pairs of reads in paired sequencing layout.</div>
                 </label>
                 <input
                     id="fastq_maxdiffs"
@@ -180,7 +179,7 @@
               <div>
                 <label for="fastq_pctid">
                   <div class="text-sm font-mono">fastq_pctid</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">Minimum percentage of alignment identity when merging pairs of reads in paired sequencing layout.</div>
                 </label>
                 <input
                     id="fastq_pctid"
@@ -195,7 +194,7 @@
               <div>
                 <label for="fastq_minmergelen">
                   <div class="text-sm font-mono">fastq_minmergelen</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">The minimum required length for the merged sequence.</div>
                 </label>
                 <input
                     id="fastq_minmergelen"
@@ -208,7 +207,7 @@
               <div>
                 <label for="fastq_maxmergelen">
                   <div class="text-sm font-mono">fastq_maxmergelen</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">The maximum required length for the merged sequence.</div>
                 </label>
                 <input
                     id="fastq_maxmergelen"
@@ -221,16 +220,15 @@
             </div>
           </div>
           <div class="pt-6">
-            <div class="text-lg font-bold">zOTU cluster size</div>
+            <div class="text-lg font-bold">ZOTU cluster size</div>
             <div class="text-sm text-gray-700">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-              et dolore magna aliquyam erat, sed diam voluptua.
+              Parameters for ZOTU clustering.
             </div>
             <div class="mt-3">
               <div>
                 <label for="minsize">
                   <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">Unique reads with less than this number of raw assigned reads will be discarded in ZOTU creation step. Most  of unique reads with low number of assigned reads are noise.</div>
                 </label>
                 <input
                     id="minsize"
@@ -245,14 +243,13 @@
           <div class="pt-6">
             <div class="text-lg font-bold">Complex TIC arguments</div>
             <div class="text-sm text-gray-700">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
-              et dolore magna aliquyam erat, sed diam voluptua.
+              Thresholds for taxonomy informed clustering. Watch out to not set the threshold of a lower rank higher than the threshold of a higher rank.
             </div>
             <div class="mt-3">
               <div>
                 <label for="family_sim">
                   <div class="text-sm font-mono">family_sim</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">Family alignment identity threshold to group unknown ZOTUs into distinct clusters at family level. Sequences with alignment identity more than this value will be taken together as one (unknown) family.</div>
                 </label>
                 <input
                     id="family_sim"
@@ -280,7 +277,7 @@
               <div>
                 <label for="genus_sim">
                   <div class="text-sm font-mono">genus_sim</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">Genus alignment identity threshold to group unknown ZOTUs into distinct clusters at genus level. Sequences with alignment identity more than this value will be taken together as one (unknown) genus.</div>
                 </label>
                 <input
                     id="genus_sim"
@@ -308,7 +305,7 @@
               <div>
                 <label for="species_sim">
                   <div class="text-sm font-mono">species_sim</div>
-                  <div class="text-xs text-gray-500">lorem ipsum dolor sit amet</div>
+                  <div class="text-xs text-gray-500">Species alignment identity threshold to group unknown ZOTUs into distinct clusters at species level. Sequences with alignment identity more than this value will be taken together as one (unknown) species.</div>
                 </label>
                 <input
                     id="species_sim"
