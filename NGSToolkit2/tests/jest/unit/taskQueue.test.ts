@@ -5,8 +5,8 @@ describe('TaskQueue', () => {
         for (let i = 0; i < 3; i++) {
             const task = jest.fn(() => Promise.resolve());
             await taskQueue.defer(task);
-            expect(task).toBeCalledTimes(1);
-            expect(task).toBeCalledWith();
+            expect(task).toHaveBeenCalledTimes(1);
+            expect(task).toHaveBeenCalledWith();
             expect(task).toHaveReturnedTimes(1);
         }
     });
