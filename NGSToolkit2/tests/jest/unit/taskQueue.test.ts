@@ -51,6 +51,16 @@ describe('TaskQueue', () => {
         expect(task3).toHaveBeenCalledTimes(1);
     });
 
+    test('defer should maintain task order for async tasks', async () => {
+        const task = jest.fn(() => new Promise<void>((resolve) => setTimeout(resolve, 1000)));
+        const task2 = jest.fn(() => Promise.resolve(2));
+        const task3 = jest.fn(() => Promise.resolve(3));
+        await Promise.all([taskQueue.defer(task), taskQueue.defer(task2), taskQueue.defer(task3)]);
+        expect(task).toHaveBeenCalledTimes(1);
+        expect(task2).toHaveBeenCalledTimes(1);
+        expect(task3).toHaveBeenCalledTimes(1);
+    }, 2000);
+
     test('defer should not begin new tasks if there is a task in progress', async () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         const task = jest.fn(() => new Promise<void>(() => {}));  // never resolves
