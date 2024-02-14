@@ -62,7 +62,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
     }
 }
 
-function matchFastqFile(fileName: string): RegExpExecArray | null {
+export function matchFastqFile(fileName: string): RegExpExecArray | null {
     if (fileName.endsWith(".fastq") || fileName.endsWith(".fastq.gz")) {
         const regex = new RegExp('((^.*)_S\\d+_L\\d{3})_R([1,2])_\\d{3}\\.(fastq(\\.gz)?)', 'gm')
         let match;
