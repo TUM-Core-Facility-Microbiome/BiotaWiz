@@ -13,7 +13,7 @@ import {
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
-import {detectStudyFolders} from "./file-explorer";
+import {detectStudyFolders} from "../utils/file-explorer";
 import {Environment, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
 import {ticConfiguration} from "../utils/ticConfiguration";
