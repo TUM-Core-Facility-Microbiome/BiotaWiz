@@ -5,7 +5,6 @@ import path from 'path';
 // code. You can also put them in separate files and import them here.
 import "./api/api";
 
-import "./api/file-explorer";
 import {Environment} from "./enums";
 import {terminateBackend} from "./utils/backend";
 
