@@ -179,7 +179,10 @@ interface Progress {
     step: string;
     message: string;
     state: string;
-    error?: string;
+    error?: {
+        code: string;
+        helpUrl: string;
+    };
 }
 
 interface Repository {

@@ -28,6 +28,9 @@
               <div class="pl-7" v-if="state.status !== 'idle'">
                 <span class="font-semibold">{{ state.step }}</span>:
                 {{ state.progress }}
+                <span v-if="state.error">
+                  <a @click="openExternal(state.error.helpUrl)" class="underline cursor-pointer text-blue-500">Help page</a>
+                </span>
               </div>
               <div class="pl-7" v-else>
                 <span class="font-semibold">Idle</span>
@@ -47,6 +50,7 @@ const state = reactive({
   status: "idle", // "idle" | "running" | "done" | "error
   step: null,
   progress: null,
+  error: null,
 });
 
 indexBridge.handleProgressUpdate((progress: Progress) => {
@@ -54,6 +58,12 @@ indexBridge.handleProgressUpdate((progress: Progress) => {
   state.status = progress.state;
   state.step = progress.step;
   state.progress = progress.message;
+  state.error = progress.error;
 });
 
+function openExternal(url: string) {
+  // deep copy string
+
+  indexBridge.openExternalLink(url);
+}
 </script>

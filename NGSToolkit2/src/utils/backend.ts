@@ -1,6 +1,6 @@
 import path from "path";
 import * as fs from "fs";
-import {COMPATIBLE_IMAGE_VERSIONS, DISTRIBUTION_NAME, IMAGE_ASSET_NAME} from "../config";
+import {COMPATIBLE_IMAGE_VERSIONS, DISTRIBUTION_NAME, GITHUB_BASE_URL, IMAGE_ASSET_NAME} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
@@ -164,6 +164,17 @@ async function queryAvailableReleaseTags(environment: Environment) {
             console.debug(`Repo offers ${availableTags.length} releases: ${availableTags.map((version: SemVer) => getVersionString(version)).join(', ')}`);
             resolve(availableTags);
         }).catch((error) => {
+            updateProgress(
+                {
+                    step: `Initializing ${environment} environment`,
+                    message: `Failed to query available releases.`,
+                    state: "error",
+                    error: {
+                        code: "RAPIOF",
+                        helpUrl: `${GITHUB_BASE_URL}/discussions/49`,
+                    },
+                }
+            );
             reject(error);
         });
     });

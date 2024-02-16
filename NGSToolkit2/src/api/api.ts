@@ -127,3 +127,7 @@ ipcMain.handle("tic:run", async () => {
     console.log("Running TIC pipeline");
     ticConfiguration.runPipeline();
 });
+
+ipcMain.handle("openExternalLink", async (event, url: string) => {
+    return await shell.openExternal(url);
+});

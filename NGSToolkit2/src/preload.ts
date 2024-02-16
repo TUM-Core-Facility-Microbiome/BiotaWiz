@@ -94,6 +94,9 @@ const indexBridge = {
     runTicPipeline: async () => {
         return ipcRenderer.invoke('tic:run');
     },
+    openExternalLink: async (url: string) => {
+        return ipcRenderer.invoke('openExternalLink', url);
+    },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {
         ipcRenderer.on('changeRouteTo', (event, route) => {
