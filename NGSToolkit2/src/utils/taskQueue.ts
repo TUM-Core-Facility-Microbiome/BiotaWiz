@@ -20,6 +20,10 @@ class TaskQueue {
         });
     }
 
+    clear(): void {
+        this.queue = [];
+    }
+
     private async processQueue(): Promise<void> {
         this.isProcessing = true;
         while (this.queue.length > 0) {

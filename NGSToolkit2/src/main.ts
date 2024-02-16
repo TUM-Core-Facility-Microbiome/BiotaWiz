@@ -7,6 +7,7 @@ import "./api/api";
 
 import {Environment} from "./enums";
 import {terminateBackend} from "./utils/backend";
+import {taskQueue} from "./utils/taskQueue";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -71,6 +72,9 @@ app.on('will-quit', async (event) => {
     event.preventDefault();
     console.log("Application will quit");
     console.log("Running cleanup tasks");
+
+    console.log("Clearing task queue");
+    taskQueue.clear(); // clear all tasks
 
     try {
         await terminateBackend(Environment.TIC);

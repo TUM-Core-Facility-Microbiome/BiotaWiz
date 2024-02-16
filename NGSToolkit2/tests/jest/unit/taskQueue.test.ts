@@ -76,4 +76,13 @@ describe('TaskQueue', () => {
         // cleanup: resolve the first task
         task.mockClear();
     });
+
+    test('clear should remove all tasks', async () => {
+        const task = jest.fn(() => Promise.resolve());
+        taskQueue.defer(task);
+        taskQueue.defer(task);
+        taskQueue.defer(task);
+        taskQueue.clear();
+        expect(task).toHaveBeenCalledTimes(0);
+    });
 });
