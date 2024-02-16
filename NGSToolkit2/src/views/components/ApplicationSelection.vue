@@ -12,8 +12,19 @@
             </p>
           </router-link>
         </li>
+<!--        <li>-->
+<!--          <router-link to="/rhea" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-orange-400">-->
+<!--            <strong class="font-medium text-black">shiny-Rhea</strong>-->
+
+<!--            <p class="mt-1 text-xs font-medium text-gray-800">-->
+<!--              Tool for analysis of microbial profiles.-->
+<!--            </p>-->
+<!--          </router-link>-->
+<!--        </li>-->
       </ul>
     </div>
 
   </div>
 </template>
+<script setup lang="ts">
+</script>
