@@ -60,11 +60,7 @@ const index = createRouter({
             children: [
                 {
                     path: '',
-                    redirect: '/settings/general',
-                },
-                {
-                    path: '/settings/general',
-                    component: () => import('../components/settings/Settings.vue'),
+                    redirect: '/settings/backend',
                 },
                 {
                     path: '/settings/environment',
