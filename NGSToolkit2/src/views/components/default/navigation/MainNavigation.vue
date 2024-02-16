@@ -2,12 +2,12 @@
   <div class="fixed top-0 flex z-50">
     <div class="flex h-screen w-16 flex-col justify-between border-e bg-white">
       <div>
-        <div class="inline-flex h-16 w-16 items-center justify-center">
+        <router-link to="/application-selector" class="inline-flex h-16 w-16 items-center justify-center">
           <img
               class="grid h-10 w-10 place-content-center rounded-lg bg-gray-100 text-xs text-gray-600"
               src="/assets/icons/icon.png" alt="Logo"
           />
-        </div>
+        </router-link>
 
         <div class="border-t border-gray-100">
           <div class="px-2">

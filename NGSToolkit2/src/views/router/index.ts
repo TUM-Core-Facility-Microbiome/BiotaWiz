@@ -6,7 +6,12 @@ const index = createRouter({
         {
             path: '',
             component: () => import('../components/DefaultShell.vue'),
+            redirect: '/application-selector',
             children: [
+                {
+                    path: '/application-selector',
+                    component: () => import('../components/ApplicationSelection.vue'),
+                },
                 {
                     path: '/application-shell',
                     component: () => import('../components/ApplicationShell.vue'),
