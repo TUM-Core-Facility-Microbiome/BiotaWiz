@@ -102,6 +102,7 @@ class TicConfiguration {
                     },
                 ],
             }).then((statusCode: number) => {
+                console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
                     updateProgress({
                         step: "Running TIC",
