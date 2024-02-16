@@ -26,6 +26,11 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                 if (nodeName.endsWith("__processed")) {
                     return;
                 }
+                // ignore Analysis directories as these come from a previous run
+                if (nodeName.startsWith("Analysis_")) {
+                    return;
+                }
+
 
                 const currentNode: IFileSystemNode = {
                     name: nodeName,
