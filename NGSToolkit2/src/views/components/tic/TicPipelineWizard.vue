@@ -25,7 +25,7 @@
             <li>
               <router-link to="/study-selection" class="flex items-center justify-end gap-2" active-class="text-blue-600">
                 <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 2 </span>
-                <span>Study</span>
+                <span>Samples</span>
               </router-link>
             </li>
             <li>
