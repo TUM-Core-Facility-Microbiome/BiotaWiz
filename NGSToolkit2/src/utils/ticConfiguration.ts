@@ -114,7 +114,7 @@ class TicConfiguration {
                 } else {
                     updateProgress({
                         step: "Running TIC",
-                        message: "Pipeline returned unexpected with failure code",
+                        message: `Pipeline returned unexpected with failure code (exit code: ${statusCode})`,
                         state: "error",
                     });
                 }
