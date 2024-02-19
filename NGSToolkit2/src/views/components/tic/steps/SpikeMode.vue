@@ -1,12 +1,11 @@
 <template>
-  <div class="mt-4">
+  <div>
     <div class="text-lg font-bold">Spike-in standard</div>
     <div class="text-sm text-gray-700">
-      The addition of a known amount of a spike-in standard to each sample allows for normalization.
-      Select if you have spiked-in standards in the samples selected in the previous step.
+      Select if you have spiked-in standards were used for the samples selected in the previous step.
     </div>
   </div>
-  <fieldset class="space-y-4 mt-2">
+  <fieldset class="space-y-2">
     <legend class="sr-only">Spike Mode Selection</legend>
 
     <div>
@@ -20,11 +19,11 @@
       />
 
       <label for="spike-mode-select-spiked"
-             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-100 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">
+             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">
         <div class="flex items-center gap-2">
           <div class="relative">
             <div class="text-sm">Spike-in standard was added to <b>all</b> samples</div>
-            <div class="text-sm text-gray-500">
+            <div class="text-xs text-gray-500">
               The output will be normalized by spike count. You must provide the amount of spike-ins and
               initial weight for all samples in the next step.
             </div>
@@ -47,11 +46,11 @@
       />
 
       <label for="spike-mode-select-partial"
-             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-100 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">
+             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">
         <div class="flex items-center gap-2">
           <div class="relative">
             <div class="text-sm">Partial: Spike-in standard was added to <b>some</b> of the samples</div>
-            <div class="text-sm text-gray-500">
+            <div class="text-xs text-gray-500">
               The output will <b>not</b> be normalized by spike count for a mixed analysis.
             </div>
             <div class="mt-2">
@@ -72,11 +71,11 @@
       />
 
       <label for="spike-mode-select-none"
-             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-100 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">
+             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">
         <div class="flex items-center gap-2">
           <div class="relative">
             <div class="text-sm">Spike-in standards were <b>not used</b> for any of the samples</div>
-            <div class="text-sm text-gray-500">
+            <div class="text-xs text-gray-500">
               Do not normalize by spike count.
               Spike sequences will be removed regardless to deal with possible spike-in contamination.
             </div>
@@ -88,10 +87,10 @@
       </label>
     </div>
   </fieldset>
-  <div class="mt-4 font-mono text-red-800 text-xs">
-    <p>spikeMode: {{ spikeMode }}</p>
-  </div>
-  <button @click="publishSpikeMode()">Create Mapping File</button>
+<!--  <div class="mt-4 font-mono text-red-800 text-xs">-->
+<!--    <p>spikeMode: {{ spikeMode }}</p>-->
+<!--  </div>-->
+  <button @click="publishSpikeMode()" class="mt-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded">Continue with selected mode: <span class="font-mono">{{ spikeMode }}</span></button>
 </template>
 
 <script setup lang="ts">

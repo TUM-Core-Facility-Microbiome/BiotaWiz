@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class="text-sm">
     <li v-for="(item, index) in items" :key="index">
       <div @click="toggleCollapse(item)">
         <span :class="{ 'font-bold': item.expanded }">
@@ -22,19 +22,27 @@
                 @change="handleCheckboxChange(item)"
             />
             <template v-if="item.type === 'directory' && !item.expanded">
-              <FolderIcon class="h-6 w-6 text-blue-500 mr-1"/>
+              <FolderIcon class="h-4 w-4 text-blue-500 mr-1"/>
             </template>
             <template v-else-if="item.type === 'directory' && item.expanded">
-              <FolderOpenIcon class="h-6 w-6 text-blue-500  mr-1"/>
+              <FolderOpenIcon class="h-4 w-4 text-blue-500  mr-1"/>
             </template>
             <template v-else>
-              <DocumentIcon class="h-6 w-6 text-blue-500 mr-1"/>
+              <DocumentIcon class="h-4 w-4 text-blue-500 mr-1"/>
             </template>
-            <p class="font-mono">{{ item.name }} {{ item.isCompressed }} {{ item.isPaired }}</p>
+            <p class="font-mono">
+              {{ item.name }}
+<!--              <span v-if="item.type === 'sample'">-->
+<!--                <span v-if="item.isCompressed">gz </span>-->
+<!--                <span v-else>non-gz </span>-->
+<!--                <span v-if="item.isPaired">paired </span>-->
+<!--              </span>-->
+            </p>
           </div>
         </span>
       </div>
-      <StudyBrowserElement v-if="item.expanded && item.type === 'directory'" :items="item.children" @selection-changed="selectItem"/>
+      <StudyBrowserElement v-if="item.expanded && item.type === 'directory'" :items="item.children"
+                           @selection-changed="selectItem"/>
     </li>
   </ul>
 </template>
