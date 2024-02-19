@@ -3,7 +3,7 @@ class TaskQueue {
     private isProcessing = false;
 
     defer<T>(task: () => Promise<T>): Promise<T> {
-        console.debug(`Adding task to queue. Waiting: ${this.queue.length}`);
+        console.debug(`Adding task to queue. Waiting: ${this.queue.length}; Processing: ${this.isProcessing}`);
         return new Promise<T>((resolve, reject) => {
             const taskWrapper = async () => {
                 try {
@@ -25,19 +25,23 @@ class TaskQueue {
     }
 
     private async processQueue(): Promise<void> {
-        this.isProcessing = true;
         while (this.queue.length > 0) {
+            this.isProcessing = true;
+            console.log('Setting isProcessing lock.');
+
             const task = this.queue.shift();
             if (task) {
                 try {
                     console.debug(`Picking new task from queue. Waiting: ${this.queue.length}`);
-                    await task();
+                    await task().finally(() => {
+                        console.log('Releasing isProcessing lock.');
+                        this.isProcessing = false;
+                    });
                 } catch (error) {
                     console.error('Error processing task:', error);
                 }
             }
         }
-        this.isProcessing = false;
     }
 }
 
