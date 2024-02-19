@@ -1,8 +1,10 @@
 <template>
-<!--  <NavBar/>-->
-  <div class="container">
+  <!-- Application Shell -->
+  <!--  <NavBar/>-->
+  <div class="container left-16 m-3 relative mb-16">
     <router-view></router-view>
   </div>
+  <!-- Application Shell End -->
 </template>
 
 <script lang="ts">

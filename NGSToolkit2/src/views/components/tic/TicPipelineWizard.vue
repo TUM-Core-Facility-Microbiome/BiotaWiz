@@ -1,4 +1,5 @@
 <template>
+  <!-- TIC Pipeline Wizard -->
   <div class="relative">
     <div class="p-2 pb-4 max-w-lg mx-auto flex justify-center font-sans">
       <div>
@@ -59,6 +60,7 @@
   <div class="container">
     <router-view></router-view>
   </div>
+  <!-- TIC Pipeline Wizard End -->
 </template>
 
 <script setup lang="ts">
