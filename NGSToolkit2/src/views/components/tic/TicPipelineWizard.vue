@@ -40,6 +40,12 @@
                 <span>Parameters</span>
               </router-link>
             </li>
+            <li>
+              <router-link to="/run" class="flex items-center justify-end gap-2" active-class="text-blue-600">
+                <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 5 </span>
+                <span>Run</span>
+              </router-link>
+            </li>
           </ol>
         </div>
       </div>
