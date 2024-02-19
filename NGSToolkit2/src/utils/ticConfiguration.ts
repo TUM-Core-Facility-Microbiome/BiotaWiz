@@ -4,7 +4,7 @@ import path from "path";
 import {writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
-import {updateProgress} from "./logHandler";
+import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
 
 class TicConfiguration {
@@ -84,6 +84,8 @@ class TicConfiguration {
         console.log(this.yamlFile);
         const yamlFile = this.relativePathToBaseDirectory(this.yamlFile);
         const mappingFile = this.relativePathToBaseDirectory(this.mappingFile);
+
+        logForEnvironment(Environment.TIC, "Pipeline will start after environment is initialized...");
 
         console.log(`Running pipeline`);
         // add to task queue
