@@ -810,9 +810,9 @@ async function runWithDocker(environment: Environment, command: string[], option
             logForEnvironment(environment, msg);
         });
     });
-    const statusCode: number = await container.wait();
+    const statusCode: {StatusCode: number} = await container.wait();
     runningContainers.delete(container.id);
-    return statusCode;
+    return statusCode.StatusCode;
 }
 
 
