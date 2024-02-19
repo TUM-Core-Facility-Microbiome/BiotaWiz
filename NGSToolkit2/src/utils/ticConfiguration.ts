@@ -113,11 +113,19 @@ class TicConfiguration {
                         state: "done",
                     });
                 } else {
-                    updateProgress({
-                        step: "Running TIC",
-                        message: `Pipeline returned unexpected with failure code (exit code: ${statusCode})`,
-                        state: "error",
-                    });
+                    if (statusCode == 137) {
+                        updateProgress({
+                            step: "Running TIC",
+                            message: "Pipeline was terminated",
+                            state: "error",
+                        });
+                    } else {
+                        updateProgress({
+                            step: "Running TIC",
+                            message: `Pipeline returned unexpected with failure code (exit code: ${statusCode})`,
+                            state: "error",
+                        });
+                    }
                 }
             }).catch((error: string) => {
                 console.error(error);
