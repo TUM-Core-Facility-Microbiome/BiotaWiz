@@ -578,34 +578,39 @@ async function getImageTagOrLatestCompatible(environment: Environment) {
  * Prepare the backend by downloading and registering the image if necessary.
  */
 export async function initializeBackend(environment: Environment) {
-    updateProgress({
-        step: `Initializing ${environment} environment`,
-        message: `Initializing ${environment} environment`,
-        state: "running",
-    });
-    // get the version of the image
-    const releaseTag = await getImageTagOrLatestCompatible(environment);
-
-    // run initialization
-    // this will download and register the image if necessary
-    const backend = await getBackend();
-    switch (backend.type) {
-        case DOCKER.type:
-            logToDevTools(`Initializing Docker backend`);
-            await initializeDockerBackend(environment, releaseTag);
-            updateProgress({
-                step: `Initializing ${environment} environment`,
-                message: "Finished initializing Docker backend",
-                state: "done",
+    return new Promise<void>((resolve, reject) => {
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Initializing ${environment} environment`,
+            state: "running",
+        });
+        // get the version of the image
+        getImageTagOrLatestCompatible(environment).then(async (releaseTag) => {
+            // run initialization
+            // this will download and register the image if necessary
+            getBackend().then(async (backend) => {
+                switch (backend.type) {
+                    case DOCKER.type:
+                        logToDevTools(`Initializing Docker backend`);
+                        await initializeDockerBackend(environment, releaseTag);
+                        updateProgress({
+                            step: `Initializing ${environment} environment`,
+                            message: "Finished initializing Docker backend",
+                            state: "done",
+                        });
+                        resolve();
+                        break;
+                    case WSL.type:
+                        logToDevTools(`Initializing WSL backend`);
+                        await initializeWslBackend(environment, releaseTag);
+                        resolve();
+                        break;
+                    default:
+                        reject(`Backend ${backend.type} not supported`);
+                }
             });
-            break;
-        case WSL.type:
-            logToDevTools(`Initializing WSL backend`);
-            await initializeWslBackend(environment, releaseTag);
-            break;
-        default:
-            throw new Error(`Backend ${backend.type} not supported`);
-    }
+        });
+    });
 }
 
 /**
