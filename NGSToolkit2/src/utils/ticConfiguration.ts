@@ -104,6 +104,7 @@ class TicConfiguration {
                     },
                 ],
             }).then((statusCode: number) => {
+                logForEnvironment(Environment.TIC, `Pipeline finished with status code ${statusCode}`);
                 console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
                     updateProgress({
