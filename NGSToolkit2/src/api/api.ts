@@ -84,8 +84,14 @@ ipcMain.handle("loadStudiesFromBaseDirectory", async (event): Promise<IFileSyste
 
 ipcMain.handle("initializeEnvironment", async (event, environment: Environment) => {
     return await taskQueue.defer(async () => {
-        initializeBackend(environment).then(() => {
-            console.log(`${environment} environment initialized`);
+        return new Promise<void>((resolve) => {
+            initializeBackend(environment).then(() => {
+                console.log(`${environment} environment initialized`);
+                resolve();
+            }).catch((err) => {
+                console.error(err);
+                resolve();
+            });
         });
     });
 });
