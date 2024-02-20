@@ -462,7 +462,7 @@ export async function initializeDockerBackend(environment: Environment, releaseT
                 logToDevTools(`Image ${image} exists.`);
                 resolve();
             } else {
-                logToDevTools(`Image ${image} does not exist.`);
+                logToDevTools(`Image ${image} does not exist locally.`);
                 // pull the image
                 updateProgress({
                     step: `Initializing ${environment} environment`,
