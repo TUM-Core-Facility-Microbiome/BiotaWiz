@@ -51,7 +51,9 @@ const config: ForgeConfig = {
                     owner: 'TUM-Core-Facility-Microbiome',
                     name: 'NGSToolkit2'
                 },
-                draft: true
+                draft: true,
+                // take the token from the environment
+                authToken: process.env.GITHUB_TOKEN
             }
         }
     ]
