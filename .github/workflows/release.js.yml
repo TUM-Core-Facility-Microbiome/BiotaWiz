@@ -27,7 +27,7 @@ jobs:
           node-version: 20
 
       - name: Build/release Electron app
-        uses: jsoma/action-electron-forge@v1.4.0
+        uses: crqch/action-electron-forge@v1.0.1
         with:
           package_root: "NGSToolkit2"
           # GitHub token, automatically provided to the action
