@@ -865,16 +865,20 @@ async function runWithWsl(environment: Environment, command: string[], options: 
     const distribution = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
 
     // run command to make bind mounts
+    logForEnvironment(environment, `Running setup (bind mounts)`);
     for (const bind of options.binds) {
         const source = windowsToWsl(bind.source);
         const target = bind.target;
 
-        console.log(`Clearing mount point ${target}`);
+        console.log(`Preparing mount point ${target}`);
+        logForEnvironment(environment, `Preparing mount point ${target}`);
+        logForEnvironment(environment, "Clearing previous mounts...");
         await runSubprocess(backend.command, ["--distribution", distribution, "--", "umount", target], (msg, isStderr) => {
             logToDevTools(msg);
         });  // might return non-zero if the mount point is not used
 
         console.log(`Mounting ${source} to ${target}`);
+        logForEnvironment(environment, `Bind mounting ${source} to ${target}`);
         const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target], (msg, isStderr) => {
             logToDevTools(msg);
         });
@@ -883,6 +887,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         }
     }
 
+    logForEnvironment(environment, `Running command`);
     runningDistributions.add(distribution);
     const args = ["--distribution", distribution, "--", ...command];
     return await runSubprocess(backend.command, args, (msg: string, isStderr: boolean) => {
