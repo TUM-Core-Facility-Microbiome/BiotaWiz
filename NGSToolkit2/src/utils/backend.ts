@@ -18,6 +18,7 @@ const wsl = require('@endevr-io/wsl-api');
 const { windowsToWsl } = require('@endevr-io/wsl-path');
 
 const runningContainers = new Set();
+const runningDistributions = new Set();
 
 const GITHUB_API_BASE_URL = cmArgs['api-url'];
 const CONTAINER_REGISTRY = cmArgs['container-registry'];
@@ -882,9 +883,11 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         }
     }
 
+    runningDistributions.add(distribution);
     const args = ["--distribution", distribution, "--", ...command];
-    const statusCode = await runSubprocess(backend.command, args, (msg: string, isStderr: boolean) => {
+    return await runSubprocess(backend.command, args, (msg: string, isStderr: boolean) => {
         logForEnvironment(environment, msg);
+    }).finally(() => {
+        runningDistributions.delete(distribution);
     });
-    return statusCode;
 }
