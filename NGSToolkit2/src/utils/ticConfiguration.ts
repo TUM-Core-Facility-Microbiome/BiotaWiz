@@ -1,11 +1,13 @@
 import {Environment, SpikeMode} from "../enums";
-import {shell} from "electron";
+import {app, shell} from "electron";
 import path from "path";
 import {writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
+
+const { Notification } = require('electron')
 
 class TicConfiguration {
     private baseDirectory = "";
@@ -112,6 +114,10 @@ class TicConfiguration {
                         message: "TIC finished",
                         state: "done",
                     });
+                    new Notification({
+                        title: app.name,
+                        body: "TIC pipeline finished successfully",
+                    }).show()
                 } else {
                     if (statusCode == 137) {
                         updateProgress({
@@ -126,6 +132,10 @@ class TicConfiguration {
                             state: "error",
                         });
                     }
+                    new Notification({
+                        title: app.name,
+                        body: "TIC pipeline failed",
+                    }).show()
                 }
             }).catch((error: string) => {
                 console.error(error);
