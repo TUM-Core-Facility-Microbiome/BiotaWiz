@@ -25,6 +25,9 @@ jobs:
       - name: list files
         run: ls -la
 
+      - name: list files in NGSToolkit2
+        run: ls -la NGSToolkit2
+
       - name: Publish Electron app
         uses: zsewa/action-electron-forge@v0.0.1
         with:
