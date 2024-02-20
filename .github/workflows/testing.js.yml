@@ -14,6 +14,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: 'NGSToolkit2' # folder where package-lock.json is located
+
     strategy:
       matrix:
         node-version: [20.x]
@@ -26,5 +30,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
     - run: npm ci
-    - run: npm run test
+    - run: npm test
