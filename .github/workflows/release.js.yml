@@ -7,7 +7,7 @@ name: Manual workflow
 on:
   push:
     branches:
-      - "development"
+      - "add-build-action"
 
 jobs:
   release:
