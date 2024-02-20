@@ -26,12 +26,7 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v1
 
-      - name: Install Node.js, NPM
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Build/release Electron app
-        uses: zsewa/action-electron-forge@v1
+      - name: Publish Electron app
+        uses: zsewa/action-electron-forge@v0.0.1
         with:
           node-installer: 'npm'
