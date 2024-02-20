@@ -13,10 +13,6 @@ jobs:
   release:
     runs-on: ${{ matrix.os }}
 
-    defaults:
-        run:
-            working-directory: 'NGSToolkit2' # folder where package-lock.json is located
-
     strategy:
       matrix:
 #        os: [ubuntu-latest, windows-latest]
