@@ -41,6 +41,7 @@ export function runSubprocess(command: string, args: string[], logHandler: (msg:
 
         subprocess.on('error', () => {
             console.error("Could not launch the process");
+            reject();
         });
         subprocess.on('exit', (code, signal) => {
             console.log(`Child exited with code ${code} and signal ${signal}`);
@@ -48,11 +49,7 @@ export function runSubprocess(command: string, args: string[], logHandler: (msg:
         // close always emits either after exit or error
         subprocess.on('close', (code, signal) => {
             console.log(`Child closed with code ${code} and signal ${signal}`);
-            if (code === 0) {
-                resolve(code);
-            } else {
-                reject(code);
-            }
+            resolve(code);
         });
     });
 }
