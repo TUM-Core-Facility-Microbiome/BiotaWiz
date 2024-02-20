@@ -27,7 +27,7 @@ jobs:
           node-version: 20
 
       - name: Build/release Electron app
-        uses: juaneth/electron-forge-builder@v1
+        uses: KL13NT/action-electron-forge@0.0.1
         with:
           package_root: "NGSToolkit2"
           # GitHub token, automatically provided to the action
@@ -36,4 +36,5 @@ jobs:
 
           # If the commit is tagged with a version (e.g. "v1.0.0"),
           # release the app after building
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          #release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          release: true
