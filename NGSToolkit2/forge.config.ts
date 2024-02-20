@@ -43,6 +43,18 @@ const config: ForgeConfig = {
             ],
         }),
     ],
+    publishers: [
+        {
+            name: '@electron-forge/publisher-github',
+            config: {
+                repository: {
+                    owner: 'TUM-Core-Facility-Microbiome',
+                    name: 'NGSToolkit2'
+                },
+                draft: true
+            }
+        }
+    ]
 };
 
 export default config;
