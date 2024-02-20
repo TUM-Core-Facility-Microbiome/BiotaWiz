@@ -877,6 +877,12 @@ async function runWithWsl(environment: Environment, command: string[], options: 
             logToDevTools(msg);
         });  // might return non-zero if the mount point is not used
 
+
+        logForEnvironment(environment, "Ensuring mount point exists...");
+        await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg, isStderr) => {
+            logToDevTools(msg);
+        }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+
         console.log(`Mounting ${source} to ${target}`);
         logForEnvironment(environment, `Bind mounting ${source} to ${target}`);
         const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target], (msg, isStderr) => {
