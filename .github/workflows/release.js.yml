@@ -19,15 +19,11 @@ jobs:
 
     strategy:
       matrix:
-#        os: [ubuntu-latest, windows-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v1
-
-      - name: list files
-        run: ls -la
 
       - name: Publish Electron app
         uses: zsewa/action-electron-forge@v0.0.10
