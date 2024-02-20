@@ -11,6 +11,7 @@ import {cmArgs} from "./command-line-arguments";
 import {runSubprocess} from "./process";
 import {Environment} from "../enums";
 import {docker} from "./makeDockerConnection";
+import {helpPages} from "./helpPages";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
@@ -171,7 +172,7 @@ async function queryAvailableReleaseTags(environment: Environment) {
                     state: "error",
                     error: {
                         code: "RAPIOF",
-                        helpUrl: `${GITHUB_BASE_URL}/discussions/49`,
+                        helpUrl: helpPages.RAPIOF,
                     },
                 }
             );
@@ -223,10 +224,34 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
             });
 
             if (tarball === undefined) {
+                updateProgress(
+                    {
+                        step: `Initializing ${environment} environment`,
+                        message: `Release v${getVersionString(releaseTag)} is missing required asset.`,
+                        state: "error",
+                        error: {
+                            code: "RASMIS",
+                            helpUrl: helpPages.RASMIS,
+                        },
+                    }
+                );
                 reject(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${getVersionString(releaseTag)}`);
             }
 
             resolve(tarball.browser_download_url);
+        }).catch((error) => {
+            updateProgress(
+                {
+                    step: `Initializing ${environment} environment`,
+                    message: `Failed to query release v${getVersionString(releaseTag)}.`,
+                    state: "error",
+                    error: {
+                        code: "RAPIOF",
+                        helpUrl: helpPages.RAPIOF,
+                    },
+                }
+            );
+            reject(error);
         });
     });
 }
@@ -484,6 +509,17 @@ export async function initializeDockerBackend(environment: Environment, releaseT
                             }
                         }
                     }
+                }).catch((error: Error) => {
+                    updateProgress({
+                        step: `Initializing ${environment} environment`,
+                        message: `Failed to pull image v${getVersionString(releaseTag)}`,
+                        state: "error",
+                        error: {
+                            code: "DOCPIF",
+                            helpUrl: helpPages.DOCPIF,
+                        },
+                    });
+                    reject(error);
                 });
             }
         });
