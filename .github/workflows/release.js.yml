@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Publish Electron app
-        uses: zsewa/action-electron-forge@v0.0.10
+        uses: zsewa/action-electron-forge@v1
         with:
           node-installer: 'npm'
           folder: 'NGSToolkit2'
