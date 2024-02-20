@@ -31,7 +31,7 @@ jobs:
           node-version: 20
 
       - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
+        uses: juaneth/electron-forge-builder@v1
         with:
           package_root: "NGSToolkit2"
           # GitHub token, automatically provided to the action
