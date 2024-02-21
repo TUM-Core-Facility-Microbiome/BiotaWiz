@@ -9,6 +9,16 @@ A desktop application for the analysis of 16S rRNA amplicon sequencing data usin
 ### Linux
 
 ### Windows
+#### Preparations
+Please install WSL2 as described [here](https://learn.microsoft.com/en-us/windows/wsl/install).
+WSL2 is the underlying technology that allows us to execute the pipeline on Windows.
+
+#### Download
+Please download the installer from the Releases page.
+You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/NGSToolkit2/releases/latest).
+
+For Windows, please download the file ending with `Setup.exe`, e.g., `NGSToolkit2-0.0.1-Setup.exe` for version `v0.0.1`.
+
 #### Setup
 Microsoft might warn you that the installer is not commonly downloaded and could be dangerous.
 
