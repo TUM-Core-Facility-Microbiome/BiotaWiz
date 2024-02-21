@@ -1,21 +1,14 @@
-# This is a basic workflow that is manually triggered
+# Create a draft release when a new tag is pushed.
+name: Release
 
-name: Manual workflow
-
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
   push:
-    branches:
-      - "add-build-action"
+    tags:
+      - 'v*'
 
 jobs:
   release:
     runs-on: ${{ matrix.os }}
-
-    defaults:
-      run:
-        working-directory: 'NGSToolkit2' # folder where package-lock.json is located
 
     strategy:
       matrix:
@@ -25,7 +18,7 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v1
 
-      - name: Publish Electron app
+      - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
         with:
           node-installer: 'npm'
