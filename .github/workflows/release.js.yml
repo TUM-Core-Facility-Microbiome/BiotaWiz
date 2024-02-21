@@ -7,15 +7,15 @@ name: Manual workflow
 on:
   push:
     branches:
-      - "development"
+      - "add-build-action"
 
 jobs:
   release:
     runs-on: ${{ matrix.os }}
 
     defaults:
-        run:
-            working-directory: 'NGSToolkit2' # folder where package-lock.json is located
+      run:
+        working-directory: 'NGSToolkit2' # folder where package-lock.json is located
 
     strategy:
       matrix:
@@ -25,12 +25,8 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v1
 
-      - name: Install Node.js, NPM
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Build/release Electron app
+      - name: Publish Electron app
         uses: zsewa/action-electron-forge@v1
         with:
           node-installer: 'npm'
+          folder: 'NGSToolkit2'
