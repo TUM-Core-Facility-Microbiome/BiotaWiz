@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
 
       - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
