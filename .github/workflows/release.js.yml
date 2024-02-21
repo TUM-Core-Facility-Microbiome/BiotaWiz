@@ -1,0 +1,32 @@
+# This is a basic workflow that is manually triggered
+
+name: Manual workflow
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  push:
+    branches:
+      - "add-build-action"
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        working-directory: 'NGSToolkit2' # folder where package-lock.json is located
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Publish Electron app
+        uses: zsewa/action-electron-forge@v1
+        with:
+          node-installer: 'npm'
+          folder: 'NGSToolkit2'
