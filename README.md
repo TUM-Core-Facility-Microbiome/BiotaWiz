@@ -5,9 +5,6 @@ A desktop application for the analysis of 16S rRNA amplicon sequencing data usin
 
 
 ## Installation
-
-### Linux
-
 ### Windows
 #### Preparations
 Please install WSL2 as described [here](https://learn.microsoft.com/en-us/windows/wsl/install).
@@ -43,6 +40,22 @@ SmartScreen might warn you that the application is unrecognized.
 Please click on `More info` and then on `Run anyway`.
 
 ![click run anyway](docs/images/windows/click_run_anyway.png)
+
+
+### Linux
+#### Preparations
+Please install Docker Engine (not Docker Desktop) as described [here](https://docs.docker.com/engine/install/).
+Docker Engine is the underlying technology that allows us to execute the pipeline in an isolated environment.
+
+#### Download and installation
+##### Debian-based distributions (e.g., Ubuntu)
+Please download the `.deb` file from the Releases page.
+You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/NGSToolkit2/releases/latest).
+
+To install use Eddy, a graphical package manager, or the terminal:
+```bash
+sudo dpkg -i <path-to-deb-file>
+```
 
 ## Usage
 
