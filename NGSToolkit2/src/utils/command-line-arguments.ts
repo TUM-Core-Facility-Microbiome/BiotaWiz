@@ -1,3 +1,5 @@
+import {app} from "electron";
+
 const commandLineArgs = require('command-line-args')
 
 // parse command line arguments
@@ -60,4 +62,11 @@ const optionDefinitions = [
         description: 'GitHub repository name of shiny-Rhea.'
     },
 ]
-export const cmArgs = commandLineArgs(optionDefinitions);
+
+
+export const cmArgs = commandLineArgs(optionDefinitions, {stopAtFirstUnknown: true});
+
+// if there are unknown command line arguments, print an error message and exit
+if (cmArgs._unknown) {
+    console.warn(`Unknown command line arguments: ${cmArgs._unknown}`);
+}
