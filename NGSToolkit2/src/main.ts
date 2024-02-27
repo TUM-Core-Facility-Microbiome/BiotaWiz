@@ -12,7 +12,7 @@ import {cmArgs} from "./utils/command-line-arguments";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
-    app.quit();
+    app.exit();
 }
 
 // when started with --version or -v, print the version and exit
