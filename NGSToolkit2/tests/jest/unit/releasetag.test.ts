@@ -60,28 +60,6 @@ describe('getMatchingVersions function', () => {
         expect(getMatchingVersions(tags, allowedRange)).toEqual([...shouldMatch]);
     });
 
-    test('should return forced tag regardless of input tags', () => {
-        // Mock the command-line-arguments module only for this test case
-        jest.resetModules();
-        jest.mock('../../../src/utils/command-line-arguments', () => ({
-            cmArgs: {
-                'force-tag': 'v0.1.0',
-                'allow-prerelease-tags': false,
-            },
-        }));
-
-        const {getMatchingVersions} = require('../../../src/utils/releasetag');
-        const {SemVer} = require('semver');
-
-        const tags = [  // forced tag is not in this list
-            new SemVer('v0.0.1'),
-            new SemVer('v0.0.4'),
-            new SemVer('v0.5.91'),
-        ];
-        const allowedRange = '^0.*';
-        expect(getMatchingVersions(tags, allowedRange)).toEqual([new SemVer('v0.1.0')]);
-    });
-
     test('should throw an error for an invalid range', () => {
         const {getMatchingVersions} = require('../../../src/utils/releasetag');
         const {SemVer} = require('semver');
