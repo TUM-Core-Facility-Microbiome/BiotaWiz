@@ -1,13 +1,11 @@
 import {Environment, SpikeMode} from "../enums";
-import {app, shell} from "electron";
+import {app, shell, Notification} from "electron";
 import path from "path";
 import {writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
-
-const {Notification} = require('electron')
 
 class TicConfiguration {
     private baseDirectory = "";
