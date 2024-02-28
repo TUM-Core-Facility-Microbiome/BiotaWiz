@@ -22,10 +22,6 @@ const runningDistributions = new Set();
 
 const GITHUB_API_BASE_URL = cmArgs['api-url'];
 const CONTAINER_REGISTRY = cmArgs['container-registry'];
-const IMAGE_REPOSITORY: Repository = {
-    owner: cmArgs['tic-pipeline-repository-owner'],
-    repo: cmArgs['tic-pipeline-repository-name'],
-}
 
 
 /**
