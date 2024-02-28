@@ -110,30 +110,6 @@ function checkTarExists(path: string) {
     }
 }
 
-/**
- * Query GitHub for the latest release tag of the image.
- */
-async function getCurrentImageReleaseTag(environment: Environment) {
-    return new Promise<SemVer>((resolve, reject) => {
-        const repo = getRepository(environment);
-        axios.get<GitHubRelease>(
-            `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/latest`,
-            {
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28'
-                },
-            }
-        ).then((response) => {
-            const data = response.data;
-            const tag = data.tag_name;
-            const semver: SemVer = semVerFromGitHubTag(tag);
-            resolve(semver);
-        }).catch((error) => {
-            reject(error);
-        });
-    });
-}
-
 export async function getCompatibleReleaseTagStrings(environment: Environment) {
     return new Promise<string[]>((resolve, reject) => {
         getCompatibleImageReleaseTags(environment).then((tags) => {
