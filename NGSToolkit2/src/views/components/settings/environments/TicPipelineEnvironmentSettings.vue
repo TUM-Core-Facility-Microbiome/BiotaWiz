@@ -4,7 +4,8 @@
       <div class="space-y-6">
         <div>
           <h3 class="text-lg font-medium">Image for the TIC pipeline</h3>
-          <p class="text-sm text-muted-foreground">The image holds the software that is used to run the TIC pipeline and a copy of the TIC pipeline itself.</p>
+          <p class="text-sm text-muted-foreground">The image holds the software that is used to run the TIC pipeline and
+            a copy of the TIC pipeline itself.</p>
         </div>
         <div class="space-y-8">
           <div class="space-y-2">
@@ -17,7 +18,10 @@
                 v-model="selectedTag"
             >
               <option :value="null">auto-update to latest version every run</option>
-              <option v-for="option in compatibleTagStrings" :value="option" :key="option">always use version {{ option }}</option>
+              <option v-for="option in compatibleTagStrings" :value="option" :key="option">always use version {{
+                  option
+                }}
+              </option>
             </select>
             <p id="ImageTag" class="text-xs text-muted-foreground">
               Changes in the image can affect the results of the pipeline. You can specify a version of the image to use
@@ -26,7 +30,8 @@
           </div>
           <div class="space-y-2">
             <div class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                   for="ImageTag">Manage associated images</div>
+                 for="ImageTag">Manage associated images
+            </div>
             <div>
               <table class="min-w-full bg-white shadow-md rounded-lg">
                 <thead>
