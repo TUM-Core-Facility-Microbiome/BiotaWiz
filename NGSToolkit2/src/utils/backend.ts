@@ -19,10 +19,11 @@ import {Environment} from "../enums";
 import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
 import {app} from "electron";
-import {wsl} from "@endevr-io/wsl-api";
-import {windowsToWsl} from '@endevr-io/wsl-path';
+import Dockerode from "dockerode";
+const wsl = require("@endevr-io/wsl-api");
+const windowsToWsl = require("@endevr-io/wsl-path");
 
-const runningContainers = new Set();
+const runningContainers: Set<string> = new Set();
 const runningDistributions = new Set();
 
 const GITHUB_API_BASE_URL = cmArgs['api-url'];
@@ -680,7 +681,7 @@ async function getAssociatedImagesDocker(environment: Environment): Promise<IIma
     return new Promise<IImage[]>((resolve) => {
         getImageBaseName(environment).then((baseName) => {
             // filter for images where the name starts with the base name
-            docker.listImages().then(async (images: { RepoTags: string[] }[]) => {
+            docker.listImages().then(async (images: Dockerode.ImageInfo[]) => {
                 const associatedImages = images.filter((imageInfo: { RepoTags: string[] }) => {
                     return imageInfo.RepoTags.some((imageName: string) => {
                         return imageName.startsWith(baseName);
