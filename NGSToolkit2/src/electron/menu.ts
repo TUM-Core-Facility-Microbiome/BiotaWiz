@@ -1,12 +1,6 @@
 // adapted from https://github.com/electron-react-boilerplate/electron-react-boilerplate/blob/main/src/main/main.ts
-import {
-    app,
-    Menu,
-    shell,
-    BrowserWindow,
-    MenuItemConstructorOptions,
-} from 'electron';
-import { GITHUB_BASE_URL, TIC_PAPER_URL } from '../config';
+import {app, BrowserWindow, Menu, MenuItemConstructorOptions, shell} from 'electron';
+import {GITHUB_BASE_URL, TIC_PAPER_URL} from '../config';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
     selector?: string;
