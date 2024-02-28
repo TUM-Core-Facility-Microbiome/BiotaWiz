@@ -1,5 +1,3 @@
-import {app} from "electron";
-
 const commandLineArgs = require('command-line-args')
 
 // parse command line arguments
@@ -17,13 +15,6 @@ const optionDefinitions = [
         type: Boolean,
         defaultValue: false,
         description: 'Allow prerelease tags when identifying the latest pipeline release. This is useful for testing.'
-    },
-    {
-        name: 'force-tag',
-        alias: 'f',
-        type: String,
-        defaultValue: "",
-        description: 'Force a specific tag (prefixed with v) to be used as the pipeline release. This is useful for testing.'
     },
     {
         name: 'container-registry',
@@ -50,6 +41,12 @@ const optionDefinitions = [
         description: 'GitHub repository name of TIC pipeline.'
     },
     {
+        name: 'tic-pipeline-vrange',
+        type: String,
+        defaultValue: '^0.*',
+        description: 'Semantic version range for TIC pipeline.'
+    },
+    {
         name: 'shiny-rhea-repository-owner',
         type: String,
         defaultValue: 'tum-core-facility-microbiome',
@@ -61,6 +58,12 @@ const optionDefinitions = [
         defaultValue: 'shiny-rhea',
         description: 'GitHub repository name of shiny-Rhea.'
     },
+    {
+        name: 'shiny-rhea-vrange',
+        type: String,
+        defaultValue: '^0.*',
+        description: 'Semantic version range for shiny-Rhea.'
+    }
 ]
 
 

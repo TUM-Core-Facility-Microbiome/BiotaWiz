@@ -1,5 +1,6 @@
 import semver, {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
+import {Environment} from "../enums";
 
 export function getVersionString(version: SemVer) {
     return version.format();
@@ -20,13 +21,27 @@ export function semVerFromGitHubTag(tag: string): SemVer {
 }
 
 
+/**
+ * Get the allowed version range for the given environment.
+ * This is set by a command line argument for each environment.
+ * The default values can be overridden by setting the arguments and are defined in the CMD module.
+ * @param environment
+ */
+export function getAllowedRange(environment: Environment): string {
+    switch (environment) {
+        case Environment.TIC:
+            return cmArgs['tic-pipeline-vrange'];
+        case Environment.SHINY_RHEA:
+            return cmArgs['shiny-rhea-vrange'];
+        default:
+            throw new Error(`Unknown environment: ${environment}`);
+    }
+}
+
 export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
     const range: string | null = semver.validRange(allowedRange);
     if (!range) {
         throw new Error(`Invalid semantic version range ${allowedRange}`);
-    }
-    if (cmArgs['force-tag'] !== "") {
-        return [semVerFromGitHubTag(cmArgs['force-tag'])];
     }
     return tags.filter((version: SemVer) =>
         semver.satisfies(version, range, {
