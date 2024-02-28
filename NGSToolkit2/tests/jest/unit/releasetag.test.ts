@@ -28,7 +28,6 @@ describe('getMatchingVersions function', () => {
         jest.resetModules();
         jest.mock('../../../src/utils/command-line-arguments', () => ({
             cmArgs: {
-                'force-tag': '',
                 'allow-prerelease-tags': true, // Set allow-prerelease-tags to true for testing this specific test case
             },
         }));
