@@ -23,11 +23,8 @@ const osIdentifierMapping: IDictionary<string> = {
     aix: platforms.AIX,
 };
 
-
 // current platform to match against a given object with handlers
 const currentPlatform: string = osIdentifierMapping[os.platform()];
-
-
 
 export const byOS = findHandlerOrDefault.bind(null, currentPlatform);
 

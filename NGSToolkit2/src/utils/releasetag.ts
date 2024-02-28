@@ -20,7 +20,6 @@ export function semVerFromGitHubTag(tag: string): SemVer {
     return new SemVer(tag);
 }
 
-
 /**
  * Get the allowed version range for the given environment.
  * This is set by a command line argument for each environment.

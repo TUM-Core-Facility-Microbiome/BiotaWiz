@@ -1,8 +1,6 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import {contextBridge, ipcRenderer} from "electron";
-import {SemVer} from "semver";
-import {getAssociatedImages, getCompatibleReleaseTagStrings, getFixedImageTagString} from "./utils/backend";
 import {Environment} from "./enums";
 
 const indexBridge = {
@@ -20,7 +18,7 @@ const indexBridge = {
         return ipcRenderer.invoke('getPlatformName')
     },
     checkWslAvailable: async () => {
-        return new Promise<boolean> ((resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             ipcRenderer.invoke('checkWslAvailable').then((result: boolean) => {
                 resolve(result);
             }).catch((error: Error) => {
@@ -38,7 +36,7 @@ const indexBridge = {
         });
     },
     handleFolderOpen: async () => {
-        return new Promise<string> ((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
             ipcRenderer.invoke('dialog:handleFolderOpen').then((result: string) => {
                 resolve(result);
             }).catch((error: Error) => {

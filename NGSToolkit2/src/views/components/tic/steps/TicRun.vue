@@ -1,5 +1,6 @@
 <template>
-  <div class="p-4 text-xs font-mono bg-gray-800 text-white rounded-lg text-wrap w-100 max-h-80 min-h-80 overflow-y-auto" id="terminal">
+  <div class="p-4 text-xs font-mono bg-gray-800 text-white rounded-lg text-wrap w-100 max-h-80 min-h-80 overflow-y-auto"
+       id="terminal">
     <p v-for="log of logLines" class="whitespace-pre-wrap">{{ log }}</p>
   </div>
 </template>

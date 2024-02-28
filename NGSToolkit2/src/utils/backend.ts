@@ -18,12 +18,12 @@ import {runSubprocess} from "./process";
 import {Environment} from "../enums";
 import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
+import {app} from "electron";
+import Dockerode from "dockerode";
+const wsl = require("@endevr-io/wsl-api");
+const windowsToWsl = require("@endevr-io/wsl-path");
 
-const {app} = require('electron');
-const wsl = require('@endevr-io/wsl-api');
-const { windowsToWsl } = require('@endevr-io/wsl-path');
-
-const runningContainers = new Set();
+const runningContainers: Set<string> = new Set();
 const runningDistributions = new Set();
 
 const GITHUB_API_BASE_URL = cmArgs['api-url'];
@@ -109,30 +109,6 @@ function checkTarExists(path: string) {
     if (!fs.existsSync(path)) {
         throw new Error(`Distribution tarball does not exist at ${path}`);
     }
-}
-
-/**
- * Query GitHub for the latest release tag of the image.
- */
-async function getCurrentImageReleaseTag(environment: Environment) {
-    return new Promise<SemVer>((resolve, reject) => {
-        const repo = getRepository(environment);
-        axios.get<GitHubRelease>(
-            `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/latest`,
-            {
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28'
-                },
-            }
-        ).then((response) => {
-            const data = response.data;
-            const tag = data.tag_name;
-            const semver: SemVer = semVerFromGitHubTag(tag);
-            resolve(semver);
-        }).catch((error) => {
-            reject(error);
-        });
-    });
 }
 
 export async function getCompatibleReleaseTagStrings(environment: Environment) {
@@ -453,7 +429,7 @@ export async function initializeWslBackend(environment: Environment, releaseTag:
 
 export async function initializeDockerBackend(environment: Environment, releaseTag: SemVer) {
     return new Promise<void>((resolve, reject) => {
-          // initialize with defaults; using socket
+        // initialize with defaults; using socket
         getImageName(environment, releaseTag).then(async (image) => {
             updateProgress({
                 step: `Initializing ${environment} environment`,
@@ -477,12 +453,12 @@ export async function initializeDockerBackend(environment: Environment, releaseT
                     message: `Pulling v${getVersionString(releaseTag)} image`,
                     state: "running",
                 });
-                await docker.pull(image).then((stream: any) => {
+                await docker.pull(image).then((stream: NodeJS.ReadableStream) => {
                     docker.modem.followProgress(stream, onFinished, onProgress);
                     let currentStatus = "";
                     let lastUpdateTimeStamp = 0;
 
-                    function onFinished(err: any, output: any) {
+                    function onFinished() {
                         logToDevTools(`Image ${image} pulled.`);
                         resolve();
                     }
@@ -702,10 +678,10 @@ export async function getAssociatedImages(environment: Environment): Promise<IIm
  * Identify images associated with the application at the Docker backend.
  */
 async function getAssociatedImagesDocker(environment: Environment): Promise<IImage[]> {
-    return new Promise<IImage[]>((resolve, reject) => {
+    return new Promise<IImage[]>((resolve) => {
         getImageBaseName(environment).then((baseName) => {
             // filter for images where the name starts with the base name
-            docker.listImages().then(async (images: any) => {
+            docker.listImages().then(async (images: Dockerode.ImageInfo[]) => {
                 const associatedImages = images.filter((imageInfo: { RepoTags: string[] }) => {
                     return imageInfo.RepoTags.some((imageName: string) => {
                         return imageName.startsWith(baseName);
@@ -729,7 +705,7 @@ async function getAssociatedImagesDocker(environment: Environment): Promise<IIma
  * Identify images associated with the application at the WSL backend.
  */
 async function getAssociatedImagesWsl(environment: Environment): Promise<IImage[]> {
-    return new Promise<IImage[]>((resolve, reject) => {
+    return new Promise<IImage[]>((resolve) => {
         getImageBaseName(environment).then((baseName) => {
             wsl.listVerbose().then(async (distributions: { name: string }[]) => {
                 // filter for distributions where the name starts with the base name
@@ -784,7 +760,7 @@ async function deleteImageDocker(image: IImage) {
  * @param image
  */
 async function deleteImageWsl(image: IImage) {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
         logToDevTools(`Deleting WSL distribution ${image.name}`);
         const distroName = `${image.name}_${image.tag}`;
         wsl.unregister(distroName).then(() => {
@@ -848,13 +824,13 @@ async function runWithDocker(environment: Environment, command: string[], option
     // start and get the stdout
     await container.start();
     runningContainers.add(container.id);
-    container.attach({stream: true, stdout: true, stderr: true}, function (err: any, stream: any) {
+    container.attach({stream: true, stdout: true, stderr: true}, function (err: (Error | null), stream: NodeJS.ReadableStream) {
         stream.on('data', (data: Buffer) => {
             const msg = data.toString();
             logForEnvironment(environment, msg);
         });
     });
-    const statusCode: {StatusCode: number} = await container.wait();
+    const statusCode: { StatusCode: number } = await container.wait();
     runningContainers.delete(container.id);
     return statusCode.StatusCode;
 }
@@ -880,19 +856,19 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         console.log(`Preparing mount point ${target}`);
         logForEnvironment(environment, `Preparing mount point ${target}`);
         logForEnvironment(environment, "Clearing previous mounts...");
-        await runSubprocess(backend.command, ["--distribution", distribution, "--", "umount", target], (msg, isStderr) => {
+        await runSubprocess(backend.command, ["--distribution", distribution, "--", "umount", target], (msg) => {
             logToDevTools(msg);
         });  // might return non-zero if the mount point is not used
 
 
         logForEnvironment(environment, "Ensuring mount point exists...");
-        await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg, isStderr) => {
+        await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
             logToDevTools(msg);
         }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
 
         console.log(`Mounting ${source} to ${target}`);
         logForEnvironment(environment, `Bind mounting ${source} to ${target}`);
-        const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target], (msg, isStderr) => {
+        const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target], (msg) => {
             logToDevTools(msg);
         });
         if (exitCode !== 0) {
@@ -903,7 +879,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
     logForEnvironment(environment, `Running command`);
     runningDistributions.add(distribution);
     const args = ["--distribution", distribution, "--", ...command];
-    return await runSubprocess(backend.command, args, (msg: string, isStderr: boolean) => {
+    return await runSubprocess(backend.command, args, (msg: string) => {
         logForEnvironment(environment, msg);
     }).finally(() => {
         runningDistributions.delete(distribution);

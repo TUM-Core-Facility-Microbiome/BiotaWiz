@@ -1,9 +1,6 @@
 import * as child_process from "child_process";
 import * as platform from "./platform";
-import {BrowserWindow} from "electron";
 import {getBackend} from "./storage";
-import {logToDevTools} from "./logHandler";
-import {Environment} from "../enums";
 
 
 async function dockerHelloWorld(): Promise<number> {
@@ -21,7 +18,9 @@ function wslHelloWorld(): Promise<number> {
     );
 }
 
-export function runSubprocess(command: string, args: string[], logHandler: (msg: string, isStderr: boolean) => void = () => {return}): Promise<number> {
+export function runSubprocess(command: string, args: string[], logHandler: (msg: string, isStderr: boolean) => void = () => {
+    return
+}): Promise<number> {
     return new Promise<number>((resolve, reject) => {
         const subprocess = child_process.spawn(command, args);
         console.log(`Spawned child with pid ${subprocess.pid}`);

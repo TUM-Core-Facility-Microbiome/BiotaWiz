@@ -1,9 +1,7 @@
-import {SemVer} from "semver";
-import {getMatchingVersions} from "../../../src/utils/releasetag";
-
 describe('getMatchingVersions function', () => {
     test('should match release versions of given range', () => {
         const {getMatchingVersions} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         const shouldMatch = [
             new SemVer('v0.0.1'),
@@ -29,7 +27,6 @@ describe('getMatchingVersions function', () => {
         jest.resetModules();
         jest.mock('../../../src/utils/command-line-arguments', () => ({
             cmArgs: {
-                'force-tag': '',
                 'allow-prerelease-tags': true, // Set allow-prerelease-tags to true for testing this specific test case
             },
         }));

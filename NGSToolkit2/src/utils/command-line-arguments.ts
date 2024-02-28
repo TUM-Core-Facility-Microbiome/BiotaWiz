@@ -1,6 +1,5 @@
-const commandLineArgs = require('command-line-args')
+import commandLineArgs from "command-line-args";
 
-// parse command line arguments
 const optionDefinitions = [
     {
         name: 'version',

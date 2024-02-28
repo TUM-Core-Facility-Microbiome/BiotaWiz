@@ -1,13 +1,11 @@
 import {Environment, SpikeMode} from "../enums";
-import {app, shell} from "electron";
+import {app, shell, Notification} from "electron";
 import path from "path";
 import {writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
-
-const { Notification } = require('electron')
 
 class TicConfiguration {
     private baseDirectory = "";
@@ -33,53 +31,9 @@ class TicConfiguration {
         this.writeMappingFile();
     }
 
-    private writeMappingFile() {
-        // save prefilled mapping file to baseDirectory
-        this.mappingFile = path.join(this.baseDirectory, 'mapping.csv');  // use file extension .csv to open in Excel but keep TSV format
-        const content = this.generateMappingFileContent();
-        writeFile(this.mappingFile, content, (err) => {
-            console.error(err);
-        });
-
-        // open mapping file in default editor
-        if (this.spikeMode == SpikeMode.SPIKED) {
-            shell.openPath(this.mappingFile).then(() => {
-                console.log(`Opened mapping file in default editor`);
-            }).catch((err: string) => {
-                console.error(err);
-            });
-        }
-    }
-
-    private generateMappingFileContent() {
-        const delimiter = "\t";
-        let content = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path'].join(delimiter) + "\n";
-
-        let spikeDefaults = ['NaN', '0'];  // set to dummy values; will be ignored by pipeline
-        if (this.spikeMode == SpikeMode.SPIKED) {
-            spikeDefaults = ['', ''];  // set empty to be filled by user
-        }
-
-        this.samples.forEach((sample) => {
-            const baseName = sample.name;
-
-            // parent path relative to baseDirectory
-            const parentPath = this.relativePathToBaseDirectory(path.dirname(sample.path));
-            content += [baseName, ...spikeDefaults, parentPath].join(delimiter) + "\n";
-        });
-        return content;
-    }
-
     public setParameters(parameters: ITicPipelineArguments) {
         this.parameters = parameters;
         this.writeParameterFile();
-    }
-
-    private writeParameterFile() {
-        this.yamlFile = path.join(this.baseDirectory, 'IMNGS2Pipeline_args.yml');
-        writeFile(this.yamlFile, stringify(this.parameters), (err) => {
-            console.error(err);
-        });
     }
 
     public runPipeline() {
@@ -145,6 +99,50 @@ class TicConfiguration {
                     state: "error",
                 });
             });
+        });
+    }
+
+    private writeMappingFile() {
+        // save prefilled mapping file to baseDirectory
+        this.mappingFile = path.join(this.baseDirectory, 'mapping.csv');  // use file extension .csv to open in Excel but keep TSV format
+        const content = this.generateMappingFileContent();
+        writeFile(this.mappingFile, content, (err) => {
+            console.error(err);
+        });
+
+        // open mapping file in default editor
+        if (this.spikeMode == SpikeMode.SPIKED) {
+            shell.openPath(this.mappingFile).then(() => {
+                console.log(`Opened mapping file in default editor`);
+            }).catch((err: string) => {
+                console.error(err);
+            });
+        }
+    }
+
+    private generateMappingFileContent() {
+        const delimiter = "\t";
+        let content = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path'].join(delimiter) + "\n";
+
+        let spikeDefaults = ['NaN', '0'];  // set to dummy values; will be ignored by pipeline
+        if (this.spikeMode == SpikeMode.SPIKED) {
+            spikeDefaults = ['', ''];  // set empty to be filled by user
+        }
+
+        this.samples.forEach((sample) => {
+            const baseName = sample.name;
+
+            // parent path relative to baseDirectory
+            const parentPath = this.relativePathToBaseDirectory(path.dirname(sample.path));
+            content += [baseName, ...spikeDefaults, parentPath].join(delimiter) + "\n";
+        });
+        return content;
+    }
+
+    private writeParameterFile() {
+        this.yamlFile = path.join(this.baseDirectory, 'IMNGS2Pipeline_args.yml');
+        writeFile(this.yamlFile, stringify(this.parameters), (err) => {
+            console.error(err);
         });
     }
 

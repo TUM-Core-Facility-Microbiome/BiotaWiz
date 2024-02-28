@@ -1,6 +1,5 @@
 import {getDefaultBackend} from "./backend";
 import jsonStorage from "electron-json-storage";
-import {SemVer} from "semver";
 import {semVerFromGitHubTag} from "./releasetag";
 import {Environment} from "../enums";
 
@@ -16,7 +15,6 @@ function isEmpty(obj: object) {
     return true;
 }
 
-
 export async function setBackend(backend: IBackend) {
     return new Promise<void>((resolve, reject) => {
         jsonStorage.set('backend', backend, (error) => {
@@ -28,7 +26,6 @@ export async function setBackend(backend: IBackend) {
         });
     });
 }
-
 
 export async function getBackend() {
     return new Promise<IBackend>((resolve, reject) => {
@@ -43,7 +40,7 @@ export async function getBackend() {
                 backendInStorage = data;
             }
 
-            if (backendInStorage != null && backendInStorage != {}) {
+            if (backendInStorage != null && !isEmpty(backendInStorage)) {
                 console.debug("Resolving backend from storage");
                 resolve(backendInStorage as IBackend);
             } else {

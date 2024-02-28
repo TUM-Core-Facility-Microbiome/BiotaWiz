@@ -27,14 +27,11 @@ class TaskQueue {
     private async processQueue(): Promise<void> {
         while (this.queue.length > 0) {
             this.isProcessing = true;
-            console.log('Setting isProcessing lock.');
 
             const task = this.queue.shift();
             if (task) {
                 try {
-                    console.debug(`Picking new task from queue. Waiting: ${this.queue.length}`);
                     await task().finally(() => {
-                        console.log('Releasing isProcessing lock.');
                         this.isProcessing = false;
                     });
                 } catch (error) {

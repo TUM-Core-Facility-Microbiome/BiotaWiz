@@ -91,4 +91,3 @@ app.on('will-quit', async (event) => {
         app.exit();
     }
 });
-

@@ -32,11 +32,11 @@
             </template>
             <p class="font-mono">
               {{ item.name }}
-<!--              <span v-if="item.type === 'sample'">-->
-<!--                <span v-if="item.isCompressed">gz </span>-->
-<!--                <span v-else>non-gz </span>-->
-<!--                <span v-if="item.isPaired">paired </span>-->
-<!--              </span>-->
+              <!--              <span v-if="item.type === 'sample'">-->
+              <!--                <span v-if="item.isCompressed">gz </span>-->
+              <!--                <span v-else>non-gz </span>-->
+              <!--                <span v-if="item.isPaired">paired </span>-->
+              <!--              </span>-->
             </p>
           </div>
         </span>
@@ -65,8 +65,8 @@ li {
 </style>
 
 <script setup>
-import {defineProps, defineEmits} from 'vue'
-import {FolderIcon, FolderOpenIcon, DocumentIcon} from '@heroicons/vue/24/outline'
+import {defineEmits, defineProps} from 'vue'
+import {DocumentIcon, FolderIcon, FolderOpenIcon} from '@heroicons/vue/24/outline'
 
 const props = defineProps(['items']); // Define the 'items' prop
 const emit = defineEmits(['selection-changed']);
