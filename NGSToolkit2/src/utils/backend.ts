@@ -21,7 +21,7 @@ import {helpPages} from "./helpPages";
 
 const {app} = require('electron');
 const wsl = require('@endevr-io/wsl-api');
-const { windowsToWsl } = require('@endevr-io/wsl-path');
+const {windowsToWsl} = require('@endevr-io/wsl-path');
 
 const runningContainers = new Set();
 const runningDistributions = new Set();
@@ -453,7 +453,7 @@ export async function initializeWslBackend(environment: Environment, releaseTag:
 
 export async function initializeDockerBackend(environment: Environment, releaseTag: SemVer) {
     return new Promise<void>((resolve, reject) => {
-          // initialize with defaults; using socket
+        // initialize with defaults; using socket
         getImageName(environment, releaseTag).then(async (image) => {
             updateProgress({
                 step: `Initializing ${environment} environment`,
@@ -854,7 +854,7 @@ async function runWithDocker(environment: Environment, command: string[], option
             logForEnvironment(environment, msg);
         });
     });
-    const statusCode: {StatusCode: number} = await container.wait();
+    const statusCode: { StatusCode: number } = await container.wait();
     runningContainers.delete(container.id);
     return statusCode.StatusCode;
 }
