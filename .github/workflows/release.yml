@@ -1,0 +1,25 @@
+# Create a draft release when a new tag is pushed.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Publish Electron app using the publishers defined in forge config
+        uses: zsewa/action-electron-forge@v1
+        with:
+          node-installer: 'npm'
+          folder: 'NGSToolkit2'

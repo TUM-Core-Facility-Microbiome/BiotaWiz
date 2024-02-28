@@ -8,10 +8,17 @@ import "./api/api";
 import {Environment} from "./enums";
 import {terminateBackend} from "./utils/backend";
 import {taskQueue} from "./utils/taskQueue";
+import {cmArgs} from "./utils/command-line-arguments";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
-    app.quit();
+    app.exit();
+}
+
+// when started with --version or -v, print the version and exit
+if (cmArgs['version']) {
+    console.log(`${app.getName()} v${app.getVersion()}`);
+    app.exit();
 }
 
 const createWindow = () => {

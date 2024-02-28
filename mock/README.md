@@ -64,6 +64,8 @@ Please note, that if you apply changes in the `images` directory, you need
 to rerun this command to reflect the changes.
 
 ### Run the GUI against the mock API
+While review versions are created, the GUI points to these endpoints by default. You can ignore this section.
+
 You can then run the GUI against the mock API by setting the following command line arguments:
 - `--api-url http://localhost:5001`
 - `--container-registry localhost:5000`
