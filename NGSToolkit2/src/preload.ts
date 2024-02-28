@@ -19,7 +19,7 @@ const indexBridge = {
         return ipcRenderer.invoke('getPlatformName')
     },
     checkWslAvailable: async () => {
-        return new Promise<boolean> ((resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             ipcRenderer.invoke('checkWslAvailable').then((result: boolean) => {
                 resolve(result);
             }).catch((error: Error) => {
@@ -37,7 +37,7 @@ const indexBridge = {
         });
     },
     handleFolderOpen: async () => {
-        return new Promise<string> ((resolve, reject) => {
+        return new Promise<string>((resolve, reject) => {
             ipcRenderer.invoke('dialog:handleFolderOpen').then((result: string) => {
                 resolve(result);
             }).catch((error: Error) => {
