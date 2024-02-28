@@ -33,4 +33,5 @@ jobs:
         cache-dependency-path: '**/package-lock.json'
     - run: npm ci
     - run: npm test
-    - run: npm start -- -- --version
+    - name: Test run the app (output version number)
+      run: npm start -- -- --version |& tee >(grep -q "Error launching app" && exit 1 || exit 0)
