@@ -29,7 +29,8 @@
                 <span class="font-semibold">{{ state.step }}</span>:
                 {{ state.progress }}
                 <span v-if="state.error">
-                  <a @click="openExternal(state.error.helpUrl)" class="underline cursor-pointer text-blue-500">Help page</a>
+                  <a @click="openExternal(state.error.helpUrl)"
+                     class="underline cursor-pointer text-blue-500">Help page</a>
                 </span>
               </div>
               <div class="pl-7" v-else>
