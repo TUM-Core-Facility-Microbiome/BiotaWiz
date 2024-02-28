@@ -1,8 +1,7 @@
-import {SemVer} from "semver";
-
 describe('getMatchingVersions function', () => {
     test('should match release versions of given range', () => {
         const {getMatchingVersions} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         const shouldMatch = [
             new SemVer('v0.0.1'),
@@ -33,6 +32,7 @@ describe('getMatchingVersions function', () => {
         }));
 
         const {getMatchingVersions} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         const shouldMatch = [
             new SemVer('v0.0.1'),
@@ -59,6 +59,7 @@ describe('getMatchingVersions function', () => {
 
     test('should throw an error for an invalid range', () => {
         const {getMatchingVersions} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         const tags = [
             new SemVer('v0.0.1'),
@@ -72,6 +73,7 @@ describe('getMatchingVersions function', () => {
 describe('getLatestVersion function', () => {
     test('should return the latest version', () => {
         const {getLatestVersion} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         const tags = [
             new SemVer('v0.0.1'),
@@ -84,6 +86,7 @@ describe('getLatestVersion function', () => {
 
     test('should return the latest version when there are pre-release tags', () => {
         const {getLatestVersion} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         const tags = [
             new SemVer('v0.0.1-alpha'),
@@ -96,6 +99,7 @@ describe('getLatestVersion function', () => {
 
     test('should return the latest version when there are pre-release tags of the same patch', () => {
         const {getLatestVersion} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         const tags = [
             new SemVer('v0.5.92'), // latest
@@ -109,6 +113,7 @@ describe('getLatestVersion function', () => {
 describe('semVerFromGitHubTag function', () => {
     test('should return a SemVer object', () => {
         const {semVerFromGitHubTag} = require('../../../src/utils/releasetag');
+        const {SemVer} = require('semver');
 
         expect(semVerFromGitHubTag('v0.5.91')).toEqual(new SemVer('v0.5.91'));
     });
