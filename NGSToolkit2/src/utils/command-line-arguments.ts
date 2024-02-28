@@ -1,5 +1,3 @@
-import {app} from "electron";
-
 const commandLineArgs = require('command-line-args')
 
 // parse command line arguments
