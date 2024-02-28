@@ -18,10 +18,9 @@ import {runSubprocess} from "./process";
 import {Environment} from "../enums";
 import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
-
-const {app} = require('electron');
-const wsl = require('@endevr-io/wsl-api');
-const {windowsToWsl} = require('@endevr-io/wsl-path');
+import {app} from "electron";
+import {wsl} from "@endevr-io/wsl-api";
+import {windowsToWsl} from '@endevr-io/wsl-path';
 
 const runningContainers = new Set();
 const runningDistributions = new Set();

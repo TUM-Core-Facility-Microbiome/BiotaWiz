@@ -35,6 +35,8 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-vite": "^7.2.0",
     "@electron-forge/publisher-github": "^7.2.0",
+    "@types/command-line-args": "^5.2.3",
+    "@types/dockerode": "^3.3.24",
     "@types/electron-json-storage": "^4.5.4",
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
