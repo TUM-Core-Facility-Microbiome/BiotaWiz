@@ -25,7 +25,6 @@ export function logToDevTools(message: string, level = 'info') {
     }
 }
 
-
 export function updateProgress(progress: Progress) {
     const window = BrowserWindow.fromId(1);
     if (window) {
