@@ -1,10 +1,16 @@
 import path from "path";
 import * as fs from "fs";
-import {COMPATIBLE_IMAGE_VERSIONS, DISTRIBUTION_NAME, GITHUB_BASE_URL, IMAGE_ASSET_NAME} from "../config";
+import {IMAGE_ASSET_NAME} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
-import {getLatestVersion, getMatchingVersions, getVersionString, semVerFromGitHubTag} from "./releasetag";
+import {
+    getAllowedRange,
+    getLatestVersion,
+    getMatchingVersions,
+    getVersionString,
+    semVerFromGitHubTag
+} from "./releasetag";
 import {logForEnvironment, logToDevTools, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
@@ -181,7 +187,8 @@ async function queryAvailableReleaseTags(environment: Environment) {
 async function getCompatibleImageReleaseTags(environment: Environment) {
     return new Promise<SemVer[]>((resolve, reject) => {
         queryAvailableReleaseTags(environment).then((availableTags) => {
-            const compatibleVersions = getMatchingVersions(availableTags, COMPATIBLE_IMAGE_VERSIONS);
+            const range = getAllowedRange(environment);
+            const compatibleVersions = getMatchingVersions(availableTags, range);
             console.debug(`Found ${compatibleVersions.length} compatible versions: ${compatibleVersions.map((version: SemVer) => getVersionString(version)).join(', ')}`);
             resolve(compatibleVersions);
         }).catch((error) => {
