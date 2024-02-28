@@ -40,7 +40,7 @@ export async function getBackend() {
                 backendInStorage = data;
             }
 
-            if (backendInStorage != null && backendInStorage != {}) {
+            if (backendInStorage != null && !isEmpty(backendInStorage)) {
                 console.debug("Resolving backend from storage");
                 resolve(backendInStorage as IBackend);
             } else {
