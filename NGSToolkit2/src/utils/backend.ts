@@ -163,8 +163,12 @@ async function queryAvailableReleaseTags(environment: Environment) {
         ).then((response) => {
             const data = response.data;
             const availableTags = data.map((release) => {
-                return semVerFromGitHubTag(release.tag_name);
-            });
+                try {
+                    return semVerFromGitHubTag(release.tag_name);
+                } catch (error) {  // return null for tags that could not be parsed and filter them out thereafter
+                    return null;
+                }
+            }).filter((tag) => tag !== null) as SemVer[];
             console.debug(`Repo offers ${availableTags.length} releases: ${availableTags.map((version: SemVer) => getVersionString(version)).join(', ')}`);
             resolve(availableTags);
         }).catch((error) => {
