@@ -1,8 +1,9 @@
-import {dialog} from "electron";
+import {BrowserWindow, dialog} from "electron";
 
 export async function handleFolderOpen(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        dialog.showOpenDialog({
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        dialog.showOpenDialog(focusedWindow, {
             properties: ['openDirectory']
         }).then((result) => {
             if (result.canceled) {
