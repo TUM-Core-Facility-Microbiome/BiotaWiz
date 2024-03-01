@@ -5,7 +5,7 @@ CONTAINER_REGISTRY="localhost:5000"
 # Import images
 # assume that images are in /images/<owner>/<repo>/v<tag>/<asset>
 # use the tag with the base image name
-for tarball_path in /images/*/*/*/image.tar.gz; do
+for tarball_path in /images/*/*/v*/image.tar.gz; do
   # get the tag from the directory name; remove the prefixed 'v'
   tag=$(basename $(dirname "${tarball_path}") | sed 's/^v//')
   # get owner and repo to construct the image name
