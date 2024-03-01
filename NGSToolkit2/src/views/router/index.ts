@@ -34,12 +34,16 @@ const index = createRouter({
                                     component: () => import('../components/tic/steps/StudySelection.vue'),
                                 },
                                 {
-                                    path: '/params',
-                                    component: () => import('../components/tic/steps/Parameters.vue'),
-                                },
-                                {
                                     path: '/spike-mode',
                                     component: () => import('../components/tic/steps/SpikeMode.vue'),
+                                },
+                                {
+                                    path: '/check-mapping',
+                                    component: () => import('../components/tic/steps/CheckMappingFile.vue'),
+                                },
+                                {
+                                    path: '/params',
+                                    component: () => import('../components/tic/steps/Parameters.vue'),
                                 },
                                 {
                                     path: '/run',

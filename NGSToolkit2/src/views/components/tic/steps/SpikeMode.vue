@@ -98,14 +98,20 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {useRouter} from "vue-router";
+import {SpikeMode} from "../../../../enums";
+
 
 const router = useRouter();
 
 let spikeMode = ref("spiked");
 
 async function publishSpikeMode() {
-  await indexBridge.publishSpikeMode(spikeMode.value);
-  await router.push("/params");
+  const actualMode = await indexBridge.publishSpikeMode(spikeMode.value);
+  if (actualMode === SpikeMode.SPIKED) {
+    await router.push("/check-mapping");
+  } else {
+    await router.push("/params");
+  }
 }
 </script>
 

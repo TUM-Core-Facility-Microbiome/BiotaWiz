@@ -121,12 +121,22 @@ ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
     }
     console.log(`Selected spike mode: ${mode}`);
     ticConfiguration.setSpikeMode(mode);
-    console.log(ticConfiguration);
+    return ticConfiguration.getSpikeMode();
 });
 
 ipcMain.handle("publish:ticParameters", async (event, parameters: ITicPipelineArguments) => {
     ticConfiguration.setParameters(parameters);
     console.log(ticConfiguration);
+});
+
+ipcMain.handle("tic:openMappingFile", async () => {
+    console.log("Opening mapping file");
+    await ticConfiguration.openMappingFile();
+});
+
+ipcMain.handle("tic:checkMapping", async () => {
+    console.log("Checking mapping file");
+    return ticConfiguration.checkMapping();
 });
 
 ipcMain.handle("tic:run", async () => {
