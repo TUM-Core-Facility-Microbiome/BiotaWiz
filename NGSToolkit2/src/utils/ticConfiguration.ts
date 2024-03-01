@@ -6,6 +6,7 @@ import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
+import {checkMappingFile} from "./check-mapping-file";
 
 class TicConfiguration {
     private baseDirectory = "";
@@ -29,6 +30,14 @@ class TicConfiguration {
         this.spikeMode = spikeMode;
         console.log(`Spike mode set to ${spikeMode}`);
         this.writeMappingFile();
+    }
+
+    public getSpikeMode() {
+        return this.spikeMode;
+    }
+
+    public checkMapping(): Promise<void> {
+        return checkMappingFile(this.mappingFile, this);
     }
 
     public setParameters(parameters: ITicPipelineArguments) {
@@ -112,12 +121,16 @@ class TicConfiguration {
 
         // open mapping file in default editor
         if (this.spikeMode == SpikeMode.SPIKED) {
-            shell.openPath(this.mappingFile).then(() => {
-                console.log(`Opened mapping file in default editor`);
-            }).catch((err: string) => {
-                console.error(err);
-            });
+            this.openMappingFile();
         }
+    }
+
+    public openMappingFile() {
+        shell.openPath(this.mappingFile).then(() => {
+            console.log(`Opened mapping file in default editor`);
+        }).catch((err: string) => {
+            console.error(err);
+        });
     }
 
     private generateMappingFileContent() {

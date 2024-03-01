@@ -86,6 +86,12 @@ const indexBridge = {
     publishSpikeMode: async (spikeModeName: string) => {
         return ipcRenderer.invoke('publish:spikeMode', spikeModeName);
     },
+    openMappingFile: async () => {
+        return ipcRenderer.invoke('tic:openMappingFile');
+    },
+    checkMappingFile: async () => {
+        return ipcRenderer.invoke('tic:checkMapping');
+    },
     publishTicParameters: async (parameters: ITicPipelineArguments) => {
         return ipcRenderer.invoke('publish:ticParameters', parameters);
     },
