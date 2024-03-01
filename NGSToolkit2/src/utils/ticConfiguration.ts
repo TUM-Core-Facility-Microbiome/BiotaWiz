@@ -1,5 +1,5 @@
 import {Environment, SpikeMode} from "../enums";
-import {app, shell, Notification} from "electron";
+import {app, shell, Notification, BrowserWindow} from "electron";
 import path from "path";
 import {writeFile} from "fs";
 import {stringify} from "yaml";
@@ -80,6 +80,11 @@ class TicConfiguration {
                     new Notification({
                         title: app.name,
                         body: "TIC pipeline finished successfully",
+                    }).on('click', () => {
+                        const mainWindow = BrowserWindow.fromId(1);
+                        if (mainWindow) {
+                            mainWindow.focus();
+                        }
                     }).show()
                 } else {
                     if (statusCode == 137) {
@@ -98,6 +103,11 @@ class TicConfiguration {
                     new Notification({
                         title: app.name,
                         body: "TIC pipeline failed",
+                    }).on('click', () => {
+                        const mainWindow = BrowserWindow.fromId(1);
+                        if (mainWindow) {
+                            mainWindow.focus();
+                        }
                     }).show()
                 }
             }).catch((error: string) => {
