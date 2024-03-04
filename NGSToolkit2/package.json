@@ -65,7 +65,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "semver": "^7.6.0",
     "vue": "^3.4.19",
-    "vue-router": "^4.2.5",
+    "vue-router": "^4.3.0",
     "yaml": "^2.3.4"
   }
 }
