@@ -27,14 +27,14 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@electron-forge/cli": "^7.2.0",
-    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/cli": "^7.3.0",
+    "@electron-forge/maker-deb": "^7.3.0",
     "@electron-forge/maker-rpm": "^7.3.0",
     "@electron-forge/maker-squirrel": "^7.3.0",
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-vite": "^7.2.0",
-    "@electron-forge/publisher-github": "^7.2.0",
+    "@electron-forge/publisher-github": "^7.3.0",
     "@types/command-line-args": "^5.2.3",
     "@types/dockerode": "^3.3.24",
     "@types/electron-json-storage": "^4.5.4",
@@ -65,7 +65,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "semver": "^7.6.0",
     "vue": "^3.4.19",
-    "vue-router": "^4.2.5",
+    "vue-router": "^4.3.0",
     "yaml": "^2.3.4"
   }
 }
