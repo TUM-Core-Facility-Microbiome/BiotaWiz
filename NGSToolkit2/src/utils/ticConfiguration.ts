@@ -38,12 +38,12 @@ export class TicConfiguration {
     public checkMapping(): Promise<void> {
         return new Promise((resolve, reject) => {
             // check if file exists
-            if (!existsSync(mappingFile)) {
-                reject(`Mapping file was not found at ${mappingFile}`);
+            if (!existsSync(this.mappingFile)) {
+                reject(`Mapping file was not found at ${this.mappingFile}`);
             }
 
             // read csv-like file
-            const data = readFileSync(mappingFile, 'utf8');
+            const data = readFileSync(this.mappingFile, 'utf8');
             if (!data) {
                 reject("Mapping file is empty");
             }
