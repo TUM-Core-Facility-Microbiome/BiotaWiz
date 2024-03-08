@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: 'NGSToolkit2' # folder where package-lock.json is located
+        working-directory: 'BiotaWiz' # folder where package-lock.json is located
 
     strategy:
       matrix:
