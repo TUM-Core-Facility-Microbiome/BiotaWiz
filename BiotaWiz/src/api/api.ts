@@ -133,7 +133,7 @@ ipcMain.handle("publish:ticParameters", async (event, parameters: ITicPipelineAr
     console.log(ticConfiguration);
 });
 
-ipcMain.handle("publish:usearch", async (event, path: string) => {
+ipcMain.handle("publish:usearchBinary", async (event, path: string) => {
     await ticConfiguration.setUsearchBinaryPath(path);
 });
 
