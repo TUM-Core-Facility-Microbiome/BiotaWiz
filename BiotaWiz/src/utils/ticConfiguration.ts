@@ -1,14 +1,16 @@
 import {Environment, SpikeMode} from "../enums";
-import {app, shell, Notification, BrowserWindow} from "electron";
+import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
 import {existsSync, readFileSync, writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
+import {getOrDownloadUsearch32Binary} from "./usearch";
 
 export class TicConfiguration {
     private baseDirectory = "";
+    private usearchBinary = "";
     private mappingFile = "";
     private yamlFile = "";
 
@@ -19,6 +21,15 @@ export class TicConfiguration {
     public setBaseDirectory(baseDirectory: string) {
         this.baseDirectory = baseDirectory;
         console.log(`TIC base directory set to ${baseDirectory}`);
+    }
+
+    public async setUsearchBinaryPath(path: string) {
+        if (path === "") {  // download and set to default path
+            path = await taskQueue.defer(getOrDownloadUsearch32Binary);
+        }
+
+        this.usearchBinary = path;
+        console.log(`Usearch binary path set to ${path}`);
     }
 
     public setSamples(samples: IFileSystemNode[]) {
