@@ -46,6 +46,10 @@ const index = createRouter({
                                     component: () => import('../components/tic/steps/Parameters.vue'),
                                 },
                                 {
+                                    path: '/usearch',
+                                    component: () => import('../components/tic/steps/Usearch.vue'),
+                                },
+                                {
                                     path: '/run',
                                     component: () => import('../components/tic/steps/TicRun.vue'),
                                 },

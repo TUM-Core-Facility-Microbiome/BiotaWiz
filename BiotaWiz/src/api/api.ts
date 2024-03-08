@@ -11,7 +11,7 @@ import {
     setFixedImageTagString
 } from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
-import {handleFolderOpen} from "./dialogs";
+import {handleFileOpen, handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "../utils/file-explorer";
 import {Environment, SpikeMode} from "../enums";
@@ -25,6 +25,10 @@ ipcMain.handle('openExternal', async (event, url: string) => {
 
 ipcMain.handle('dialog:handleFolderOpen', async () => {
     return await handleFolderOpen();
+});
+
+ipcMain.handle('dialog:handleFileOpen', async () => {
+    return await handleFileOpen();
 });
 
 ipcMain.handle("getPlatformName", () => {

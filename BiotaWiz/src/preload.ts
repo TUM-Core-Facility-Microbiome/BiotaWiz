@@ -44,6 +44,15 @@ const indexBridge = {
             });
         });
     },
+    handleFileOpen: async () => {
+        return new Promise<string>((resolve, reject) => {
+            ipcRenderer.invoke('dialog:handleFileOpen').then((result: string) => {
+                resolve(result);
+            }).catch((error: Error) => {
+                reject(error);
+            });
+        });
+    },
     getBackend: async (): Promise<IBackend> => {
         return ipcRenderer.invoke('getBackend');
     },
