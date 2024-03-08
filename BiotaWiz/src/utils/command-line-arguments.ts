@@ -1,4 +1,14 @@
 import commandLineArgs from "command-line-args";
+import {
+    REGISTRY_URL,
+    API_URL,
+    TIC_PIPELINE_REPOSITORY_OWNER,
+    TIC_PIPELINE_REPOSITORY_NAME,
+    TIC_PIPELINE_VRANGE,
+    SHINY_RHEA_REPOSITORY_OWNER,
+    SHINY_RHEA_REPOSITORY_NAME,
+    SHINY_RHEA_VRANGE
+} from "../config";
 
 const optionDefinitions = [
     {
@@ -18,49 +28,49 @@ const optionDefinitions = [
     {
         name: 'container-registry',
         type: String,
-        defaultValue: 'localhost:5000',  // production: 'ghcr.io', testing: 'localhost:5000'
+        defaultValue: REGISTRY_URL,
         description: 'Container registry to use.'
     },
     {
         name: 'api-url',
         type: String,
-        defaultValue: 'http://localhost:5001',  // production: 'https://api.github.com', testing: 'http://localhost:5001'
+        defaultValue: API_URL,
         description: 'GitHub API base URL including protocol.'
     },
     {
         name: 'tic-pipeline-repository-owner',
         type: String,
-        defaultValue: 'tum-core-facility-microbiome',
+        defaultValue: TIC_PIPELINE_REPOSITORY_OWNER,
         description: 'GitHub repository owner of TIC pipeline.'
     },
     {
         name: 'tic-pipeline-repository-name',
         type: String,
-        defaultValue: 'tic-pipeline',
+        defaultValue: TIC_PIPELINE_REPOSITORY_NAME,
         description: 'GitHub repository name of TIC pipeline.'
     },
     {
         name: 'tic-pipeline-vrange',
         type: String,
-        defaultValue: '^0.*',
+        defaultValue: TIC_PIPELINE_VRANGE,
         description: 'Semantic version range for TIC pipeline.'
     },
     {
         name: 'shiny-rhea-repository-owner',
         type: String,
-        defaultValue: 'tum-core-facility-microbiome',
+        defaultValue: SHINY_RHEA_REPOSITORY_OWNER,
         description: 'GitHub repository owner of shiny-Rhea.'
     },
     {
         name: 'shiny-rhea-repository-name',
         type: String,
-        defaultValue: 'shiny-rhea',
+        defaultValue: SHINY_RHEA_REPOSITORY_NAME,
         description: 'GitHub repository name of shiny-Rhea.'
     },
     {
         name: 'shiny-rhea-vrange',
         type: String,
-        defaultValue: '^0.*',
+        defaultValue: SHINY_RHEA_VRANGE,
         description: 'Semantic version range for shiny-Rhea.'
     }
 ]
