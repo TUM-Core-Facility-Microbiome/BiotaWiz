@@ -23,13 +23,22 @@ export class TicConfiguration {
         console.log(`TIC base directory set to ${baseDirectory}`);
     }
 
-    public async setUsearchBinaryPath(path: string) {
-        if (path === "") {  // download and set to default path
-            path = await taskQueue.defer(getOrDownloadUsearch32Binary);
-        }
-
-        this.usearchBinary = path;
-        console.log(`Usearch binary path set to ${path}`);
+    public setUsearchBinaryPath(path: string) {
+        return new Promise<void>((resolve, reject) => {
+            if (path === "") {  // download and set to default path
+                taskQueue.defer(getOrDownloadUsearch32Binary).then((path) => {
+                    this.usearchBinary = path;
+                    console.log(`Usearch binary path set to ${path}`);
+                    resolve();
+                }).catch((error) => {
+                    reject(error);
+                });
+            } else {
+                this.usearchBinary = path;
+                console.log(`Usearch binary path set to ${path}`);
+                resolve();
+            }
+        });
     }
 
     public setSamples(samples: IFileSystemNode[]) {
