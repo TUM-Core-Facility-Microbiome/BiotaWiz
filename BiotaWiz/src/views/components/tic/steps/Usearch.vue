@@ -102,11 +102,11 @@ async function selectUsearchFile() {
 }
 
 async function run() {
-  // if (usearch.value === "download") {
-  //   await indexBridge.publishUsearchBinary("");
-  // } else {
-  //   await indexBridge.publishUsearchBinary(usearchPath.value);
-  // }
+  if (usearch.value === "download") {
+    await indexBridge.publishUsearchBinary("");
+  } else {
+    await indexBridge.publishUsearchBinary(usearchPath.value);
+  }
 
   await router.push("/run");
 }

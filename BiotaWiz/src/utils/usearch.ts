@@ -19,34 +19,35 @@ export async function getOrDownloadUsearch32Binary() {
 
 async function download32bitBinary(path: string) {
     return new Promise<void>((resolve, reject) => {
-        updateProgress({
-            step: "Downloading USEARCH32 binary",
-            message: "Downloading",
-            state: "running",
-        });
-        logForEnvironment(Environment.TIC, "Downloading USEARCH32 binary");
-
-        const writer = fs.createWriteStream(path);
-        axios.get(
-            USEARCH32_DOWNLOAD_URL,
-            {responseType: 'stream'}
-        ).then((response) => {
-            response.data.pipe(writer);
-
-            writer.on('finish', () => {
-                updateProgress({
-                    step: "Downloading USEARCH32 binary",
-                    message: "Downloaded",
-                    state: "done",
-                });
-                logForEnvironment(Environment.TIC, "Download finished");
-                resolve();
-            });
-            writer.on('error', (error) => {
-                reject(error);
-            });
-        }).catch((error) => {
-            reject(error);
-        });
+        resolve();
+        // updateProgress({
+        //     step: "Downloading USEARCH32 binary",
+        //     message: "Downloading",
+        //     state: "running",
+        // });
+        // logForEnvironment(Environment.TIC, "Downloading USEARCH32 binary");
+        //
+        // const writer = fs.createWriteStream(path);
+        // axios.get(
+        //     USEARCH32_DOWNLOAD_URL,
+        //     {responseType: 'stream'}
+        // ).then((response) => {
+        //     response.data.pipe(writer);
+        //
+        //     writer.on('finish', () => {
+        //         updateProgress({
+        //             step: "Downloading USEARCH32 binary",
+        //             message: "Downloaded",
+        //             state: "done",
+        //         });
+        //         logForEnvironment(Environment.TIC, "Download finished");
+        //         resolve();
+        //     });
+        //     writer.on('error', (error) => {
+        //         reject(error);
+        //     });
+        // }).catch((error) => {
+        //     reject(error);
+        // });
     });
 }
