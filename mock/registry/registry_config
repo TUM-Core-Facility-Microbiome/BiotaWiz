@@ -1,0 +1,16 @@
+version: 0.1
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+http:
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
+auth:
+  token:
+    realm: "http://127.0.0.1:9000/auth"
+    service: "Docker registry"
+    issuer: "Acme auth server"
+    rootcertbundle: "/usr/local/share/ca-certificates/server.crt"

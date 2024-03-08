@@ -11,6 +11,26 @@ restricted (private repositories prior to publication).
 For running the mock APIs you need to have docker and docker-compose installed.
 
 ### Setup
+#### Generating certs
+The container registry uses an authorization service that provides tokens for
+accessing the container registry. This service requires a certificate and a key.
+You can generate these by running the following command in the `mock` directory:
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout docker-auth/certs/domain.key -out docker-auth/certs/domain.crt -sha256 -days 3650 -nodes -subj "/C=DE/ST=Bavaria/L=Munich/O=TUM-Core-Facility-Microbiome/OU=BiotaWiz/CN=localhost"
+```
+
+#### Change default password
+Generate a BCrypt hash using `htpasswd -nB <USERNAME>`. This will interactively ask for a new password.
+If you don't have `htpasswd` installed, you can use the following command to generate the hash:
+```bash
+docker run --rm --entrypoint htpasswd httpd -Bbn <USERNAME> <PASSWORD>
+```
+Copy the part after `<USERNAME>:` and replace the password for the admin account in 
+`docker-auth/auth_config.yml` with the generated hash.
+Place the plain text password in the `container-registry-setup` container's environment
+variable `REGISTRY_PASSWORD` in the `docker-compose.yml` file.
+
+#### Set up the `images` directory
 Please replicate the expected folder structure inside the `images` directory.
 Subdirectories of the `images` directory are expected to be named replicating 
 GitHub repositories. 
