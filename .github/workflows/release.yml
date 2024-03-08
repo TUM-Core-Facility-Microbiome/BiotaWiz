@@ -22,4 +22,4 @@ jobs:
         uses: zsewa/action-electron-forge@v1
         with:
           node-installer: 'npm'
-          folder: 'NGSToolkit2'
+          folder: 'BiotaWiz'

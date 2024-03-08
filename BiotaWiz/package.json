@@ -1,6 +1,6 @@
 {
-  "name": "ngstoolkit2",
-  "productName": "NGSToolkit2",
+  "name": "biotawiz",
+  "productName": "BiotaWiz",
   "version": "0.0.1-alpha.4",
   "description": "Analyze 16S rRNA amplicon sequences for microbiome studies using the TIC pipeline",
   "main": ".vite/build/main.js",

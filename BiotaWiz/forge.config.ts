@@ -5,7 +5,7 @@ import {VitePlugin} from '@electron-forge/plugin-vite';
 
 const config: ForgeConfig = {
     packagerConfig: {
-        executableName: "ngstoolkit2",
+        executableName: "biotawiz",
         icon: "./assets/icons/icon",
     },
     rebuildConfig: {},
@@ -49,7 +49,7 @@ const config: ForgeConfig = {
             config: {
                 repository: {
                     owner: 'TUM-Core-Facility-Microbiome',
-                    name: 'NGSToolkit2'
+                    name: 'BiotaWiz'
                 },
                 draft: true,
                 // take the token from the environment
