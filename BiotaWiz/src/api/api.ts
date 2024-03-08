@@ -133,6 +133,10 @@ ipcMain.handle("publish:ticParameters", async (event, parameters: ITicPipelineAr
     console.log(ticConfiguration);
 });
 
+ipcMain.handle("publish:usearch", async (event, path: string) => {
+    await ticConfiguration.setUsearchBinaryPath(path);
+});
+
 ipcMain.handle("tic:openMappingFile", async () => {
     console.log("Opening mapping file");
     await ticConfiguration.openMappingFile();

@@ -104,6 +104,9 @@ const indexBridge = {
     publishTicParameters: async (parameters: ITicPipelineArguments) => {
         return ipcRenderer.invoke('publish:ticParameters', parameters);
     },
+    publishUsearchBinary: async (path: string) => {
+        return ipcRenderer.invoke('publish:usearchBinary', path);
+    },
     runTicPipeline: async () => {
         return ipcRenderer.invoke('tic:run');
     },

@@ -2,6 +2,9 @@ export const GITHUB_BASE_URL = 'https://github.com/TUM-Core-Facility-Microbiome/
 export const TIC_PAPER_URL = 'https://doi.org/10.3389/fbinf.2022.864597';
 export const IMAGE_ASSET_NAME = 'image.tar.gz';
 
+// USEARCH
+export const USEARCH32_DOWNLOAD_URL = 'https://drive5.com/downloads/usearch11.0.667_i86linux32.gz';
+
 // defaults. These are overridden by command-line arguments.
 export const REGISTRY_URL = 'localhost:5000';  // production: 'ghcr.io', testing: 'localhost:5000'
 export const API_URL = 'http://localhost:5001';  // production: 'https://api.github.com', testing: 'http://localhost:5001'
