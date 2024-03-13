@@ -16,7 +16,7 @@ The container registry uses an authorization service that provides tokens for
 accessing the container registry. This service requires a certificate and a key.
 You can generate these by running the following command in the `mock` directory:
 ```bash
-openssl req -x509 -newkey rsa:4096 -keyout docker-auth/certs/domain.key -out docker-auth/certs/domain.crt -sha256 -days 3650 -nodes -subj "/C=DE/ST=Bavaria/L=Munich/O=TUM-Core-Facility-Microbiome/OU=BiotaWiz/CN=localhost"
+openssl req -x509 -newkey rsa:4096 -keyout docker-auth/certs/server.key -out docker-auth/certs/server.crt -sha256 -days 3650 -nodes -subj "/C=DE/ST=Bavaria/L=Munich/O=TUM-Core-Facility-Microbiome/OU=BiotaWiz/CN=localhost"
 ```
 
 #### Change default password
