@@ -1,0 +1,39 @@
+# The application assumes that there is a public repository, where the pipeline is 
+# available in a container registry and releases are listed.
+# Bringing up this docker-compose mocks the required endpoints.
+services:
+  docker-auth:
+    image: cesanta/docker_auth
+    ports:
+      - 9000:9000
+    volumes:
+      - ./docker-auth:/config:ro
+      - ./docker-auth/certs:/certs
+  registry:
+    image: registry # docker provides an official image of the distribution implementation for storing and distributing of container images and artifacts
+    ports:
+      - 5000:5000
+    volumes:
+      - ./registry/registry_config:/etc/docker/registry/config.yml
+      - ./.registry-data:/var/lib/registry
+      - ./docker-auth/certs/server.crt:/usr/local/share/ca-certificates/server.crt:ro  # Mount the server certificate into the container
+  container-registry-setup:
+    build: ./container-registry-setup
+    volumes:
+      - ./images:/images
+      - /var/run/docker.sock:/var/run/docker.sock  # Mount Docker socket from host
+    depends_on:
+      - registry
+    restart: "no"
+    environment:  # provide login credentials for the registry. This is set in docker-auth/auth-config.yml.
+      - REGISTRY_URL=localhost:5000
+      - REGISTRY_USER=admin
+      - REGISTRY_PASSWORD=GcGL2CgcDPCXdokgeGAQDFw2IPMG3Kmv
+  github-release-api:
+    build: ./mock-github-release-api
+    ports:
+      - 5001:5001
+    environment:
+      - EXPOSED_PORT=5001  # The port the mock server is running on; must match the port defined above
+    volumes:
+      - ./images:/images

@@ -5,12 +5,12 @@ storage:
   filesystem:
     rootdirectory: /var/lib/registry
 http:
-  addr: :5000
+  addr: :50500
   headers:
     X-Content-Type-Options: [nosniff]
 auth:
   token:
-    realm: "http://127.0.0.1:9000/auth"
+    realm: "https://www.imngs2.org:61000/auth"
     service: "Docker registry"
     issuer: "Acme auth server"
     rootcertbundle: "/usr/local/share/ca-certificates/server.crt"

@@ -1,24 +1,28 @@
 # The application assumes that there is a public repository, where the pipeline is 
 # available in a container registry and releases are listed.
 # Bringing up this docker-compose mocks the required endpoints.
+version: '2'
 services:
   docker-auth:
     image: cesanta/docker_auth
+    container_name: BiotaWiz_docker_auth
     ports:
-      - 9000:9000
+      - 127.0.0.1:60000:60000
     volumes:
       - ./docker-auth:/config:ro
       - ./docker-auth/certs:/certs
   registry:
     image: registry # docker provides an official image of the distribution implementation for storing and distributing of container images and artifacts
+    container_name: BiotaWiz_registry
     ports:
-      - 5000:5000
+      - 127.0.0.1:50500:50500
     volumes:
       - ./registry/registry_config:/etc/docker/registry/config.yml
       - ./.registry-data:/var/lib/registry
-      - ./docker-auth/certs/server.crt:/usr/local/share/ca-certificates/server.crt:ro  # Mount the server certificate into the container
+      - ./docker-auth/certs:/usr/local/share/ca-certificates:ro  # Mount the server certificate into the container
   container-registry-setup:
     build: ./container-registry-setup
+    container_name: BiotaWiz_registry_setup
     volumes:
       - ./images:/images
       - /var/run/docker.sock:/var/run/docker.sock  # Mount Docker socket from host
@@ -26,14 +30,16 @@ services:
       - registry
     restart: "no"
     environment:  # provide login credentials for the registry. This is set in docker-auth/auth-config.yml.
-      - REGISTRY_URL=localhost:5000
+      - REGISTRY_URL=localhost:50500
       - REGISTRY_USER=admin
-      - REGISTRY_PASSWORD=GcGL2CgcDPCXdokgeGAQDFw2IPMG3Kmv
+      - REGISTRY_PASSWORD=sesame-unframed-eagle-freestyle-retract
   github-release-api:
     build: ./mock-github-release-api
+    container_name: BiotaWiz_github_mock_api
     ports:
-      - 5001:5001
+      - 127.0.0.1:50501:50501
     environment:
-      - EXPOSED_PORT=5001  # The port the mock server is running on; must match the port defined above
+      - EXPOSED_PORT=50501  # The port the mock server is running on; must match the port defined above
     volumes:
       - ./images:/images
+
