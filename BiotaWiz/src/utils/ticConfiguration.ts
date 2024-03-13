@@ -26,11 +26,13 @@ export class TicConfiguration {
     public setUsearchBinaryPath(binPath: string) {
         return new Promise<void>((resolve, reject) => {
             if (binPath === "") {  // download and set to default path
-                getOrDownloadUsearch32Binary().then((downloadedPath: string) => {
-                    this.usearchBinary = downloadedPath;
-                    console.log(`Usearch binary path set to ${downloadedPath}`);
-                    resolve();
-                });
+                taskQueue.defer(() => {
+                    return getOrDownloadUsearch32Binary()
+                }).then((downloadedPath: string) => {
+                        this.usearchBinary = downloadedPath;
+                        console.log(`Usearch binary path set to ${downloadedPath}`);
+                        resolve();
+                })
             } else {
                 this.usearchBinary = binPath;
                 console.log(`Usearch binary path set to ${binPath}`);
@@ -173,6 +175,10 @@ export class TicConfiguration {
                         source: this.baseDirectory,
                         target: "/base/inputs",
                     },
+                    {
+                        source: this.usearchBinary,
+                        target: "/usr/local/bin/usearch.gz",
+                    }
                 ],
             }).then((statusCode: number) => {
                 logForEnvironment(Environment.TIC, `Pipeline finished with status code ${statusCode}`);
