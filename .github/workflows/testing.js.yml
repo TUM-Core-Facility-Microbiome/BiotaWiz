@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: 'BiotaWiz' # folder where package-lock.json is located
+        working-directory: 'IMNGS2-Core' # folder where package-lock.json is located
 
     strategy:
       matrix:
@@ -34,4 +34,4 @@ jobs:
     - run: npm ci
     - run: npm test
     - name: Test run the app (output version number)
-      run: npm start -- -- --version |& grep --color -E "BiotaWiz v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?"
+      run: npm start -- -- --version |& grep --color -E "IMNGS2-Core v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?"
