@@ -1,6 +1,6 @@
 {
-  "name": "biotawiz",
-  "productName": "BiotaWiz",
+  "name": "imgns2-core",
+  "productName": "IMNGS2-Core",
   "version": "0.0.1-alpha.4",
   "description": "Analyze 16S rRNA amplicon sequences for microbiome studies using the TIC pipeline",
   "main": ".vite/build/main.js",
