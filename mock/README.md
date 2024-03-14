@@ -59,12 +59,12 @@ Example setup for the `images` directory:
         └── v0.1.5-alpha
             └── image.tar.gz
 ```
-This container registry will then provide the following images:
-- `localhost:5000/tum-core-facility-microbiome/shiny-rhea:v1.0.0`
-- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:v0.1.4`
-- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:v0.1.5-alpha`
+This container registry will then provide the following images (not including `v` with the version tag):
+- `localhost:5000/tum-core-facility-microbiome/shiny-rhea:1.0.0`
+- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:0.1.4`
+- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:0.1.5-alpha`
 
-The mock GitHub Release API will provide the following endpoints (among others):
+The mock GitHub Release API will provide the following endpoints (among others; tags are referred by the full name including the `v` prefix):
 - `http://localhost:5001/repos/tum-core-facility-microbiome/tic-pipeline/releases`
 - `http://localhost:5001/repos/tum-core-facility-microbiome/tic-pipeline/releases/tags/v0.1.4`
 - `http://localhost:5001/zsewa/docker-action-test/releases/download/v0.1.4/image.tar.gz`
