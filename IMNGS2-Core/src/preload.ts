@@ -80,6 +80,9 @@ const indexBridge = {
     publishTicBaseDirectory: async (baseDirectory: string) => {
         return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);
     },
+    getTicBaseDirectory: async (): Promise<string> => {
+        return ipcRenderer.invoke('tic:getBaseDirectory');
+    },
     publishSamples: async (samples: IFileSystemNode[]) => {
         return ipcRenderer.invoke('publish:ticSamples', samples);
     },

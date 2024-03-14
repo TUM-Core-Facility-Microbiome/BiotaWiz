@@ -74,6 +74,10 @@ ipcMain.handle("runMockProcess", async () => {
     return runMockProcess();
 });
 
+ipcMain.handle("tic:getBaseDirectory", async () => {
+    return await getTicBaseDirectory();
+});
+
 ipcMain.handle("loadStudiesFromBaseDirectory", async (): Promise<IFileSystemNode[]> => {
     return new Promise<IFileSystemNode[]>((resolve) => {
         getTicBaseDirectory().then((baseDirectory) => {
