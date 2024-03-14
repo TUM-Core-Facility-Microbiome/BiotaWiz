@@ -1,6 +1,6 @@
 import path from "path";
 import * as fs from "fs";
-import {IMAGE_ASSET_NAME} from "../config";
+import {API_BASIC_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
@@ -132,9 +132,8 @@ async function queryAvailableReleaseTags(environment: Environment) {
         axios.get<GitHubRelease[]>(
             `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases`,
             {
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28'
-                },
+                headers: {'X-GitHub-Api-Version': '2022-11-28'},
+                auth: API_BASIC_AUTH,
             }
         ).then((response) => {
             const data = response.data;
@@ -196,7 +195,10 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
         logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
         axios.get<GitHubRelease>(
             RELEASE_URL,
-            {headers: {'X-GitHub-Api-Version': '2022-11-28'}}
+            {
+                headers: {'X-GitHub-Api-Version': '2022-11-28'},
+                auth: API_BASIC_AUTH,
+            }
         ).then((response) => {
             const data = response.data;
             const assets = data.assets;
@@ -253,7 +255,10 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
             const writer = fs.createWriteStream(expectedPath);
             axios.get(
                 tarballUrl,
-                {responseType: 'stream'}
+                {
+                    responseType: 'stream',
+                    auth: API_BASIC_AUTH,
+                }
             ).then((response) => {
                 response.data.pipe(writer);
 
@@ -453,7 +458,8 @@ export async function initializeDockerBackend(environment: Environment, releaseT
                     message: `Pulling v${getVersionString(releaseTag)} image`,
                     state: "running",
                 });
-                await docker.pull(image).then((stream: NodeJS.ReadableStream) => {
+                // pull from private registry
+                await docker.pull(image, {authconfig: REGISTRY_AUTH}).then((stream: NodeJS.ReadableStream) => {
                     docker.modem.followProgress(stream, onFinished, onProgress);
                     let currentStatus = "";
                     let lastUpdateTimeStamp = 0;
