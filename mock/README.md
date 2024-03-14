@@ -16,7 +16,7 @@ The container registry uses an authorization service that provides tokens for
 accessing the container registry. This service requires a certificate and a key.
 You can generate these by running the following command in the `mock` directory:
 ```bash
-openssl req -x509 -newkey rsa:4096 -keyout docker-auth/certs/domain.key -out docker-auth/certs/domain.crt -sha256 -days 3650 -nodes -subj "/C=DE/ST=Bavaria/L=Munich/O=TUM-Core-Facility-Microbiome/OU=BiotaWiz/CN=localhost"
+openssl req -x509 -newkey rsa:4096 -keyout docker-auth/certs/server.key -out docker-auth/certs/server.crt -sha256 -days 3650 -nodes -subj "/C=DE/ST=Bavaria/L=Munich/O=TUM-Core-Facility-Microbiome/OU=BiotaWiz/CN=localhost"
 ```
 
 #### Change default password
@@ -59,12 +59,12 @@ Example setup for the `images` directory:
         └── v0.1.5-alpha
             └── image.tar.gz
 ```
-This container registry will then provide the following images:
-- `localhost:5000/tum-core-facility-microbiome/shiny-rhea:v1.0.0`
-- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:v0.1.4`
-- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:v0.1.5-alpha`
+This container registry will then provide the following images (not including `v` with the version tag):
+- `localhost:5000/tum-core-facility-microbiome/shiny-rhea:1.0.0`
+- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:0.1.4`
+- `localhost:5000/tum-core-facility-microbiome/tic-pipeline:0.1.5-alpha`
 
-The mock GitHub Release API will provide the following endpoints (among others):
+The mock GitHub Release API will provide the following endpoints (among others; tags are referred by the full name including the `v` prefix):
 - `http://localhost:5001/repos/tum-core-facility-microbiome/tic-pipeline/releases`
 - `http://localhost:5001/repos/tum-core-facility-microbiome/tic-pipeline/releases/tags/v0.1.4`
 - `http://localhost:5001/zsewa/docker-action-test/releases/download/v0.1.4/image.tar.gz`
