@@ -1,7 +1,7 @@
 import {GITHUB_BASE_URL} from "../config";
 
 export const helpPages = {
-    RAPIOF: `${GITHUB_BASE_URL}/discussions/49`,  // Release API Offline
-    RASMIS: `${GITHUB_BASE_URL}/discussions/55`,  // Resource Asset Missing
-    DOCPIF: `${GITHUB_BASE_URL}/discussions/56`, // Docker Pull Image Failed
+    DOCPIF: `${GITHUB_BASE_URL}/discussions/1`, // Docker Pull Image Failed
+    RASMIS: `${GITHUB_BASE_URL}/discussions/2`,  // Resource Asset Missing
+    RAPIOF: `${GITHUB_BASE_URL}/discussions/3`,  // Release API Offline
 }
