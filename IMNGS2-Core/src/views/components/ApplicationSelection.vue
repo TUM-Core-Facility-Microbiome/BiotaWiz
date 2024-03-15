@@ -27,4 +27,24 @@
   </div>
 </template>
 <script setup lang="ts">
+import {reactive} from "vue";
+
+const state = reactive({
+  name: null as string | null,
+  version: null as string | null,
+});
+
+function getName() {
+  indexBridge.getName().then((name: string) => {
+    state.name = name;
+  });
+}
+function getVersion() {
+  indexBridge.getVersion().then((version: string) => {
+    state.version = version;
+  });
+}
+
+getName();
+getVersion();
 </script>
