@@ -5,6 +5,12 @@ import {Environment} from "./enums";
 
 const indexBridge = {
     // renderer to main
+    getName: async () => {
+        return ipcRenderer.invoke('app:getName');
+    },
+    getVersion: async () => {
+        return ipcRenderer.invoke('app:getVersion');
+    },
     openExternal: async (url: string) => {
         return new Promise<void>((resolve, reject) => {
             ipcRenderer.invoke('openExternal', url).then(() => {
