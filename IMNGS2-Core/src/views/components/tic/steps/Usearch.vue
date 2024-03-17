@@ -56,6 +56,7 @@
             <br>
             <div class="text-xs text-gray-500">
               If you select this option, please select the binary file here. The file is most likely named usearch11.0.667_i86linux64.
+              The file must be decompressed (without .gz-file extension) and executable for now!
               <br>
               <button
                   class="mt-1 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded"
