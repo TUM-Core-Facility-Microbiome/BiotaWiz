@@ -20,6 +20,7 @@ import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
 import {app} from "electron";
 import Dockerode from "dockerode";
+import {getLocalAppDataPath} from "./helpers";
 const wsl = require("@endevr-io/wsl-api");
 const windowsToWsl = require("@endevr-io/wsl-path");
 
@@ -281,17 +282,7 @@ async function getExpectedDistributionTarPath(environment: Environment, releaseT
 }
 
 async function getDistributionInstallLocation(environment: Environment, releaseTag: SemVer) {
-    const appDataDirectory = byOS({
-        [platforms.WINDOWS]: () => {
-            // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
-            const localAppData = process.env.LOCALAPPDATA;
-            if (localAppData === undefined) {
-                return app.getPath('userData');  // fallback when environment variable is not set
-            }
-            return path.join(localAppData, app.name);
-        },
-        default: () => app.getPath('userData'),
-    })();
+    const appDataDirectory = getLocalAppDataPath();
     const installDir = path.join(appDataDirectory, 'wsl-distro', await getImageName(environment, releaseTag));
 
     // make sure the path exists
