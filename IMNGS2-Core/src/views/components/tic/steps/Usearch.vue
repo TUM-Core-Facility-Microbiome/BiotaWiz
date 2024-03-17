@@ -73,7 +73,8 @@
   <!--    <p>spikeMode: {{ spikeMode }}</p>-->
   <!--  </div>-->
   <button @click="run()"
-          class="mt-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded">
+          :disabled="usearch === 'path' && usearchPath === ''"
+          class="mt-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded disabled:text-gray-500 disabled:border-gray-500">
     Run
   </button>
 </template>
