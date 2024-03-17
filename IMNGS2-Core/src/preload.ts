@@ -50,6 +50,15 @@ const indexBridge = {
             });
         });
     },
+    handleFileOpen: async () => {
+        return new Promise<string>((resolve, reject) => {
+            ipcRenderer.invoke('dialog:handleFileOpen').then((result: string) => {
+                resolve(result);
+            }).catch((error: Error) => {
+                reject(error);
+            });
+        });
+    },
     getBackend: async (): Promise<IBackend> => {
         return ipcRenderer.invoke('getBackend');
     },
@@ -103,6 +112,9 @@ const indexBridge = {
     },
     publishTicParameters: async (parameters: ITicPipelineArguments) => {
         return ipcRenderer.invoke('publish:ticParameters', parameters);
+    },
+    publishUsearchBinary: async (path: string) => {
+        return ipcRenderer.invoke('publish:usearchBinary', path);
     },
     runTicPipeline: async () => {
         return ipcRenderer.invoke('tic:run');

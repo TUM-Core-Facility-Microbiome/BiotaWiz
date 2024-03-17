@@ -1,14 +1,16 @@
 import {Environment, SpikeMode} from "../enums";
-import {app, shell, Notification, BrowserWindow} from "electron";
+import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
 import {existsSync, readFileSync, writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
+import {getOrDownloadUsearch32Binary} from "./usearch";
 
 export class TicConfiguration {
     private baseDirectory = "";
+    private usearchBinary = "";
     private mappingFile = "";
     private yamlFile = "";
 
@@ -19,6 +21,24 @@ export class TicConfiguration {
     public setBaseDirectory(baseDirectory: string) {
         this.baseDirectory = baseDirectory;
         console.log(`TIC base directory set to ${baseDirectory}`);
+    }
+
+    public setUsearchBinaryPath(binPath: string) {
+        return new Promise<void>((resolve, reject) => {
+            if (binPath === "") {  // download and set to default path
+                taskQueue.defer(() => {
+                    return getOrDownloadUsearch32Binary()
+                }).then((downloadedPath: string) => {
+                        this.usearchBinary = downloadedPath;
+                        console.log(`Usearch binary path set to ${downloadedPath}`);
+                        resolve();
+                })
+            } else {
+                this.usearchBinary = binPath;
+                console.log(`Usearch binary path set to ${binPath}`);
+                resolve();
+            }
+        });
     }
 
     public setSamples(samples: IFileSystemNode[]) {
@@ -149,12 +169,21 @@ export class TicConfiguration {
                 state: "running",
             });
 
-            await run(Environment.TIC, ["run_imngs2", "--yml-file", yamlFile, "--mapping-file", mappingFile], {
+            await run(Environment.TIC, [
+                "run_imngs2",
+                "--yml-file", yamlFile,
+                "--mapping-file", mappingFile,
+                "--usearch-bin", "/base/binaries/usearch",
+            ], {
                 binds: [
                     {
                         source: this.baseDirectory,
                         target: "/base/inputs",
                     },
+                    {
+                        source: this.usearchBinary,
+                        target: "/base/binaries/usearch",
+                    }
                 ],
             }).then((statusCode: number) => {
                 logForEnvironment(Environment.TIC, `Pipeline finished with status code ${statusCode}`);

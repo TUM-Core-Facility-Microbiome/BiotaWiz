@@ -20,8 +20,9 @@ import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
 import {app} from "electron";
 import Dockerode from "dockerode";
+import {getLocalAppDataPath} from "./helpers";
 const wsl = require("@endevr-io/wsl-api");
-const windowsToWsl = require("@endevr-io/wsl-path");
+const { windowsToWsl } = require("@endevr-io/wsl-path");
 
 const runningContainers: Set<string> = new Set();
 const runningDistributions = new Set();
@@ -258,6 +259,14 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
                 {
                     responseType: 'stream',
                     auth: API_BASIC_AUTH,
+                    onDownloadProgress: function(progressEvent) {
+                        let percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+                        updateProgress({
+                            step: `Initializing ${environment} environment`,
+                            message: `Downloading distribution files (${percentCompleted}%)`,
+                            state: "running",
+                        });
+                    },
                 }
             ).then((response) => {
                 response.data.pipe(writer);
@@ -281,17 +290,7 @@ async function getExpectedDistributionTarPath(environment: Environment, releaseT
 }
 
 async function getDistributionInstallLocation(environment: Environment, releaseTag: SemVer) {
-    const appDataDirectory = byOS({
-        [platforms.WINDOWS]: () => {
-            // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
-            const localAppData = process.env.LOCALAPPDATA;
-            if (localAppData === undefined) {
-                return app.getPath('userData');  // fallback when environment variable is not set
-            }
-            return path.join(localAppData, app.name);
-        },
-        default: () => app.getPath('userData'),
-    })();
+    const appDataDirectory = getLocalAppDataPath();
     const installDir = path.join(appDataDirectory, 'wsl-distro', await getImageName(environment, releaseTag));
 
     // make sure the path exists
@@ -313,7 +312,7 @@ export async function getImageTarball(environment: Environment, releaseTag: SemV
 
     updateProgress({
         step: `Initializing ${environment} environment`,
-        message: `Downloading distribution files`,
+        message: `Getting distribution files`,
         state: "running",
     });
 
@@ -866,11 +865,24 @@ async function runWithWsl(environment: Environment, command: string[], options: 
             logToDevTools(msg);
         });  // might return non-zero if the mount point is not used
 
-
-        logForEnvironment(environment, "Ensuring mount point exists...");
-        await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
-            logToDevTools(msg);
-        }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+        if (fs.lstatSync(bind.source).isDirectory()) {
+            logForEnvironment(environment, "Ensuring mount point exists...");
+            await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
+                logToDevTools(msg);
+            }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+        } else {
+            // create parent directory if necessary
+            logForEnvironment(environment, "Ensuring mount point parent exists...");
+            const parent = path.dirname(target);
+            await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", parent], (msg) => {
+                logToDevTools(msg);
+            }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+            // touch file
+            logForEnvironment(environment, "Ensuring mount point file exists...");
+            await runSubprocess(backend.command, ["--distribution", distribution, "--", "touch", target], (msg) => {
+                logToDevTools(msg);
+            });
+        }
 
         console.log(`Mounting ${source} to ${target}`);
         logForEnvironment(environment, `Bind mounting ${source} to ${target}`);

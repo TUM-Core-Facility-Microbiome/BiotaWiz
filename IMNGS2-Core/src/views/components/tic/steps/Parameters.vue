@@ -389,7 +389,7 @@
   <div>
     <button
         class="mt-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded"
-        @click="publishParameters()">Start run
+        @click="publishParameters()">Set parameters and continue
     </button>
   </div>
 
@@ -519,7 +519,7 @@ async function publishParameters() {
   const args = generateTicPipelineArgumentsObj();
   await indexBridge.publishTicParameters(args).then(() => {
     console.log("Published TIC pipeline arguments");
-    router.push("/run");
+    router.push("/usearch");
   }).catch(() => {
     console.error("Could not publish TIC pipeline arguments");
   });

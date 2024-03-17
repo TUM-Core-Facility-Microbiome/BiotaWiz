@@ -11,7 +11,7 @@ import {
     setFixedImageTagString
 } from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
-import {handleFolderOpen} from "./dialogs";
+import {handleFileOpen, handleFolderOpen} from "./dialogs";
 import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "../utils/file-explorer";
 import {Environment, SpikeMode} from "../enums";
@@ -32,6 +32,10 @@ ipcMain.handle('openExternal', async (event, url: string) => {
 
 ipcMain.handle('dialog:handleFolderOpen', async () => {
     return await handleFolderOpen();
+});
+
+ipcMain.handle('dialog:handleFileOpen', async () => {
+    return await handleFileOpen();
 });
 
 ipcMain.handle("getPlatformName", () => {
@@ -138,6 +142,10 @@ ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
 ipcMain.handle("publish:ticParameters", async (event, parameters: ITicPipelineArguments) => {
     ticConfiguration.setParameters(parameters);
     console.log(ticConfiguration);
+});
+
+ipcMain.handle("publish:usearchBinary", async (event, path: string) => {
+    await ticConfiguration.setUsearchBinaryPath(path);
 });
 
 ipcMain.handle("tic:openMappingFile", async () => {
