@@ -4,6 +4,8 @@ import fs from "fs";
 import axios from "axios";
 import {USEARCH32_DOWNLOAD_URL} from "../config";
 import {getLocalAppDataPath} from "./helpers";
+import {run} from "./backend";
+import {Environment} from "../enums";
 
 
 export async function getOrDownloadUsearch32Binary() {

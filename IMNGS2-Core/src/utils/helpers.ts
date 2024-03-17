@@ -1,6 +1,6 @@
 import {app} from "electron";
 import path from 'path';
-import {byOS, platforms} from "../platform";
+import {byOS, platforms} from "./platform";
 
 /**
  * Returns the path to the user's application data directory.
