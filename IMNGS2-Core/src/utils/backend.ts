@@ -22,7 +22,7 @@ import {app} from "electron";
 import Dockerode from "dockerode";
 import {getLocalAppDataPath} from "./helpers";
 const wsl = require("@endevr-io/wsl-api");
-const windowsToWsl = require("@endevr-io/wsl-path");
+const { windowsToWsl } = require("@endevr-io/wsl-path");
 
 const runningContainers: Set<string> = new Set();
 const runningDistributions = new Set();
