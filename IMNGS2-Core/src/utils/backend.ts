@@ -857,11 +857,24 @@ async function runWithWsl(environment: Environment, command: string[], options: 
             logToDevTools(msg);
         });  // might return non-zero if the mount point is not used
 
-
-        logForEnvironment(environment, "Ensuring mount point exists...");
-        await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
-            logToDevTools(msg);
-        }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+        if (fs.lstatSync(bind.source).isDirectory()) {
+            logForEnvironment(environment, "Ensuring mount point exists...");
+            await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
+                logToDevTools(msg);
+            }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+        } else {
+            // create parent directory if necessary
+            logForEnvironment(environment, "Ensuring mount point parent exists...");
+            const parent = path.dirname(target);
+            await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", parent], (msg) => {
+                logToDevTools(msg);
+            }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+            // touch file
+            logForEnvironment(environment, "Ensuring mount point file exists...");
+            await runSubprocess(backend.command, ["--distribution", distribution, "--", "touch", target], (msg) => {
+                logToDevTools(msg);
+            });
+        }
 
         console.log(`Mounting ${source} to ${target}`);
         logForEnvironment(environment, `Bind mounting ${source} to ${target}`);
