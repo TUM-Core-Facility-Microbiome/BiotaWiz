@@ -3,10 +3,12 @@ import path from 'path';
 import fs from "fs";
 import axios from "axios";
 import {USEARCH32_DOWNLOAD_URL} from "../config";
+import {getLocalAppDataPath} from "./helpers";
 
 
 export async function getOrDownloadUsearch32Binary() {
-    const expectedPath = path.join(app.getPath('userData'), 'usearch11.0.667_i86linux32.gz');
+    const appDataDirectory = getLocalAppDataPath();
+    const expectedPath = path.join(appDataDirectory, 'usearch11.0.667_i86linux32.gz');
     if (fs.existsSync(expectedPath)) {
         return expectedPath;
     } else {
