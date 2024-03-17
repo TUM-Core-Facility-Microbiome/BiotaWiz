@@ -47,7 +47,7 @@ async def release_details(owner: str, repo: str, tag: str):
             for asset in os.listdir(os.path.join(IMAGES, owner, repo, tag)):
                 assets.append({
                     "name": asset,
-                    "browser_download_url": f"https://www.imngs2.org:{EXPOSED_PORT}/{owner}/{repo}/releases/download/{tag}/{asset}",
+                    "browser_download_url": f"https://www.imngs2.org:51501/{owner}/{repo}/releases/download/{tag}/{asset}",
                 })
             return {"assets": assets}
 
