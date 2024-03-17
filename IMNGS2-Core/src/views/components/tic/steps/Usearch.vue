@@ -9,29 +9,29 @@
   <fieldset class="space-y-2">
     <legend class="sr-only">USEARCH selection</legend>
 
-    <div>
-      <input
-          type="radio"
-          v-model="usearch"
-          value="download"
-          id="usearch-select-download"
-          class="peer hidden [&:checked_+_label_svg]:block"
-          checked
-      />
+<!--    <div>-->
+<!--      <input-->
+<!--          type="radio"-->
+<!--          v-model="usearch"-->
+<!--          value="download"-->
+<!--          id="usearch-select-download"-->
+<!--          class="peer hidden [&:checked_+_label_svg]:block"-->
+<!--          checked-->
+<!--      />-->
 
-      <label for="usearch-select-download"
-             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">
-        <div class="flex items-center gap-2">
-          <div class="relative">
-            <div class="text-sm">Download a copy of USEARCH 11 for me (32-bit)</div>
-            <div class="text-xs text-gray-500">
-              The 32-bit version meets the needs of most users. The main limitation is that a maximum of 4Gb RAM can be used.
-              This will download the 32-bit usearch binary for you or use a version downloaded for a previous run. You agree to the <a @click="openInDefaultBrowser('https://drive5.com/usearch/license32.html')" class="underline cursor-pointer text-blue-500">terms of the USEARCH 32-bit license</a>.
-            </div>
-          </div>
-        </div>
-      </label>
-    </div>
+<!--      <label for="usearch-select-download"-->
+<!--             class="flex cursor-pointer items-center justify-between rounded-lg border border-gray-300 bg-white p-4 text-sm font-medium shadow-sm hover:border-gray-200 peer-checked:border-blue-500 peer-checked:ring-1 peer-checked:ring-blue-500">-->
+<!--        <div class="flex items-center gap-2">-->
+<!--          <div class="relative">-->
+<!--            <div class="text-sm">Download a copy of USEARCH 11 for me (32-bit)</div>-->
+<!--            <div class="text-xs text-gray-500">-->
+<!--              The 32-bit version meets the needs of most users. The main limitation is that a maximum of 4Gb RAM can be used.-->
+<!--              This will download the 32-bit usearch binary for you or use a version downloaded for a previous run. You agree to the <a @click="openInDefaultBrowser('https://drive5.com/usearch/license32.html')" class="underline cursor-pointer text-blue-500">terms of the USEARCH 32-bit license</a>.-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </label>-->
+<!--    </div>-->
 
     <div>
       <input
@@ -85,7 +85,7 @@ import {useRouter} from "vue-router";
 
 const router = useRouter();
 
-let usearch = ref("download");
+let usearch = ref("path");
 let usearchPath = ref("");
 
 async function openInDefaultBrowser(url: string) {
