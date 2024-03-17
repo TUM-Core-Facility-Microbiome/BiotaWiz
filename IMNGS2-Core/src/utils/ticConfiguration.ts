@@ -169,7 +169,12 @@ export class TicConfiguration {
                 state: "running",
             });
 
-            await run(Environment.TIC, ["run_imngs2", "--yml-file", yamlFile, "--mapping-file", mappingFile], {
+            await run(Environment.TIC, [
+                "run_imngs2",
+                "--yml-file", yamlFile,
+                "--mapping-file", mappingFile,
+                "--usearch-bin", "/base/binaries/usearch",
+            ], {
                 binds: [
                     {
                         source: this.baseDirectory,
@@ -177,7 +182,7 @@ export class TicConfiguration {
                     },
                     {
                         source: this.usearchBinary,
-                        target: "/usr/local/bin/usearch.gz",
+                        target: "/base/binaries/usearch",
                     }
                 ],
             }).then((statusCode: number) => {
