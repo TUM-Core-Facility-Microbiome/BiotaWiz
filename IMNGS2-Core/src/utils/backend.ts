@@ -259,6 +259,14 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
                 {
                     responseType: 'stream',
                     auth: API_BASIC_AUTH,
+                    onDownloadProgress: function(progressEvent) {
+                        let percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+                        updateProgress({
+                            step: `Initializing ${environment} environment`,
+                            message: `Downloading distribution files (${percentCompleted}%)`,
+                            state: "running",
+                        });
+                    },
                 }
             ).then((response) => {
                 response.data.pipe(writer);
@@ -304,7 +312,7 @@ export async function getImageTarball(environment: Environment, releaseTag: SemV
 
     updateProgress({
         step: `Initializing ${environment} environment`,
-        message: `Downloading distribution files`,
+        message: `Getting distribution files`,
         state: "running",
     });
 
