@@ -166,7 +166,7 @@ export default class MenuBuilder {
                     },
                 },
                 {
-                    label: 'Search Issues',
+                    label: 'Search/Report Issues',
                     click() {
                         shell.openExternal(`${GITHUB_BASE_URL}/issues`);
                     },

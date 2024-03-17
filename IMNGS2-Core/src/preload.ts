@@ -5,6 +5,12 @@ import {Environment} from "./enums";
 
 const indexBridge = {
     // renderer to main
+    getName: async () => {
+        return ipcRenderer.invoke('app:getName');
+    },
+    getVersion: async () => {
+        return ipcRenderer.invoke('app:getVersion');
+    },
     openExternal: async (url: string) => {
         return new Promise<void>((resolve, reject) => {
             ipcRenderer.invoke('openExternal', url).then(() => {
@@ -88,6 +94,9 @@ const indexBridge = {
     },
     publishTicBaseDirectory: async (baseDirectory: string) => {
         return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);
+    },
+    getTicBaseDirectory: async (): Promise<string> => {
+        return ipcRenderer.invoke('tic:getBaseDirectory');
     },
     publishSamples: async (samples: IFileSystemNode[]) => {
         return ipcRenderer.invoke('publish:ticSamples', samples);

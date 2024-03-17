@@ -2,7 +2,7 @@
   <div>
     <div class="text-lg font-bold">Spike-in standard</div>
     <div class="text-sm text-gray-700">
-      Select if you have spiked-in standards were used for the samples selected in the previous step.
+      Select if spiked-in standards were used for the samples selected in the previous step.
     </div>
   </div>
   <fieldset class="space-y-2">

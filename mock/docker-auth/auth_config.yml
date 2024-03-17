@@ -2,13 +2,13 @@
 #
 #  auth:
 #    token:
-#      realm: "http://127.0.0.1:9000/auth"
+#      realm: "http://127.0.0.1:60000/auth"
 #      service: "Docker registry"
 #      issuer: "Acme auth server"
 #      rootcertbundle: "/path/to/server.crt"
 
 server:
-  addr: ":9000"
+  addr: ":60000"
 
 token:
   issuer: "Acme auth server"  # Must match issuer in the Registry config.
@@ -19,14 +19,15 @@ token:
 users:
   # Password is specified as a BCrypt hash. Use `htpasswd -nB USERNAME` to generate.
   "admin":
-    password: "$2y$05$ELtDgsPCkUJFPV51eRmEh.TjuG.MTUGTlO8BqyAcBzhwXaTb9Pnl2"  # GcGL2CgcDPCXdokgeGAQDFw2IPMG3Kmv
-  "": {}  # Allow anonymous (no "docker login") access.
+    password: "$2y$05$CLwFdLpJdSCoInFC9vzG8OpBiqaeEwNHqGiQJT6vfILpM3FhPWgQG"
+  "pulluser":
+    password: "$2y$05$LuNDPDG3jIwx9ZnnbLI9B.R0R3s4XWhP.PNb7vfWg5c5uIE9r5d5i"  # 4R4M3FQzKhCbiY6Hxpu2
 
 acl:
   - match: {account: "admin"}
     actions: ["*"]
     comment: "Admin has full access to everything."
   # anonymous users can pull all images
-  - match: {account: ""}
+  - match: {account: "pulluser"}
     actions: ["pull"]
-    comment: "Everybody can pull stuff."
+    comment: "Software can pull stuff."

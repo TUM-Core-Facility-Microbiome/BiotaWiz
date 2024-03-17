@@ -1,4 +1,4 @@
-import {ipcMain, shell} from 'electron';
+import {app, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
     deleteImage,
@@ -18,6 +18,13 @@ import {Environment, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
 import {ticConfiguration} from "../utils/ticConfiguration";
 
+ipcMain.handle('app:getName', () => {
+    return app.getName();
+});
+
+ipcMain.handle('app:getVersion', () => {
+    return app.getVersion();
+});
 
 ipcMain.handle('openExternal', async (event, url: string) => {
     return await shell.openExternal(url);
@@ -76,6 +83,10 @@ ipcMain.handle("deleteImage", async (event, name: string, tag: string) => {
 ipcMain.handle("runMockProcess", async () => {
     console.log("runMockProcess");
     return runMockProcess();
+});
+
+ipcMain.handle("tic:getBaseDirectory", async () => {
+    return await getTicBaseDirectory();
 });
 
 ipcMain.handle("loadStudiesFromBaseDirectory", async (): Promise<IFileSystemNode[]> => {
