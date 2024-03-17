@@ -73,7 +73,7 @@ const index = createRouter({
             children: [
                 {
                     path: '',
-                    redirect: '/settings/backend',
+                    redirect: '/settings/general',
                 },
                 {
                     path: '/settings/environment',
@@ -87,6 +87,10 @@ const index = createRouter({
                             component: () => import('../components/settings/environments/ShinyRheaEnvironmentSettings.vue'),
                         },
                     ]
+                },
+                {
+                    path: '/settings/general',
+                    component: () => import('../components/settings/General.vue'),
                 },
                 {
                     path: '/settings/backend',
