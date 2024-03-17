@@ -39,6 +39,7 @@ export function getAllowedRange(environment: Environment): string {
 
 export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
     const range: string | null = semver.validRange(allowedRange);
+    console.log(`using range ${range} for given range string ${allowedRange}`);
     if (!range) {
         throw new Error(`Invalid semantic version range ${allowedRange}`);
     }
