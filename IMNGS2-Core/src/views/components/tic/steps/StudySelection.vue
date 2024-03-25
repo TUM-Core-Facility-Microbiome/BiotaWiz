@@ -12,7 +12,7 @@
       <p class="text-xs">
         Currently, samples must follow the Illumina naming scheme and be paired to be detected.
         <br>
-        A more flexible approach is planned for the final product (Issue #35).</p>
+        A more flexible approach is planned for the final application (Issue #35).</p>
     </div>
   </div>
 </template>
