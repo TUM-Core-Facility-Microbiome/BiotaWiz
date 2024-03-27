@@ -32,7 +32,7 @@ jobs:
 
       - name: Regenerate lockfile for MacOS builds
         if: matrix.os == 'macos-latest'
-        run: cd IMNGS2-Core && npm i --package-lock-only
+        run: cd IMNGS2-Core && npm i
 
       - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
