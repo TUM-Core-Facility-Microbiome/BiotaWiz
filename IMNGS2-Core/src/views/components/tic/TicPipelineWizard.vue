@@ -17,39 +17,39 @@
             <!--            </span>-->
             <!--            </li>-->
             <li>
-              <router-link to="/base-selection" class="flex items-center justify-end gap-2"
+              <router-link to="base-selection" class="flex items-center justify-end gap-2"
                            active-class="text-blue-600">
                 <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 1 </span>
                 <span>Base</span>
               </router-link>
             </li>
             <li>
-              <router-link to="/study-selection" class="flex items-center justify-end gap-2"
+              <router-link to="study-selection" class="flex items-center justify-end gap-2"
                            active-class="text-blue-600">
                 <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 2 </span>
                 <span>Samples</span>
               </router-link>
             </li>
             <li>
-              <router-link to="/spike-mode" class="flex items-center justify-end gap-2" active-class="text-blue-600">
+              <router-link to="spike-mode" class="flex items-center justify-end gap-2" active-class="text-blue-600">
                 <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 3 </span>
                 <span>Spike-in</span>
               </router-link>
             </li>
             <li>
-              <router-link to="/params" class="flex items-center justify-end gap-2" active-class="text-blue-600">
+              <router-link to="params" class="flex items-center justify-end gap-2" active-class="text-blue-600">
                 <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 4 </span>
                 <span>Parameters</span>
               </router-link>
             </li>
             <li>
-              <router-link to="/usearch" class="flex items-center justify-end gap-2" active-class="text-blue-600">
+              <router-link to="usearch" class="flex items-center justify-end gap-2" active-class="text-blue-600">
                 <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 5 </span>
                 <span>USEARCH</span>
               </router-link>
             </li>
             <li>
-              <router-link to="/run" class="flex items-center justify-end gap-2" active-class="text-blue-600">
+              <router-link to="run" class="flex items-center justify-end gap-2" active-class="text-blue-600">
                 <span class="w-6 h-6 rounded bg-gray-50 text-center text-[10px]/6 font-bold text-gray-600"> 6 </span>
                 <span>Run</span>
               </router-link>
@@ -63,10 +63,10 @@
   <!-- <div>-->
   <!--    <div class="mb-2">-->
   <!--      <nav class="flex gap-6" aria-label="Tabs">-->
-  <!--        <router-link to="/base-selection" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Base selection</router-link>-->
-  <!--        <router-link to="/study-selection" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Study</router-link>-->
-  <!--        <router-link to="/spike-mode" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Spike-ins</router-link>-->
-  <!--        <router-link to="/params" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Parameters</router-link>-->
+  <!--        <router-link to="base-selection" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Base selection</router-link>-->
+  <!--        <router-link to="study-selection" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Study</router-link>-->
+  <!--        <router-link to="spike-mode" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Spike-ins</router-link>-->
+  <!--        <router-link to="params" class="shrink-0 rounded-lg p-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700" active-class="text-white bg-blue-500">Parameters</router-link>-->
   <!--      </nav>-->
   <!--    </div>-->
   <!--  </div>-->

@@ -39,7 +39,7 @@ const selectBaseDir = () => {
     await indexBridge.publishTicBaseDirectory(baseDir);
 
     // navigate to the next step
-    await router.push("/study-selection");
+    await router.push("study-selection");
   }).catch(() => {
     console.log("Could not select base dir");
   });

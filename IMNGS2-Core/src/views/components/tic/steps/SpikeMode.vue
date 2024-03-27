@@ -108,9 +108,9 @@ let spikeMode = ref("spiked");
 async function publishSpikeMode() {
   const actualMode = await indexBridge.publishSpikeMode(spikeMode.value);
   if (actualMode === SpikeMode.SPIKED) {
-    await router.push("/check-mapping");
+    await router.push("check-mapping");
   } else {
-    await router.push("/params");
+    await router.push("params");
   }
 }
 </script>

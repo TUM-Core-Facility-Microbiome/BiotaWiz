@@ -77,7 +77,7 @@ async function publishSelectedSamples() {
   await indexBridge.publishSamples(deepCopy);
 
   // navigate to the next step
-  await router.push("/spike-mode");
+  await router.push("spike-mode");
 }
 </script>
 
