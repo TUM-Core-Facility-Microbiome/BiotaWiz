@@ -19,7 +19,10 @@ const config: ForgeConfig = {
             options: {
                 icon: "./assets/icons/icon.png",
             }
-        })],
+        }),
+        new MakerZIP({}, ['darwin']),
+        // new MakerDmg({}),
+    ],
     plugins: [
         new VitePlugin({
             // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
