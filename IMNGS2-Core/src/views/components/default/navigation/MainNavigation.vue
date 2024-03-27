@@ -15,7 +15,7 @@
               <li>
                 <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
                              active-class="bg-blue-50 text-blue-700"
-                             to="/tic">
+                             to="/application-shell/tic">
                   <code class="text-xs font-bold">TIC</code>
                   <span
                       class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
@@ -27,7 +27,7 @@
               <li>
                 <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
                              active-class="bg-blue-50 text-blue-700"
-                             to="/rhea">
+                             to="/application-shell/rhea">
                   <code class="text-xs font-bold">Rhea</code>
                   <span
                       class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">

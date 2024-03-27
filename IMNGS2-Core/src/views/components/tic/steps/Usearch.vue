@@ -107,7 +107,7 @@ async function run() {
     await indexBridge.publishUsearchBinary(usearchPath.value);
   }
 
-  await router.push("/run");
+  await router.push("run");
 }
 </script>
 

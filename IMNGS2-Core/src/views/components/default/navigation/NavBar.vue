@@ -1,10 +1,10 @@
 <template>
   <ul class="flex">
     <li class="flex-1 mr-2">
-      <router-link to="/tic" class="header nav">TIC pipeline</router-link>
+      <router-link to="/application-shell/tic" class="header nav">TIC pipeline</router-link>
     </li>
     <li class="flex-1 mr-2">
-      <router-link to="/rhea" class="header nav" href="#">Rhea</router-link>
+      <router-link to="/application-shell/rhea" class="header nav" href="#">Rhea</router-link>
     </li>
   </ul>
 </template>

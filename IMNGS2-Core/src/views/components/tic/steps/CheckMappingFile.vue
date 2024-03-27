@@ -34,7 +34,7 @@ function openMappingFile() {
 
 async function checkMappingFile() {
   await indexBridge.checkMappingFile().then(async () => {
-    await router.push("/params");
+    await router.push("params");
   }).catch((e) => {
     let errorMessage = e.message.replace("Error invoking remote method 'tic:checkMapping': ", '');
     alert(errorMessage);

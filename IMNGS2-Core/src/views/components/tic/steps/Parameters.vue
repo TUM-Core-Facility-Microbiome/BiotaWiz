@@ -519,7 +519,7 @@ async function publishParameters() {
   const args = generateTicPipelineArgumentsObj();
   await indexBridge.publishTicParameters(args).then(() => {
     console.log("Published TIC pipeline arguments");
-    router.push("/usearch");
+    router.push("usearch");
   }).catch(() => {
     console.error("Could not publish TIC pipeline arguments");
   });
