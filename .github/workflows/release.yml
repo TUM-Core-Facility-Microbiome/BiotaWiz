@@ -24,6 +24,7 @@ jobs:
 
       - name: Setup node
         if: matrix.os == 'macos-latest'
+        uses: actions/setup-node@v4
 
       - name: Remove package-lock for MacOS builds (issue with optional dependencies)
         if: matrix.os == 'macos-latest'
