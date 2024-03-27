@@ -22,7 +22,7 @@ const config: ForgeConfig = {
             }
         }),
         new MakerZIP({}, ['darwin']),
-        // new MakerDmg({}),
+        new MakerDmg({}),
     ],
     plugins: [
         new VitePlugin({
