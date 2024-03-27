@@ -10,7 +10,9 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "test": "jest"
+    "test": "jest",
+    "_postinstall": "node ./node_modules/platform-dependent-modules/cli.js",
+    "postinstall": "npm run _postinstall"
   },
   "keywords": [],
   "author": {
@@ -26,9 +28,17 @@
     }
   ],
   "license": "MIT",
+  "config": {
+    "platformDependentModules": {
+      "darwin": [
+        "appdmg"
+      ]
+    }
+  },
   "devDependencies": {
     "@electron-forge/cli": "^7.3.0",
     "@electron-forge/maker-deb": "^7.3.0",
+    "@electron-forge/maker-dmg": "^7.3.0",
     "@electron-forge/maker-rpm": "^7.3.0",
     "@electron-forge/maker-squirrel": "^7.3.0",
     "@electron-forge/maker-zip": "^7.3.0",
@@ -63,6 +73,7 @@
     "dockerode": "^4.0.2",
     "electron-json-storage": "^4.6.0",
     "electron-squirrel-startup": "^1.0.0",
+    "platform-dependent-modules": "^0.0.14",
     "semver": "^7.6.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
