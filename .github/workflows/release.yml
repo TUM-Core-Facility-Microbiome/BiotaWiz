@@ -18,9 +18,13 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Install build dependencies
+      - name: Install additional build dependencies for MacOS
         if: matrix.os == 'macos-latest'
         run: python3 -m pip install setuptools
+
+      - name: Remove package-lock for MacOS builds (issue with optional dependencies)
+        if: matrix.os == 'macos-latest'
+        run: rm ./IMNGS2-Core/package-lock.json
 
       - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
