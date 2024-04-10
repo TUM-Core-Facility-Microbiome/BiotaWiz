@@ -17,6 +17,7 @@ import {detectStudyFolders} from "../utils/file-explorer";
 import {Environment, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
 import {ticConfiguration} from "../utils/ticConfiguration";
+import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 
 ipcMain.handle('app:getName', () => {
     return app.getName();
@@ -165,4 +166,12 @@ ipcMain.handle("tic:run", async () => {
 
 ipcMain.handle("openExternalLink", async (event, url: string) => {
     return await shell.openExternal(url);
+});
+
+ipcMain.handle("openIssues", async () => {
+    openIssues();
+});
+
+ipcMain.handle("openCommunityDiscussions", async () => {
+    openCommunityDiscussions();
 });

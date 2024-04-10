@@ -20,6 +20,12 @@ const indexBridge = {
             });
         });
     },
+    openIssues: async () => {
+        return ipcRenderer.invoke('openIssues');
+    },
+    openCommunityDiscussions: async () => {
+        return ipcRenderer.invoke('openCommunityDiscussions');
+    },
     getPlatformName: async (): Promise<string> => {
         return ipcRenderer.invoke('getPlatformName')
     },

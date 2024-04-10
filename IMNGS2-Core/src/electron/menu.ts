@@ -1,6 +1,7 @@
 // adapted from https://github.com/electron-react-boilerplate/electron-react-boilerplate/blob/main/src/main/main.ts
 import {app, BrowserWindow, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import {GITHUB_BASE_URL, TIC_PAPER_URL} from '../config';
+import {openCommunityDiscussions, openIssues} from "./browserLinks";
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
     selector?: string;
@@ -162,13 +163,13 @@ export default class MenuBuilder {
                 {
                     label: 'Community Discussions',
                     click() {
-                        shell.openExternal(`${GITHUB_BASE_URL}/discussions`);
+                        openCommunityDiscussions();
                     },
                 },
                 {
                     label: 'Search/Report Issues',
                     click() {
-                        shell.openExternal(`${GITHUB_BASE_URL}/issues`);
+                        openIssues();
                     },
                 },
             ],
@@ -270,13 +271,13 @@ export default class MenuBuilder {
                     {
                         label: 'Community Discussions',
                         click() {
-                            shell.openExternal(`${GITHUB_BASE_URL}/discussions`);
+                            openCommunityDiscussions();
                         },
                     },
                     {
                         label: 'Search/Report Issues',
                         click() {
-                            shell.openExternal(`${GITHUB_BASE_URL}/issues`);
+                            openIssues();
                         },
                     },
                     {

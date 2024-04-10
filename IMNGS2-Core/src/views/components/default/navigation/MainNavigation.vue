@@ -40,7 +40,29 @@
         </div>
       </div>
 
-      <div class="sticky inset-x-0 bottom-0 border-t border-gray-100 bg-white p-2">
+      <div class="sticky inset-x-0 bottom-0 border-gray-100 bg-white p-2">
+        <div class="py-1">
+          <a @click="openCommunityDiscussions"
+              class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
+          >
+            <ChatBubbleLeftRightIcon></ChatBubbleLeftRightIcon>
+            <span
+                class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
+              Community Discussions
+            </span>
+          </a>
+        </div>
+        <div class="py-1">
+          <a @click="openIssues"
+              class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
+          >
+            <FireIcon></FireIcon>
+            <span
+                class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
+              Search/Report Issues
+            </span>
+          </a>
+        </div>
         <div class="py-1">
           <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
                        active-class="bg-blue-50 text-blue-700"
@@ -59,4 +81,14 @@
 </template>
 <script setup lang="ts">
 import SettingsIcon from "../icons/SettingsIcon.vue";
+import ChatBubbleLeftRightIcon from "../icons/ChatBubbleLeftRightIcon.vue";
+import FireIcon from "../icons/FireIcon.vue";
+
+function openIssues() {
+  indexBridge.openIssues();
+}
+
+function openCommunityDiscussions() {
+  indexBridge.openCommunityDiscussions();
+}
 </script>
