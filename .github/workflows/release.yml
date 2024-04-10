@@ -26,13 +26,11 @@ jobs:
         if: matrix.os == 'macos-latest'
         uses: actions/setup-node@v4
 
-      - name: Remove package-lock for MacOS builds (issue with optional dependencies)
-        if: matrix.os == 'macos-latest'
-        run: rm ./IMNGS2-Core/package-lock.json
-
-      - name: Regenerate lockfile for MacOS builds
-        if: matrix.os == 'macos-latest'
-        run: cd IMNGS2-Core && npm i
+      - name: Remove package-lock and regenerate on specified platform (npm issue with optional dependencies)
+        if: matrix.os == 'macos-latest' || matrix.os == 'windows-latest'
+        run: |
+          rm ./IMNGS2-Core/package-lock.json
+          cd IMNGS2-Core && npm i
 
       - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
