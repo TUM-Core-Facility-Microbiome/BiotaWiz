@@ -57,4 +57,15 @@ indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: stri
     }, 50);
   }
 });
+
+async function rollback() {
+  return new Promise<void>((resolve, reject) => {
+    console.log("Killing processing...");
+    reject();
+  });
+}
+
+defineExpose({
+  rollback,
+});
 </script>

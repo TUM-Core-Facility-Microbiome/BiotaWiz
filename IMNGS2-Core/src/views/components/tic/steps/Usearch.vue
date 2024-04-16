@@ -70,21 +70,25 @@
       </label>
     </div>
   </fieldset>
-  <button @click="run()"
-          :disabled="usearch === 'path' && usearchPath === ''"
-          class="mt-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded disabled:text-gray-500 disabled:border-gray-500">
-    Run
-  </button>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
 
 let usearch = ref("path");
 let usearchPath = ref("");
+
+function isValid() {
+  return usearch.value === "download" || (usearch.value === "path" && usearchPath.value !== "");
+}
+
+const emit = defineEmits(['update:isValid']);
+watchEffect(() => {
+  emit('update:isValid', isValid());
+});
 
 async function openInDefaultBrowser(url: string) {
   await indexBridge.openExternal(url);
@@ -100,15 +104,28 @@ async function selectUsearchFile() {
   });
 }
 
-async function run() {
-  if (usearch.value === "download") {
-    await indexBridge.publishUsearchBinary("");
-  } else {
-    await indexBridge.publishUsearchBinary(usearchPath.value);
-  }
-
-  await router.push("run");
+async function apply() {
+  return new Promise<void>((resolve, reject) => {
+    let path = usearchPath.value;
+    if (usearch.value === "download") {
+      path = "";
+    }
+    indexBridge.publishUsearchBinary(path).then(() => {
+      resolve();
+    }).catch(() => {
+      reject();
+    });
+  });
 }
+
+async function rollback() {
+  return
+}
+
+defineExpose({
+  apply,
+  rollback,
+});
 </script>
 
 <script lang="ts">
