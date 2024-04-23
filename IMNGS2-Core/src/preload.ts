@@ -2,6 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import {contextBridge, ipcRenderer} from "electron";
 import {Environment} from "./enums";
+import {logToDevTools} from "./utils/logHandler";
 
 const indexBridge = {
     // renderer to main
@@ -124,6 +125,16 @@ const indexBridge = {
     },
     runTicPipeline: async () => {
         return ipcRenderer.invoke('tic:run');
+    },
+    terminateTicBackend: async () => {
+        return new Promise<void>((resolve, reject) => {
+            ipcRenderer.invoke('tic:terminateBackend').then(() => {
+                logToDevTools("tic terminated (preload)")
+                resolve();
+            }).catch(() => {
+                reject();
+            });
+        });
     },
     openExternalLink: async (url: string) => {
         return ipcRenderer.invoke('openExternalLink', url);

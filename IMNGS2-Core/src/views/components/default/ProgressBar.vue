@@ -13,6 +13,7 @@
                       'bg-green-400' : state.status === 'done',
                       'bg-gray-400' : state.status === 'idle',
                       'bg-red-400' : state.status === 'error',
+                      'bg-orange-400' : state.status === 'warning',
                     }"
                 ></span>
                 <span
@@ -22,6 +23,7 @@
                       'bg-green-500' : state.status === 'done',
                       'bg-gray-500' : state.status === 'idle',
                       'bg-red-500' : state.status === 'error',
+                      'bg-orange-500' : state.status === 'warning',
                     }"
                 ></span>
               </span>
@@ -48,7 +50,7 @@
 import {reactive} from "vue";
 
 const state = reactive({
-  status: "idle", // "idle" | "running" | "done" | "error
+  status: "idle", // "idle" | "running" | "done" | "warning" | "error
   step: null,
   progress: null,
   error: null,

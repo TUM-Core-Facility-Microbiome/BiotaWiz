@@ -516,14 +516,17 @@ export async function initializeDockerBackend(environment: Environment, releaseT
 }
 
 export async function terminateBackend(environment: Environment) {
+    updateProgress({
+        step: `Terminating ${environment} environment`,
+        message: `Terminating...`,
+        state: "running",
+    });
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
-            await terminateDockerBackend();
-            return;
+            return await terminateDockerBackend();
         case WSL.type:
-            await terminateWslBackend(environment);
-            return;
+            return await terminateWslBackend(environment);
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
@@ -532,20 +535,28 @@ export async function terminateBackend(environment: Environment) {
 async function terminateWslBackend(environment: Environment) {
     const distribution = await getImageBaseName(environment);
     logToDevTools(`Terminating WSL distribution ${distribution}`);
-    await wsl.terminate(distribution);
+    return await wsl.terminate(distribution);
 }
 
 async function terminateDockerBackend() {
-    console.log(`Number of running containers: ${runningContainers.size}`)
-    await Promise.all(Array.from(runningContainers).map(async (containerId) => {
-        console.log(`Stopping container ${containerId}`);
-        const container = docker.getContainer(containerId);
-        // try to stop the container for 10 seconds, then kill it
-        await container.stop({t: 10}).catch(() => {
-            console.log(`Killing container ${containerId}`);
-            return container.kill();
-        });
-    }));
+    return new Promise<void>(async (resolve, reject) => {
+        console.log(`Number of running containers: ${runningContainers.size}`)
+        await Promise.all(Array.from(runningContainers).map(async (containerId) => {
+            console.log(`Stopping container ${containerId}`);
+            const container = docker.getContainer(containerId);
+            // try to stop the container for 10 seconds, then kill it
+            return await container.stop({t: 10}).catch(() => {
+                console.log(`Killing container ${containerId}`);
+                container.kill().then(() => {
+                    resolve();
+                }).catch(() => {
+                    reject();
+                });
+            }).then(() => {
+                resolve();
+            });
+        }));
+    })
 }
 
 /**

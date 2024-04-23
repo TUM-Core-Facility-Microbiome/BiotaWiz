@@ -59,9 +59,8 @@ indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: stri
 });
 
 async function rollback() {
-  return new Promise<void>((resolve, reject) => {
-    console.log("Killing processing...");
-    reject();
+  return new Promise<void>(async (resolve, reject) => {
+    await indexBridge.terminateTicBackend();
   });
 }
 

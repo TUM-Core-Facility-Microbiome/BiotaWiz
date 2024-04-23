@@ -110,12 +110,10 @@ export default {
               this.currentTabIndex = oldIndex;
               reject(false);
             });
-          } else {
+          } else {  // back
            this.$refs[`step-${oldIndex}`].rollback().then(() => {
-             this.currentTabIndex = index;
              resolve(true);
            }).catch(() => {
-             this.currentTabIndex = oldIndex;
              reject(false);
            });
           }
