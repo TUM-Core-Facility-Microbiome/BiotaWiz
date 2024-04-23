@@ -57,4 +57,14 @@ indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: stri
     }, 50);
   }
 });
+
+async function rollback() {
+  return new Promise<void>(async (resolve, reject) => {
+    await indexBridge.terminateTicBackend();
+  });
+}
+
+defineExpose({
+  rollback,
+});
 </script>

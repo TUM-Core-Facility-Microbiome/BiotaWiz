@@ -11,7 +11,7 @@
     <div>
       <input
           type="radio"
-          v-model="spikeMode"
+          v-model="state.mode"
           value="spiked"
           id="spike-mode-select-spiked"
           class="peer hidden [&:checked_+_label_svg]:block"
@@ -39,7 +39,7 @@
     <div>
       <input
           type="radio"
-          v-model="spikeMode"
+          v-model="state.mode"
           value="partial"
           id="spike-mode-select-partial"
           class="peer hidden [&:checked_+_label_svg]:block"
@@ -64,7 +64,7 @@
     <div>
       <input
           type="radio"
-          v-model="spikeMode"
+          v-model="state.mode"
           value="none"
           id="spike-mode-select-none"
           class="peer hidden [&:checked_+_label_svg]:block"
@@ -87,32 +87,44 @@
       </label>
     </div>
   </fieldset>
-  <!--  <div class="mt-4 font-mono text-red-800 text-xs">-->
-  <!--    <p>spikeMode: {{ spikeMode }}</p>-->
-  <!--  </div>-->
-  <button @click="publishSpikeMode()"
-          class="mt-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded">
-    Continue with selected mode: <span class="font-mono">{{ spikeMode }}</span></button>
+ Continue with selected mode: <span class="font-mono">{{ state.mode }}</span>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import {reactive, ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {SpikeMode} from "../../../../enums";
 
 
 const router = useRouter();
 
-let spikeMode = ref("spiked");
+const state = reactive({
+  mode: "spiked",
+});
 
-async function publishSpikeMode() {
-  const actualMode = await indexBridge.publishSpikeMode(spikeMode.value);
-  if (actualMode === SpikeMode.SPIKED) {
-    await router.push("check-mapping");
-  } else {
-    await router.push("params");
-  }
+const emit = defineEmits(['update:isValid']);
+watchEffect(() => {
+  emit('update:isValid', state.mode !== null);
+});
+
+async function apply() {
+  return new Promise<void>((resolve, reject) => {
+    indexBridge.publishSpikeMode(state.mode).then(() => {
+      resolve();
+    }).catch(() => {
+      reject();
+    });
+  });
 }
+
+async function rollback() {
+  return
+}
+
+defineExpose({
+  apply,
+  rollback,
+});
 </script>
 
 <script lang="ts">

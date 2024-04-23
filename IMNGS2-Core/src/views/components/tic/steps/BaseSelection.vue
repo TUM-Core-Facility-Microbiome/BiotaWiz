@@ -14,34 +14,48 @@
         @click="selectBaseDir">Select Base Directory
     </button>
     <div v-if="state.baseDir" class="mt-4">
-      <p>Selected:
-        <div class="font-mono">{{ getFolderName(state.baseDir) }}</div>
+      <p class="text-sm">Selected:
+        <div class="font-mono text-wrap break-words">{{ state.baseDir }}</div>
       </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {reactive} from "vue";
+import {reactive, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
 
 const state = reactive({
+  isValid: false,
   baseDir: null as string | null,
 });
+
+const emit = defineEmits(['update:isValid']);
+watchEffect(() => {
+  emit('update:isValid', state.isValid);
+});
+
+async function apply() {
+  return new Promise<void>((resolve, reject) => {
+    indexBridge.publishTicBaseDirectory(state.baseDir).then(() => {
+        resolve();
+    }).catch(() => {
+        reject();
+    });
+  });
+}
 
 const selectBaseDir = () => {
   indexBridge.handleFolderOpen().then(async (baseDir: string) => {
     console.log("Base dir: ", baseDir);
     state.baseDir = baseDir;
-
-    await indexBridge.publishTicBaseDirectory(baseDir);
-
-    // navigate to the next step
-    await router.push("study-selection");
+    state.isValid = true;
   }).catch(() => {
     console.log("Could not select base dir");
+    state.baseDir = null;
+    state.isValid = false;
   });
 }
 
@@ -49,4 +63,8 @@ const getFolderName = (path: string) => {
   const parts = path.split("/");
   return parts[parts.length - 1];
 }
+
+defineExpose({
+  apply,
+});
 </script>

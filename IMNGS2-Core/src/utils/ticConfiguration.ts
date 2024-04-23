@@ -204,11 +204,11 @@ export class TicConfiguration {
                         }
                     }).show()
                 } else {
-                    if (statusCode == 137) {
+                    if (statusCode == 143 || statusCode == 137) {
                         updateProgress({
                             step: "Running TIC",
                             message: "Pipeline was terminated",
-                            state: "error",
+                            state: "warning",
                         });
                     } else {
                         updateProgress({
@@ -216,16 +216,16 @@ export class TicConfiguration {
                             message: `Pipeline returned unexpected with failure code (exit code: ${statusCode})`,
                             state: "error",
                         });
+                        new Notification({
+                            title: app.name,
+                            body: "TIC pipeline failed",
+                        }).on('click', () => {
+                            const mainWindow = BrowserWindow.fromId(1);
+                            if (mainWindow) {
+                                mainWindow.focus();
+                            }
+                        }).show()
                     }
-                    new Notification({
-                        title: app.name,
-                        body: "TIC pipeline failed",
-                    }).on('click', () => {
-                        const mainWindow = BrowserWindow.fromId(1);
-                        if (mainWindow) {
-                            mainWindow.focus();
-                        }
-                    }).show()
                 }
             }).catch((error: string) => {
                 console.error(error);

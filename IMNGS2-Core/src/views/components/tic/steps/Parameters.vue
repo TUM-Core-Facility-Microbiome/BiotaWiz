@@ -1,11 +1,8 @@
 <template>
   <div>
-    <div class="text-lg font-bold">Base Directory</div>
+    <div class="text-lg font-bold">Parameters</div>
     <div class="text-sm text-gray-700">
-      Select the base directory for the TIC pipeline.
-      <br>
-      This folder and/or its sub-folders should contain all sequence files you want to analyze in this run.
-      Results of the pipeline will be written to the selected base folder.
+      Set the parameters for the Taxonomy Informed Clustering pipeline.
     </div>
   </div>
   <div class="mt-3 divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white select-none">
@@ -369,34 +366,10 @@
       </p>
     </details>
   </div>
-
-  <!--  <div class="mt-4 font-mono text-red-800 text-xs">-->
-  <!--    <p>stripleft: {{ stripleft }}</p>-->
-  <!--    <p>stripright: {{ stripright }}</p>-->
-  <!--    <p>abund_limit: {{ abund_limit }}</p>-->
-  <!--    <p>sample_wise_correction: {{ sample_wise_correction }}</p>-->
-  <!--    <br>-->
-  <!--    <p>fastq_maxdiffs: {{ fastq_maxdiffs }}</p>-->
-  <!--    <p>fastq_pctid: {{ fastq_pctid }}</p>-->
-  <!--    <p>fastq_minmergelen: {{ fastq_minmergelen }}</p>-->
-  <!--    <p>fastq_maxmergelen: {{ fastq_maxmergelen }}</p>-->
-  <!--    <p>minsize: {{ minsize }}</p>-->
-  <!--    <p>family_sim: {{ family_sim }}</p>-->
-  <!--    <p>genus_sim: {{ genus_sim }}</p>-->
-  <!--    <p>species_sim: {{ species_sim }}</p>-->
-  <!--    <br>-->
-  <!--  </div>-->
-  <div>
-    <button
-        class="mt-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded"
-        @click="publishParameters()">Set parameters and continue
-    </button>
-  </div>
-
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {reactive, ref, watchEffect} from 'vue';
 import {useRouter} from "vue-router";
 
 const router = useRouter();
@@ -414,6 +387,11 @@ let minsize = ref(2);
 let family_sim = ref(0.90);
 let genus_sim = ref(0.95);
 let species_sim = ref(0.97);
+
+const emit = defineEmits(['update:isValid']);
+watchEffect(() => {
+  emit('update:isValid', true);
+});
 
 function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
   const DEFAULT_TIC_PIPELINE_ARGUMENTS: ITicPipelineArguments = {
@@ -515,15 +493,26 @@ function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
   return args;
 }
 
-async function publishParameters() {
-  const args = generateTicPipelineArgumentsObj();
-  await indexBridge.publishTicParameters(args).then(() => {
-    console.log("Published TIC pipeline arguments");
-    router.push("usearch");
-  }).catch(() => {
-    console.error("Could not publish TIC pipeline arguments");
+async function apply() {
+  return new Promise<void>((resolve, reject) => {
+    indexBridge.publishTicParameters(generateTicPipelineArgumentsObj()).then(() => {
+      console.log("Published TIC pipeline arguments");
+      resolve();
+    }).catch(() => {
+      console.error("Could not publish TIC pipeline arguments");
+      reject();
+    });
   });
 }
+
+async function rollback() {
+  return
+}
+
+defineExpose({
+  apply,
+  rollback,
+});
 </script>
 
 <script lang="ts">

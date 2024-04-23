@@ -8,7 +8,7 @@ import {
     initializeBackend,
     resetToDefaultBackend,
     setBackendByType,
-    setFixedImageTagString
+    setFixedImageTagString, terminateBackend
 } from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFileOpen, handleFolderOpen} from "./dialogs";
@@ -18,6 +18,7 @@ import {Environment, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
 import {ticConfiguration} from "../utils/ticConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
+import {logToDevTools} from "../utils/logHandler";
 
 ipcMain.handle('app:getName', () => {
     return app.getName();
@@ -162,6 +163,11 @@ ipcMain.handle("tic:checkMapping", async () => {
 ipcMain.handle("tic:run", async () => {
     console.log("Running TIC pipeline");
     ticConfiguration.runPipeline();
+});
+
+ipcMain.handle("tic:terminateBackend", async () => {
+    console.log("Stopping TIC pipeline");
+    return await terminateBackend(Environment.TIC);
 });
 
 ipcMain.handle("openExternalLink", async (event, url: string) => {
