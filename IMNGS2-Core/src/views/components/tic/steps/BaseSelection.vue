@@ -14,8 +14,8 @@
         @click="selectBaseDir">Select Base Directory
     </button>
     <div v-if="state.baseDir" class="mt-4">
-      <p>Selected:
-        <div class="font-mono">{{ state.baseDir }}</div>
+      <p class="text-sm">Selected:
+        <div class="font-mono text-wrap break-words">{{ state.baseDir }}</div>
       </p>
     </div>
   </div>

@@ -5,8 +5,8 @@
   <div class="study-browser">
     <StudyBrowserElement :items="state.tree" @selection-changed="handleSelect"/>
   </div>
-  <div v-if="state.selectedItems.length > 0">Selected {{ state.selectedItems.length }} samples</div>
-  <div v-else>Please select at least one sample to continue</div>
+  <div class="text-sm" v-if="state.selectedItems.length > 0">Selected {{ state.selectedItems.length }} samples</div>
+  <div class="text-sm" v-else>Please select at least one sample to continue</div>
 </template>
 
 <style scoped>
