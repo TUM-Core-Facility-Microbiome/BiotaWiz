@@ -147,7 +147,7 @@ export default {
     backButtonOptions() {
       if (this.currentTabIndex === 5) {
         return {
-          text: 'Stop processing'
+          text: 'Stop processing and go back'
         };
       } else {
         return {
