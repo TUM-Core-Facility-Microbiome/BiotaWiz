@@ -6,7 +6,7 @@
     </div>
   </div>
   <div>
-    <StudyBrowser :base-dir="state.baseDir"/>
+    <StudyBrowser :base-dir="state.baseDir" @update:selectionChanged="onSelectionChanged($event)"/>
     <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3 mb-4 mt-10" role="alert">
       <p class="font-bold text-sm">Development notice:</p>
       <p class="text-xs">
@@ -19,9 +19,37 @@
 
 <script setup lang="ts">
 import StudyBrowser from "../../default/StudyBrowser.vue";
-import {reactive} from "vue";
+import {reactive, watchEffect} from "vue";
 
 const state = reactive({
   baseDir: null as string | null,
+  selectedItems: [] as IFileSystemNode[],
+});
+
+function onSelectionChanged(updated: IFileSystemNode[]) {
+  console.log("Wrapper informed about changed selection");
+  console.log(updated);
+  state.selectedItems = updated;
+}
+
+const emit = defineEmits(['update:isValid']);
+watchEffect(() => {
+  emit('update:isValid', state.selectedItems.length > 0);
+});
+
+async function apply() {
+  return new Promise<void>((resolve, reject) => {
+    // as selected items are reactive this was causing issues (non-cloneable objects); a deep copy is a workaround
+    const deepCopy = JSON.parse(JSON.stringify(state.selectedItems));
+    indexBridge.publishSamples(deepCopy).then(() => {
+      resolve();
+    }).catch(() => {
+      reject();
+    });
+  });
+}
+
+defineExpose({
+  apply,
 });
 </script>

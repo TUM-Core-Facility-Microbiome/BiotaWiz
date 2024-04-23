@@ -5,14 +5,8 @@
   <div class="study-browser">
     <StudyBrowserElement :items="state.tree" @selection-changed="handleSelect"/>
   </div>
-  <button v-if="state.selectedItems.length > 0"
-          class="mt-2 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-1 px-4 border border-blue-500 hover:border-transparent rounded"
-          @click="publishSelectedSamples()">Continue with {{ state.selectedItems.length }} samples
-  </button>
-  <button v-else
-          class="mt-2 bg-transparent text-gray-500 disabled font-semibold py-1 px-4 border border-gray-500 rounded cursor-not-allowed">
-    Please select at least one sample to continue
-  </button>
+  <div v-if="state.selectedItems.length > 0">Selected {{ state.selectedItems.length }} samples</div>
+  <div v-else>Please select at least one sample to continue</div>
 </template>
 
 <style scoped>
@@ -23,7 +17,7 @@
 </style>
 
 <script setup lang="ts">
-import {reactive, watch} from "vue";
+import {reactive, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
@@ -60,6 +54,11 @@ watch(() => props.baseDir, () => {
   updateStudies();
 });
 
+const emit = defineEmits(['update:selectionChanged']);
+watchEffect(() => {
+  emit('update:selectionChanged', state.selectedItems);
+});
+
 const handleSelect = (selectedItems: any[]) => {
   state.selectedItems = selectedItems;
   console.log(`selectedItems: ${JSON.stringify(selectedItems)}`);
@@ -71,14 +70,7 @@ const handleSelect = (selectedItems: any[]) => {
   console.log(`fileNames: ${fileNames}`);
 }
 
-async function publishSelectedSamples() {
-  // as selected items are reactive this was causing issues (non-cloneable objects); a deep copy is a workaround
-  const deepCopy = JSON.parse(JSON.stringify(state.selectedItems));
-  await indexBridge.publishSamples(deepCopy);
 
-  // navigate to the next step
-  await router.push("spike-mode");
-}
 </script>
 
 <script lang="ts">
