@@ -15,7 +15,7 @@
     </button>
     <div v-if="state.baseDir" class="mt-4">
       <p>Selected:
-        <div class="font-mono">{{ getFolderName(state.baseDir) }}</div>
+        <div class="font-mono">{{ state.baseDir }}</div>
       </p>
     </div>
   </div>
