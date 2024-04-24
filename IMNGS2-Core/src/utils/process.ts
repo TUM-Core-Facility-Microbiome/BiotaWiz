@@ -20,9 +20,12 @@ function wslHelloWorld(): Promise<number> {
 
 export function runSubprocess(command: string, args: string[], logHandler: (msg: string, isStderr: boolean) => void = () => {
     return
-}): Promise<number> {
+}, pidRegister: Set<child_process.ChildProcess> | null = null): Promise<number> {
     return new Promise<number>((resolve, reject) => {
         const subprocess = child_process.spawn(command, args);
+        if (pidRegister) {
+            pidRegister.add(subprocess);
+        }
         console.log(`Spawned child with pid ${subprocess.pid}`);
 
         subprocess.stdout.on('data', (data) => {
@@ -48,6 +51,9 @@ export function runSubprocess(command: string, args: string[], logHandler: (msg:
         // close always emits either after exit or error
         subprocess.on('close', (code, signal) => {
             console.log(`Child closed with code ${code} and signal ${signal}`);
+            if (pidRegister) {
+                pidRegister.delete(subprocess);
+            }
             resolve(code);
         });
     });

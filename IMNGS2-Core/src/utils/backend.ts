@@ -21,11 +21,13 @@ import {helpPages} from "./helpPages";
 import {app} from "electron";
 import Dockerode from "dockerode";
 import {getLocalAppDataPath} from "./helpers";
+import * as child_process from "node:child_process";
 const wsl = require("@endevr-io/wsl-api");
 const { windowsToWsl } = require("@endevr-io/wsl-path");
 
 const runningContainers: Set<string> = new Set();
 const runningDistributions = new Set();
+const runningWslMainProcesses: Set<child_process.ChildProcess> = new Set();
 
 const GITHUB_API_BASE_URL = cmArgs['api-url'];
 const CONTAINER_REGISTRY = cmArgs['container-registry'];
@@ -534,14 +536,15 @@ export async function terminateBackend(environment: Environment) {
 
 async function terminateWslBackend() {
     return new Promise<void>(async (resolve, reject) => {
-        console.log(`Number of running distributions: ${runningDistributions.size}`)
-        await Promise.all(Array.from(runningDistributions).map(async (distribution) => {
-            console.log(`Terminating distribution ${distribution}`);
-            return await wsl.terminate(distribution).then(() => {
+        console.log(`Number of running WSL main processes: ${runningWslMainProcesses.size}`)
+        return await Promise.all(Array.from(runningWslMainProcesses).map(async (childProcess) => {
+            console.log(`Terminating process ${childProcess.pid}`);
+            const success = childProcess.kill();
+            if (success) {
                 resolve();
-            }).catch(() => {
+            } else {
                 reject();
-            });
+            }
         }));
     });
 }
@@ -549,7 +552,7 @@ async function terminateWslBackend() {
 async function terminateDockerBackend() {
     return new Promise<void>(async (resolve, reject) => {
         console.log(`Number of running containers: ${runningContainers.size}`)
-        await Promise.all(Array.from(runningContainers).map(async (containerId) => {
+        return await Promise.all(Array.from(runningContainers).map(async (containerId) => {
             console.log(`Stopping container ${containerId}`);
             const container = docker.getContainer(containerId);
             // try to stop the container for 10 seconds, then kill it
@@ -918,7 +921,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
     const args = ["--distribution", distribution, "--", ...command];
     return await runSubprocess(backend.command, args, (msg: string) => {
         logForEnvironment(environment, msg);
-    }).finally(() => {
+    }, runningWslMainProcesses).finally(() => {
         runningDistributions.delete(distribution);
     });
 }
