@@ -526,16 +526,24 @@ export async function terminateBackend(environment: Environment) {
         case DOCKER.type:
             return await terminateDockerBackend();
         case WSL.type:
-            return await terminateWslBackend(environment);
+            return await terminateWslBackend();
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
 }
 
-async function terminateWslBackend(environment: Environment) {
-    const distribution = await getImageBaseName(environment);
-    logToDevTools(`Terminating WSL distribution ${distribution}`);
-    return await wsl.terminate(distribution);
+async function terminateWslBackend() {
+    return new Promise<void>(async (resolve, reject) => {
+        console.log(`Number of running distributions: ${runningDistributions.size}`)
+        await Promise.all(Array.from(runningDistributions).map(async (distribution) => {
+            console.log(`Terminating distribution ${distribution}`);
+            return await wsl.terminate(distribution).then(() => {
+                resolve();
+            }).catch(() => {
+                reject();
+            });
+        }));
+    });
 }
 
 async function terminateDockerBackend() {
