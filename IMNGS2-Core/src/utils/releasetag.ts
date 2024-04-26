@@ -29,7 +29,7 @@ export function semVerFromGitHubTag(tag: string): SemVer {
 export function getAllowedRange(environment: Environment): string {
     switch (environment) {
         case Environment.IMNGS2CORE:
-            return cmArgs['tic-pipeline-vrange'];
+            return cmArgs['imngs2core-pipeline-vrange'];
         case Environment.SHINY_RHEA:
             return cmArgs['shiny-rhea-vrange'];
         default:

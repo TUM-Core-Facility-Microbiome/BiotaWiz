@@ -99,17 +99,17 @@ const indexBridge = {
     deleteImage: async (name: string, tag: string) => {
         return ipcRenderer.invoke('deleteImage', name, tag);
     },
-    publishTicBaseDirectory: async (baseDirectory: string) => {
-        return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);
+    publishImngs2CoreBaseDirectory: async (baseDirectory: string) => {
+        return ipcRenderer.invoke('imngs2core:setBaseDirectory', baseDirectory);
     },
-    getTicBaseDirectory: async (): Promise<string> => {
+    getImngs2CoreBaseDirectory: async (): Promise<string> => {
         return ipcRenderer.invoke('imngs2core:getBaseDirectory');
     },
     publishSamples: async (samples: IFileSystemNode[]) => {
-        return ipcRenderer.invoke('publish:ticSamples', samples);
+        return ipcRenderer.invoke('imngs2core:setSamples', samples);
     },
     publishSpikeMode: async (spikeModeName: string) => {
-        return ipcRenderer.invoke('publish:spikeMode', spikeModeName);
+        return ipcRenderer.invoke('imngs2core:setSpikeMode', spikeModeName);
     },
     openMappingFile: async () => {
         return ipcRenderer.invoke('imngs2core:openMappingFile');
@@ -117,16 +117,16 @@ const indexBridge = {
     checkMappingFile: async () => {
         return ipcRenderer.invoke('imngs2core:checkMapping');
     },
-    publishTicParameters: async (parameters: ITicPipelineArguments) => {
-        return ipcRenderer.invoke('publish:ticParameters', parameters);
+    publishImngs2CoreParameters: async (parameters: IImngs2CoreArguments) => {
+        return ipcRenderer.invoke('imngs2core:setParameters', parameters);
     },
     publishUsearchBinary: async (path: string) => {
-        return ipcRenderer.invoke('publish:usearchBinary', path);
+        return ipcRenderer.invoke('imngs2core:setUsearchBinary', path);
     },
-    runTicPipeline: async () => {
+    runImngs2Core: async () => {
         return ipcRenderer.invoke('imngs2core:run');
     },
-    terminateTicBackend: async () => {
+    terminateImngs2CoreBackend: async () => {
         return new Promise<void>((resolve, reject) => {
             ipcRenderer.invoke('imngs2core:terminateBackend').then(() => {
                 logToDevTools("imngs2core terminated (preload)")

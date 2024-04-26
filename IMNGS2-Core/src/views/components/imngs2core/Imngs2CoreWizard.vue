@@ -49,7 +49,7 @@
       </h5>
     </Wizard>
   </div>
-  <!-- TIC Pipeline Wizard End -->
+  <!-- IMNGS2-Core Wizard End -->
 </template>
 
 <script setup lang="ts">
@@ -77,7 +77,7 @@ import Usearch from "./steps/Usearch.vue";
 import Run from "./steps/Imngs2CoreRun.vue";
 
 export default {
-  name: 'TicPipelineWizard',
+  name: 'Imngs2CorePipelineWizard',
   components: {
     Wizard,
     BaseSelection,

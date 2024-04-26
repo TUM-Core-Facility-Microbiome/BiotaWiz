@@ -55,11 +55,11 @@ export async function getBackend() {
     });
 }
 
-export function setTicBaseDirectory(baseDirectory: string) {
+export function setImngs2CoreBaseDirectory(baseDirectory: string) {
     return new Promise<void>((resolve, reject) => {
-        const baseDirectoryObj: ITicBaseDirectory = {path: baseDirectory};
+        const baseDirectoryObj: IImngs2CoreBaseDirectory = {path: baseDirectory};
 
-        jsonStorage.set('ticBaseDirectory', baseDirectoryObj, (error) => {
+        jsonStorage.set('imngs2coreBaseDirectory', baseDirectoryObj, (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -69,9 +69,9 @@ export function setTicBaseDirectory(baseDirectory: string) {
     });
 }
 
-export function getTicBaseDirectory() {
+export function getImngs2CoreBaseDirectory() {
     return new Promise<string>((resolve, reject) => {
-        jsonStorage.get('ticBaseDirectory', (error, data: ITicBaseDirectory) => {
+        jsonStorage.get('imngs2coreBaseDirectory', (error, data: IImngs2CoreBaseDirectory) => {
             if (error) {
                 reject(error);
             } else {

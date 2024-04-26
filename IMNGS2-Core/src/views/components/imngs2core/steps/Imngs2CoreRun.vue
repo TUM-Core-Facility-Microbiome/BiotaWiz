@@ -2,7 +2,7 @@
   <div>
     <div class="text-lg font-bold">Running pipeline</div>
     <div class="text-sm text-gray-700">
-      You should see the logs of the TIC pipeline here. Output will be written to your selected base directory:
+      You should see the logs of IMNGS2-Core here. Output will be written to your selected base directory:
       <br>
       {{ state.baseDir }}
     </div>
@@ -24,17 +24,17 @@ const state = reactive({
 const logLines = ref<string[]>([]);
 
 onMounted(() => {
-  getTicBaseDirectory();
+  getImngs2CoreBaseDirectory();
   // prepare the environment
-  indexBridge.runTicPipeline().then(() => {
-    console.log("Tic pipeline running");
+  indexBridge.runImngs2Core().then(() => {
+    console.log("IMNGS2-Core running");
   }).catch(() => {
-    console.log("Tic pipeline failed");
+    console.log("IMNGS2-Core pipeline failed");
   });
 });
 
-function getTicBaseDirectory() {
-  indexBridge.getTicBaseDirectory().then((baseDir: string) => {
+function getImngs2CoreBaseDirectory() {
+  indexBridge.getImngs2CoreBaseDirectory().then((baseDir: string) => {
     console.log("Base dir: ", baseDir);
     state.baseDir = baseDir;
   }).catch(() => {
@@ -60,7 +60,7 @@ indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: stri
 
 async function rollback() {
   return new Promise<void>(async (resolve, reject) => {
-    await indexBridge.terminateTicBackend();
+    await indexBridge.terminateImngs2CoreBackend();
   });
 }
 

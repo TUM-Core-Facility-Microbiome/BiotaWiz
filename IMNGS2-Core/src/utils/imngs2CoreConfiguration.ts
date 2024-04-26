@@ -8,7 +8,7 @@ import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
 import {getOrDownloadUsearch32Binary} from "./usearch";
 
-export class TicConfiguration {
+export class Imngs2CoreConfiguration {
     private baseDirectory = "";
     private usearchBinary = "";
     private mappingFile = "";
@@ -16,11 +16,11 @@ export class TicConfiguration {
 
     private spikeMode: SpikeMode = null;
     private samples: IFileSystemNode[] = [];
-    private parameters: ITicPipelineArguments = null;
+    private parameters: IImngs2CoreArguments = null;
 
     public setBaseDirectory(baseDirectory: string) {
         this.baseDirectory = baseDirectory;
-        console.log(`TIC base directory set to ${baseDirectory}`);
+        console.log(`IMNGS2-Core base directory set to ${baseDirectory}`);
     }
 
     public setUsearchBinaryPath(binPath: string) {
@@ -148,7 +148,7 @@ export class TicConfiguration {
         });
     }
 
-    public setParameters(parameters: ITicPipelineArguments) {
+    public setParameters(parameters: IImngs2CoreArguments) {
         this.parameters = parameters;
         this.writeParameterFile();
     }
@@ -164,7 +164,7 @@ export class TicConfiguration {
         // add to task queue
         taskQueue.defer(async () => {
             updateProgress({
-                step: "Running TIC",
+                step: "Running IMNGS2-Core",
                 message: "Running Analysis...",
                 state: "running",
             });
@@ -190,13 +190,13 @@ export class TicConfiguration {
                 console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
                     updateProgress({
-                        step: "Running TIC",
-                        message: "TIC finished",
+                        step: "Running IMNGS2-Core",
+                        message: "IMNGS2-Core finished",
                         state: "done",
                     });
                     new Notification({
                         title: app.name,
-                        body: "TIC pipeline finished successfully",
+                        body: "IMNGS2-Core finished successfully",
                     }).on('click', () => {
                         const mainWindow = BrowserWindow.fromId(1);
                         if (mainWindow) {
@@ -206,19 +206,19 @@ export class TicConfiguration {
                 } else {
                     if (statusCode == 143 || statusCode == 137) {
                         updateProgress({
-                            step: "Running TIC",
+                            step: "Running IMNGS2-Core",
                             message: "Pipeline was terminated",
                             state: "warning",
                         });
                     } else {
                         updateProgress({
-                            step: "Running TIC",
+                            step: "Running IMNGS2-Core",
                             message: `Pipeline returned unexpected with failure code (exit code: ${statusCode})`,
                             state: "error",
                         });
                         new Notification({
                             title: app.name,
-                            body: "TIC pipeline failed",
+                            body: "IMNGS2-Core failed",
                         }).on('click', () => {
                             const mainWindow = BrowserWindow.fromId(1);
                             if (mainWindow) {
@@ -230,7 +230,7 @@ export class TicConfiguration {
             }).catch((error: string) => {
                 console.error(error);
                 updateProgress({
-                    step: "Running TIC",
+                    step: "Running IMNGS2-Core",
                     message: "Could not start pipeline",
                     state: "error",
                 });
@@ -300,4 +300,4 @@ export class TicConfiguration {
     }
 }
 
-export const ticConfiguration = new TicConfiguration();
+export const imngs2CoreConfiguration = new Imngs2CoreConfiguration();

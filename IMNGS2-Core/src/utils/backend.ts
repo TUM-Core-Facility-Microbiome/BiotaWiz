@@ -41,8 +41,8 @@ function getRepository(environment: Environment): Repository {
     switch (environment) {
         case Environment.IMNGS2CORE:
             return {
-                owner: cmArgs['tic-pipeline-repository-owner'],
-                repo: cmArgs['tic-pipeline-repository-name'],
+                owner: cmArgs['imngs2core-repository-owner'],
+                repo: cmArgs['imngs2core-repository-name'],
             }
         case Environment.SHINY_RHEA:
             return {

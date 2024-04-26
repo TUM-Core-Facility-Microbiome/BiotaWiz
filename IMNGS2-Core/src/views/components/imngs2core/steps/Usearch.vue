@@ -2,7 +2,7 @@
   <div>
     <div class="text-lg font-bold">USEARCH Binary</div>
     <div class="text-sm text-gray-700">
-      The TIC pipeline is based on USEARCH 11. Due to USEARCH's licensing we can not include the binary in the
+      IMNGS2-Core is based on USEARCH 11. Due to USEARCH's licensing we can not include the binary in the
       pipeline environment. Please select how you want to proceed.
     </div>
   </div>

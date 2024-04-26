@@ -12,11 +12,11 @@ import {
 } from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFileOpen, handleFolderOpen} from "./dialogs";
-import {getBackend, getTicBaseDirectory, setTicBaseDirectory} from "../utils/storage";
+import {getBackend, getImngs2CoreBaseDirectory, setImngs2CoreBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "../utils/file-explorer";
 import {Environment, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
-import {ticConfiguration} from "../utils/ticConfiguration";
+import {imngs2CoreConfiguration} from "../utils/imngs2CoreConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 
@@ -88,12 +88,12 @@ ipcMain.handle("runMockProcess", async () => {
 });
 
 ipcMain.handle("imngs2core:getBaseDirectory", async () => {
-    return await getTicBaseDirectory();
+    return await getImngs2CoreBaseDirectory();
 });
 
 ipcMain.handle("loadStudiesFromBaseDirectory", async (): Promise<IFileSystemNode[]> => {
     return new Promise<IFileSystemNode[]>((resolve) => {
-        getTicBaseDirectory().then((baseDirectory) => {
+        getImngs2CoreBaseDirectory().then((baseDirectory) => {
             resolve(detectStudyFolders(baseDirectory));
         });
     });
@@ -113,20 +113,20 @@ ipcMain.handle("initializeEnvironment", async (event, environment: Environment) 
     });
 });
 
-ipcMain.handle("publish:ticBaseDirectory", async (event, baseDirectory: string) => {
-    console.log(`Setting TIC base directory to ${baseDirectory}`);
-    ticConfiguration.setBaseDirectory(baseDirectory);
-    console.log(ticConfiguration);
-    await setTicBaseDirectory(baseDirectory);
+ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: string) => {
+    console.log(`Setting IMNGS2-Core base directory to ${baseDirectory}`);
+    imngs2CoreConfiguration.setBaseDirectory(baseDirectory);
+    console.log(imngs2CoreConfiguration);
+    await setImngs2CoreBaseDirectory(baseDirectory);
 });
 
-ipcMain.handle("publish:ticSamples", async (event, samples: IFileSystemNode[]) => {
-    console.log(`Setting TIC samples to ${JSON.stringify(samples)}`);
-    ticConfiguration.setSamples(samples);
-    console.log(ticConfiguration);
+ipcMain.handle("imngs2core:setSamples", async (event, samples: IFileSystemNode[]) => {
+    console.log(`Setting IMNGS2-Core samples to ${JSON.stringify(samples)}`);
+    imngs2CoreConfiguration.setSamples(samples);
+    console.log(imngs2CoreConfiguration);
 });
 
-ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
+ipcMain.handle("imngs2core:setSpikeMode", async (event, spikeModeName: string) => {
     // parse spike mode
     let mode;
     if (spikeModeName === SpikeMode.SPIKED) {
@@ -137,36 +137,36 @@ ipcMain.handle("publish:spikeMode", async (event, spikeModeName: string) => {
         mode = SpikeMode.NONE;
     }
     console.log(`Selected spike mode: ${mode}`);
-    ticConfiguration.setSpikeMode(mode);
-    return ticConfiguration.getSpikeMode();
+    imngs2CoreConfiguration.setSpikeMode(mode);
+    return imngs2CoreConfiguration.getSpikeMode();
 });
 
-ipcMain.handle("publish:ticParameters", async (event, parameters: ITicPipelineArguments) => {
-    ticConfiguration.setParameters(parameters);
-    console.log(ticConfiguration);
+ipcMain.handle("imngs2core:setParameters", async (event, parameters: IImngs2CoreArguments) => {
+    imngs2CoreConfiguration.setParameters(parameters);
+    console.log(imngs2CoreConfiguration);
 });
 
-ipcMain.handle("publish:usearchBinary", async (event, path: string) => {
-    await ticConfiguration.setUsearchBinaryPath(path);
+ipcMain.handle("imngs2core:setUsearchBinary", async (event, path: string) => {
+    await imngs2CoreConfiguration.setUsearchBinaryPath(path);
 });
 
 ipcMain.handle("imngs2core:openMappingFile", async () => {
     console.log("Opening mapping file");
-    await ticConfiguration.openMappingFile();
+    await imngs2CoreConfiguration.openMappingFile();
 });
 
 ipcMain.handle("imngs2core:checkMapping", async () => {
     console.log("Checking mapping file");
-    return ticConfiguration.checkMapping();
+    return imngs2CoreConfiguration.checkMapping();
 });
 
 ipcMain.handle("imngs2core:run", async () => {
-    console.log("Running TIC pipeline");
-    ticConfiguration.runPipeline();
+    console.log("Running IMNGS2-Core pipeline");
+    imngs2CoreConfiguration.runPipeline();
 });
 
 ipcMain.handle("imngs2core:terminateBackend", async () => {
-    console.log("Stopping TIC pipeline");
+    console.log("Stopping IMNGS2-Core pipeline");
     return await terminateBackend(Environment.IMNGS2CORE);
 });
 

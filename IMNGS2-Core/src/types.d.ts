@@ -105,7 +105,7 @@ interface ICreateTableTICArgs {
     sample_wise_correction: boolean;
 }
 
-interface ITicPipelineArguments {
+interface IImngs2CoreArguments {
     MergePairsArgs: IMergePairsArgs;
     TrimBothSidesArgs: ITrimBothSidesArgs;
     TrimOneSideArgs: ITrimOneSideArgs;
@@ -122,7 +122,7 @@ interface ITicPipelineArguments {
     CreateTableTICArgs: ICreateTableTICArgs;
 }
 
-interface ITicBaseDirectory {
+interface IImngs2CoreBaseDirectory {
     path: string;
 }
 

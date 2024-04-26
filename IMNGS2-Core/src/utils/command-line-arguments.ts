@@ -2,9 +2,9 @@ import commandLineArgs from "command-line-args";
 import {
     REGISTRY_URL,
     API_URL,
-    TIC_PIPELINE_REPOSITORY_OWNER,
-    TIC_PIPELINE_REPOSITORY_NAME,
-    TIC_PIPELINE_VRANGE,
+    IMNGS2CORE_REPOSITORY_OWNER,
+    IMNGS2CORE_REPOSITORY_NAME,
+    IMNGS2CORE_VRANGE,
     SHINY_RHEA_REPOSITORY_OWNER,
     SHINY_RHEA_REPOSITORY_NAME,
     SHINY_RHEA_VRANGE
@@ -38,22 +38,22 @@ const optionDefinitions = [
         description: 'GitHub API base URL including protocol.'
     },
     {
-        name: 'tic-pipeline-repository-owner',
+        name: 'imngs2core-repository-owner',
         type: String,
-        defaultValue: TIC_PIPELINE_REPOSITORY_OWNER,
-        description: 'GitHub repository owner of TIC pipeline.'
+        defaultValue: IMNGS2CORE_REPOSITORY_OWNER,
+        description: 'GitHub repository owner of IMNGS2-Core.'
     },
     {
-        name: 'tic-pipeline-repository-name',
+        name: 'imngs2core-repository-name',
         type: String,
-        defaultValue: TIC_PIPELINE_REPOSITORY_NAME,
-        description: 'GitHub repository name of TIC pipeline.'
+        defaultValue: IMNGS2CORE_REPOSITORY_NAME,
+        description: 'GitHub repository name of IMNGS2-Core.'
     },
     {
-        name: 'tic-pipeline-vrange',
+        name: 'imngs2core-pipeline-vrange',
         type: String,
-        defaultValue: TIC_PIPELINE_VRANGE,
-        description: 'Semantic version range for TIC pipeline.'
+        defaultValue: IMNGS2CORE_VRANGE,
+        description: 'Semantic version range for IMNGS2-Core.'
     },
     {
         name: 'shiny-rhea-repository-owner',

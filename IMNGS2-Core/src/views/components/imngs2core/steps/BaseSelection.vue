@@ -2,7 +2,7 @@
   <div>
     <div class="text-lg font-bold">Base Directory</div>
     <div class="text-sm text-gray-700">
-      Select the base directory for the TIC pipeline.
+      Select the base directory for IMNGS2-Core.
       <br>
       This folder and/or its sub-folders should contain all sequence files you want to analyze in this run.
       Results of the pipeline will be written to the selected base folder.
@@ -39,7 +39,7 @@ watchEffect(() => {
 
 async function apply() {
   return new Promise<void>((resolve, reject) => {
-    indexBridge.publishTicBaseDirectory(state.baseDir).then(() => {
+    indexBridge.publishImngs2CoreBaseDirectory(state.baseDir).then(() => {
         resolve();
     }).catch(() => {
         reject();

@@ -2,7 +2,7 @@
   "name": "imngs2-core",
   "productName": "IMNGS2-Core",
   "version": "0.0.1-beta.2",
-  "description": "Analyze 16S rRNA amplicon sequences for microbiome studies using the TIC pipeline",
+  "description": "Analyze 16S rRNA amplicon sequences for microbiome studies",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",

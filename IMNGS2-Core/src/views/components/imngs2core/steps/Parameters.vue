@@ -393,8 +393,8 @@ watchEffect(() => {
   emit('update:isValid', true);
 });
 
-function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
-  const DEFAULT_TIC_PIPELINE_ARGUMENTS: ITicPipelineArguments = {
+function generateImngs2CorePipelineArgumentsObj(): IImngs2CoreArguments {
+  const DEFAULT_IMNGS2CORE_ARGUMENTS: IImngs2CoreArguments = {
     MergePairsArgs: {
       fastq_maxdiffs: 50,
       fastq_pctid: 50,
@@ -482,7 +482,7 @@ function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
   };
 
   // patch args
-  const args = DEFAULT_TIC_PIPELINE_ARGUMENTS;
+  const args = DEFAULT_IMNGS2CORE_ARGUMENTS;
   args.TrimBothSidesArgs = trimBothSidesArgs;
   args.TrimOneSideArgs = trimOneSideArgs;
   args.CreateTableTICArgs = createTableTICArgs;
@@ -495,11 +495,11 @@ function generateTicPipelineArgumentsObj(): ITicPipelineArguments {
 
 async function apply() {
   return new Promise<void>((resolve, reject) => {
-    indexBridge.publishTicParameters(generateTicPipelineArgumentsObj()).then(() => {
-      console.log("Published TIC pipeline arguments");
+    indexBridge.publishImngs2CoreParameters(generateImngs2CorePipelineArgumentsObj()).then(() => {
+      console.log("Published IMNGS2-Core pipeline arguments");
       resolve();
     }).catch(() => {
-      console.error("Could not publish TIC pipeline arguments");
+      console.error("Could not publish IMNGS2-Core pipeline arguments");
       reject();
     });
   });
