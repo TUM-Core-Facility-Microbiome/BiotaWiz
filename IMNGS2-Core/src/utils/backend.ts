@@ -39,7 +39,7 @@ const CONTAINER_REGISTRY = cmArgs['container-registry'];
  */
 function getRepository(environment: Environment): Repository {
     switch (environment) {
-        case Environment.TIC:
+        case Environment.IMNGS2CORE:
             return {
                 owner: cmArgs['tic-pipeline-repository-owner'],
                 repo: cmArgs['tic-pipeline-repository-name'],

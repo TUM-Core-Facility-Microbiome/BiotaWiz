@@ -4,11 +4,11 @@
       <h1 class="text-2xl font-semibold mb-4">Applications</h1>
       <ul class="mt-4 space-y-2">
         <li>
-          <router-link to="/application-shell/tic" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic">
-            <strong class="font-medium text-black">TIC</strong>
+          <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic">
+            <strong class="font-medium text-black">IMNGS2-Core</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
-              Generate clusters from 16S amplicon sequencing data using Taxonomy Informed Clustering.
+              Analyze raw 16S rRNA amplicon data with the core pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2
             </p>
           </router-link>
         </li>
