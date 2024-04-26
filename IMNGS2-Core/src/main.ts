@@ -84,7 +84,7 @@ app.on('will-quit', async (event) => {
     taskQueue.clear(); // clear all tasks
 
     try {
-        await terminateBackend(Environment.TIC);
+        await terminateBackend(Environment.IMNGS2CORE);
     } catch (e) {
         console.error('Error during cleanup:', e);
     } finally {

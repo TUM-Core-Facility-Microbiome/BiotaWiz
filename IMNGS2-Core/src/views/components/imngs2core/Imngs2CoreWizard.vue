@@ -1,5 +1,5 @@
 <template>
-  <!-- TIC Pipeline Wizard -->
+  <!-- imngs2core Pipeline Wizard -->
   <div>
     <Wizard
         :nextButton="nextButtonOptions"
@@ -58,7 +58,7 @@ import {Environment} from "../../../enums";
 
 onMounted(() => {
   // prepare the environment
-  indexBridge.initializeEnvironment(Environment.TIC).then(() => {
+  indexBridge.initializeEnvironment(Environment.IMNGS2CORE).then(() => {
     console.log("Backend initialized 2");
   }).catch(() => {
     console.log("Backend initialization failed");
@@ -74,7 +74,7 @@ import StudySelection from "./steps/StudySelection.vue";
 import SpikeMode from "./steps/SpikeMode.vue";
 import Parameters from "./steps/Parameters.vue";
 import Usearch from "./steps/Usearch.vue";
-import Run from "./steps/TicRun.vue";
+import Run from "./steps/Imngs2CoreRun.vue";
 
 export default {
   name: 'TicPipelineWizard',

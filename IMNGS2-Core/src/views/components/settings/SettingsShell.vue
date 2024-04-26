@@ -48,9 +48,9 @@
                   <router-link
                       class="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                       active-class="bg-gray-100"
-                      to="/settings/environment/tic-pipeline"
+                      to="/settings/environment/imngs2core"
                   >
-                    TIC Pipeline
+                    IMNGS2-Core
                   </router-link>
                 </li>
 

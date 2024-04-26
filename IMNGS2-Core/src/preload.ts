@@ -103,7 +103,7 @@ const indexBridge = {
         return ipcRenderer.invoke('publish:ticBaseDirectory', baseDirectory);
     },
     getTicBaseDirectory: async (): Promise<string> => {
-        return ipcRenderer.invoke('tic:getBaseDirectory');
+        return ipcRenderer.invoke('imngs2core:getBaseDirectory');
     },
     publishSamples: async (samples: IFileSystemNode[]) => {
         return ipcRenderer.invoke('publish:ticSamples', samples);
@@ -112,10 +112,10 @@ const indexBridge = {
         return ipcRenderer.invoke('publish:spikeMode', spikeModeName);
     },
     openMappingFile: async () => {
-        return ipcRenderer.invoke('tic:openMappingFile');
+        return ipcRenderer.invoke('imngs2core:openMappingFile');
     },
     checkMappingFile: async () => {
-        return ipcRenderer.invoke('tic:checkMapping');
+        return ipcRenderer.invoke('imngs2core:checkMapping');
     },
     publishTicParameters: async (parameters: ITicPipelineArguments) => {
         return ipcRenderer.invoke('publish:ticParameters', parameters);
@@ -124,12 +124,12 @@ const indexBridge = {
         return ipcRenderer.invoke('publish:usearchBinary', path);
     },
     runTicPipeline: async () => {
-        return ipcRenderer.invoke('tic:run');
+        return ipcRenderer.invoke('imngs2core:run');
     },
     terminateTicBackend: async () => {
         return new Promise<void>((resolve, reject) => {
-            ipcRenderer.invoke('tic:terminateBackend').then(() => {
-                logToDevTools("tic terminated (preload)")
+            ipcRenderer.invoke('imngs2core:terminateBackend').then(() => {
+                logToDevTools("imngs2core terminated (preload)")
                 resolve();
             }).catch(() => {
                 reject();
