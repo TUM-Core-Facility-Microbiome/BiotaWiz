@@ -1,5 +1,9 @@
 # IMNGS2-Core
-A desktop application for the analysis of 16S rRNA amplicon sequencing data using the TIC pipeline.
+A desktop application for the analysis of 16S rRNA amplicon sequencing data.
+
+The application provides multiple tools that you might find useful for analyzing 16S rRNA amplicon data:
+- [x] IMNGS2-Core. Core pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2.
+- [ ] Namco. Co-occurrence network analysis of microbial communities.
 
 When reviewing this application before the repos for the TIC pipeline is made public, please
 follow the instructions in `mock`.
