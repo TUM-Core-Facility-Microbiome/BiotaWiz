@@ -3,9 +3,8 @@
     <div class="flex-1 lg:max-w-2xl">
       <div class="space-y-6">
         <div>
-          <h3 class="text-lg font-medium">Image for the TIC pipeline</h3>
-          <p class="text-sm text-muted-foreground">The image holds the software that is used to run the TIC pipeline and
-            a copy of the TIC pipeline itself.</p>
+          <h3 class="text-lg font-medium">Image for IMNGS2-Core</h3>
+          <p class="text-sm text-muted-foreground">The image holds the software that is used to run IMNGS2-Core</p>
         </div>
         <div class="space-y-8">
           <div class="space-y-2">
@@ -62,7 +61,7 @@
               </table>
             </div>
             <p id="ImageTag" class="text-xs text-muted-foreground">
-              You can manage images for the TIC pipeline here. Only images using the current backend are shown.
+              You can manage images for IMNGS2-Core here. Only images using the current backend are shown.
             </p>
           </div>
         </div>
@@ -79,7 +78,7 @@ const compatibleTagStrings = ref([]);
 const selectedTag = ref(null);
 const associatedImages = ref([]);
 
-const environment = Environment.TIC;
+const environment = Environment.IMNGS2CORE;
 
 function loadFixedReleaseTag() {
   indexBridge.getFixedImageTagString(environment).then((tag: string) => {

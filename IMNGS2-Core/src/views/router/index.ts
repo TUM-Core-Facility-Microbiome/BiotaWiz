@@ -21,37 +21,37 @@ const index = createRouter({
                             redirect: '/application-shell/base-selection',
                         },
                         {
-                            path: '/application-shell/tic',
-                            component: () => import('../components/tic/TicPipelineWizard.vue'),
-                            redirect: '/application-shell/tic/base-selection',
+                            path: '/application-shell/imngs2core',
+                            component: () => import('../components/imngs2core/Imngs2CoreWizard.vue'),
+                            redirect: '/application-shell/imngs2core/base-selection',
                             children: [
                                 {
-                                    path: '/application-shell/tic/base-selection',
-                                    component: () => import('../components/tic/steps/BaseSelection.vue'),
+                                    path: '/application-shell/imngs2core/base-selection',
+                                    component: () => import('../components/imngs2core/steps/BaseSelection.vue'),
                                 },
                                 {
-                                    path: '/application-shell/tic/study-selection',
-                                    component: () => import('../components/tic/steps/StudySelection.vue'),
+                                    path: '/application-shell/imngs2core/study-selection',
+                                    component: () => import('../components/imngs2core/steps/StudySelection.vue'),
                                 },
                                 {
-                                    path: '/application-shell/tic/spike-mode',
-                                    component: () => import('../components/tic/steps/SpikeMode.vue'),
+                                    path: '/application-shell/imngs2core/spike-mode',
+                                    component: () => import('../components/imngs2core/steps/SpikeMode.vue'),
                                 },
                                 {
-                                    path: '/application-shell/tic/check-mapping',
-                                    component: () => import('../components/tic/steps/CheckMappingFile.vue'),
+                                    path: '/application-shell/imngs2core/check-mapping',
+                                    component: () => import('../components/imngs2core/steps/CheckMappingFile.vue'),
                                 },
                                 {
-                                    path: '/application-shell/tic/params',
-                                    component: () => import('../components/tic/steps/Parameters.vue'),
+                                    path: '/application-shell/imngs2core/params',
+                                    component: () => import('../components/imngs2core/steps/Parameters.vue'),
                                 },
                                 {
-                                    path: '/application-shell/tic/usearch',
-                                    component: () => import('../components/tic/steps/Usearch.vue'),
+                                    path: '/application-shell/imngs2core/usearch',
+                                    component: () => import('../components/imngs2core/steps/Usearch.vue'),
                                 },
                                 {
-                                    path: '/application-shell/tic/run',
-                                    component: () => import('../components/tic/steps/TicRun.vue'),
+                                    path: '/application-shell/imngs2core/run',
+                                    component: () => import('../components/imngs2core/steps/Imngs2CoreRun.vue'),
                                 },
                             ]
                         },
@@ -79,8 +79,8 @@ const index = createRouter({
                     path: '/settings/environment',
                     children: [
                         {
-                            path: '/settings/environment/tic-pipeline',
-                            component: () => import('../components/settings/environments/TicPipelineEnvironmentSettings.vue'),
+                            path: '/settings/environment/imngs2core',
+                            component: () => import('../components/settings/environments/Imngs2CoreEnvironmentSettings.vue'),
                         },
                         {
                             path: '/settings/environment/shiny-rhea',

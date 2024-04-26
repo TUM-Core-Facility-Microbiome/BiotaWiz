@@ -87,7 +87,7 @@ ipcMain.handle("runMockProcess", async () => {
     return runMockProcess();
 });
 
-ipcMain.handle("tic:getBaseDirectory", async () => {
+ipcMain.handle("imngs2core:getBaseDirectory", async () => {
     return await getTicBaseDirectory();
 });
 
@@ -150,24 +150,24 @@ ipcMain.handle("publish:usearchBinary", async (event, path: string) => {
     await ticConfiguration.setUsearchBinaryPath(path);
 });
 
-ipcMain.handle("tic:openMappingFile", async () => {
+ipcMain.handle("imngs2core:openMappingFile", async () => {
     console.log("Opening mapping file");
     await ticConfiguration.openMappingFile();
 });
 
-ipcMain.handle("tic:checkMapping", async () => {
+ipcMain.handle("imngs2core:checkMapping", async () => {
     console.log("Checking mapping file");
     return ticConfiguration.checkMapping();
 });
 
-ipcMain.handle("tic:run", async () => {
+ipcMain.handle("imngs2core:run", async () => {
     console.log("Running TIC pipeline");
     ticConfiguration.runPipeline();
 });
 
-ipcMain.handle("tic:terminateBackend", async () => {
+ipcMain.handle("imngs2core:terminateBackend", async () => {
     console.log("Stopping TIC pipeline");
-    return await terminateBackend(Environment.TIC);
+    return await terminateBackend(Environment.IMNGS2CORE);
 });
 
 ipcMain.handle("openExternalLink", async (event, url: string) => {

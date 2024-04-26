@@ -158,7 +158,7 @@ export class TicConfiguration {
         const yamlFile = this.relativePathToBaseDirectory(this.yamlFile);
         const mappingFile = this.relativePathToBaseDirectory(this.mappingFile);
 
-        logForEnvironment(Environment.TIC, "Pipeline will start after environment is initialized...");
+        logForEnvironment(Environment.IMNGS2CORE, "Pipeline will start after environment is initialized...");
 
         console.log(`Running pipeline`);
         // add to task queue
@@ -169,7 +169,7 @@ export class TicConfiguration {
                 state: "running",
             });
 
-            await run(Environment.TIC, [
+            await run(Environment.IMNGS2CORE, [
                 "run_imngs2",
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
@@ -186,7 +186,7 @@ export class TicConfiguration {
                     }
                 ],
             }).then((statusCode: number) => {
-                logForEnvironment(Environment.TIC, `Pipeline finished with status code ${statusCode}`);
+                logForEnvironment(Environment.IMNGS2CORE, `Pipeline finished with status code ${statusCode}`);
                 console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
                     updateProgress({

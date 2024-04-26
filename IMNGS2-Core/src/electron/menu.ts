@@ -1,6 +1,6 @@
 // adapted from https://github.com/electron-react-boilerplate/electron-react-boilerplate/blob/main/src/main/main.ts
 import {app, BrowserWindow, Menu, MenuItemConstructorOptions, shell} from 'electron';
-import {GITHUB_BASE_URL, TIC_PAPER_URL} from '../config';
+import {GITHUB_BASE_URL} from '../config';
 import {openCommunityDiscussions, openIssues} from "./browserLinks";
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
@@ -196,9 +196,9 @@ export default class MenuBuilder {
                     },
                     {type: 'separator'},
                     {
-                        label: '&TIC pipeline',
+                        label: '&IMNGS2-Core',
                         click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/application-shell/tic');
+                            this.mainWindow.webContents.send('changeRouteTo', '/application-shell/imngs2core');
                         }
                     },
                     {type: 'separator'},
@@ -261,12 +261,6 @@ export default class MenuBuilder {
                         click() {
                             shell.openExternal(GITHUB_BASE_URL);
                         },
-                    },
-                    {
-                        label: 'TIC-pipeline paper',
-                        click() {
-                            shell.openExternal(TIC_PAPER_URL);
-                        }
                     },
                     {
                         label: 'Community Discussions',

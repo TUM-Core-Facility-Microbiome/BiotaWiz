@@ -5,6 +5,6 @@ export enum SpikeMode {
 }
 
 export enum Environment {
-    TIC = "TIC",
+    IMNGS2CORE = "IMNGS2-Core",
     SHINY_RHEA = "shiny-Rhea",
 }

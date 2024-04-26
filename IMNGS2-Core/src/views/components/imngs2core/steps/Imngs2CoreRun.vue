@@ -43,7 +43,7 @@ function getTicBaseDirectory() {
 }
 
 indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: string) => {
-  if (environment === Environment.TIC) {
+  if (environment === Environment.IMNGS2CORE) {
     console.log(logMessage);
     if (logMessage.startsWith('\r')) {
       logLines.value.pop();
