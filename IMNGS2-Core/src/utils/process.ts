@@ -91,6 +91,10 @@ export function getBackendVersion(): Promise<string> {
                 console.log(`Child closed with code ${code} and signal ${signal}`);
                 reject(code);
             });
+            subprocess.on('error', (err) => {
+                console.error(`Error starting process: ${err}`);
+                reject(err);
+            });
         });
     });
 }
