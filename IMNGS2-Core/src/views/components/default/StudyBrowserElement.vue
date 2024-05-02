@@ -32,11 +32,14 @@
             </template>
             <p class="font-mono">
               {{ item.name }}
-              <!--              <span v-if="item.type === 'sample'">-->
-              <!--                <span v-if="item.isCompressed">gz </span>-->
-              <!--                <span v-else>non-gz </span>-->
-              <!--                <span v-if="item.isPaired">paired </span>-->
-              <!--              </span>-->
+<!--              <span v-if="item.type === 'sample'">-->
+<!--                <span v-if="item.isCompressed">gz </span>-->
+<!--                <span v-else>non-gz </span>-->
+<!--                <span v-if="item.isPaired">paired </span>-->
+<!--                <span v-else>single </span>-->
+<!--                <span v-if="item.metadata">metadata </span>-->
+<!--                <span v-else>no-metadata </span>-->
+<!--              </span>-->
             </p>
           </div>
         </span>

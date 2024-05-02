@@ -35,7 +35,13 @@ interface IFileSystemSample extends IFileSystemNode {
     type: "sample";
     isPaired: boolean;
     isCompressed: boolean;
-    metadataAvailable: boolean;  // amount of spike-in and sample weight
+    metadata?: ISampleMetadata;
+}
+
+interface ISampleMetadata {
+    spikeAmount?: number;
+    totalWeight?: number;
+    additional?: IDictionary<string>;
 }
 
 interface IMergePairsArgs {
