@@ -58,7 +58,7 @@ function updateState() {
     state.platform = "unknown";
   });
 
-// get backend name
+  // get backend name
   indexBridge.getBackend().then((backend: IBackend) => {
     state.backendName = backend.name;
   }).catch(() => {
@@ -66,7 +66,7 @@ function updateState() {
     state.backendName = "unknown";
   });
 
-// get backend version
+  // get backend version
   indexBridge.getBackendVersion().then((version: string) => {
     console.log("Backend version: ", version);
     state.backendVersion = version;
