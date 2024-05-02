@@ -15,7 +15,7 @@ export class Imngs2CoreConfiguration {
     private yamlFile = "";
 
     private spikeMode: SpikeMode = null;
-    private samples: IFileSystemNode[] = [];
+    private samples: IFileSystemSample[] = [];
     private parameters: IImngs2CoreArguments = null;
 
     public setBaseDirectory(baseDirectory: string) {
@@ -41,7 +41,7 @@ export class Imngs2CoreConfiguration {
         });
     }
 
-    public setSamples(samples: IFileSystemNode[]) {
+    public setSamples(samples: IFileSystemSample[]) {
         this.samples = samples;
     }
 
@@ -262,19 +262,57 @@ export class Imngs2CoreConfiguration {
 
     private generateMappingFileContent() {
         const delimiter = "\t";
-        let content = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path'].join(delimiter) + "\n";
 
-        let spikeDefaults = ['NaN', '0'];  // set to dummy values; will be ignored by pipeline
-        if (this.spikeMode == SpikeMode.SPIKED) {
-            spikeDefaults = ['', ''];  // set empty to be filled by user
-        }
+        // join additional metadata for header
+        let additionalMetadata = new Set<string>();
+        this.samples.forEach((sample) => {
+            if (sample.metadata) {
+                // get keys of additional metadata
+                for (let key in sample.metadata.additional) {
+                    additionalMetadata.add(key);
+                }
+            }
+        });
+        console.debug(additionalMetadata);
+
+        // remove default metadata keys
+        const additionalColumns = [...additionalMetadata];
+        const columns = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path', ...additionalMetadata];
+        let content = columns.join(delimiter) + "\n";
 
         this.samples.forEach((sample) => {
             const baseName = sample.name;
-
             // parent path relative to baseDirectory
+
             const parentPath = this.relativePathToBaseDirectory(path.dirname(sample.path));
-            content += [baseName, ...spikeDefaults, parentPath].join(delimiter) + "\n";
+            let spike = {spikeIn: 'NaN', weight: 'NaN'};  // set to dummy values; will be ignored by pipeline
+            const additional = [];
+            if (sample.metadata) {
+                if (this.spikeMode == SpikeMode.SPIKED) {
+                    if (sample.metadata.spikeAmount) {
+                        spike.spikeIn = sample.metadata.spikeAmount.toString();
+                    }
+                    if (sample.metadata.totalWeight) {
+                        spike.weight = sample.metadata.totalWeight.toString();
+                    }
+                }
+                for (let column in additionalColumns) {
+                    if (sample.metadata.additional && sample.metadata.additional.has(column)) {
+                        additional.push(sample.metadata.additional.get(column));
+                    } else {
+                        additional.push('');
+                    }
+                }
+            }
+            console.log(spike);
+            console.log(additional);
+            content += [
+                baseName,
+                spike.weight,
+                spike.spikeIn,
+                parentPath,
+                ...additional
+            ].join(delimiter) + "\n";
         });
         return content;
     }
