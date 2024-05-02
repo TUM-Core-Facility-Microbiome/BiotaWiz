@@ -1,6 +1,6 @@
 {
-  "name": "imngs2-core",
-  "productName": "IMNGS2-Core",
+  "name": "imngs2-local",
+  "productName": "IMNGS2-Local",
   "version": "0.0.1-beta.3",
   "description": "Analyze 16S rRNA amplicon sequences for microbiome studies",
   "main": ".vite/build/main.js",
