@@ -120,7 +120,7 @@ ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: strin
     await setImngs2CoreBaseDirectory(baseDirectory);
 });
 
-ipcMain.handle("imngs2core:setSamples", async (event, samples: IFileSystemNode[]) => {
+ipcMain.handle("imngs2core:setSamples", async (event, samples: IFileSystemSample[]) => {
     console.log(`Setting IMNGS2-Core samples to ${JSON.stringify(samples)}`);
     imngs2CoreConfiguration.setSamples(samples);
     console.log(imngs2CoreConfiguration);

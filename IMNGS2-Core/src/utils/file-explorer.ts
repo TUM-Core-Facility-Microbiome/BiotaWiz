@@ -16,7 +16,7 @@ export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
     return root.children;
 }
 
-function parseMetafile(metafile: string): ISampleMetadata {
+function parseMetafile(metafile: string): Map<string, ISampleMetadata> {
     const metaMap = new Map<string, ISampleMetadata>();
 
     const lines = metafile.split("\n");
@@ -40,9 +40,9 @@ function parseMetafile(metafile: string): ISampleMetadata {
         const sampleId = values[0];
         let spikeIn = parseFloat(values[2]);
         let weight = parseFloat(values[1]);
-        let additional = {};
+        let additional: Map<string, string> = new Map<string, string>();
         for (let i = 3; i < columns.length; i++) {
-            additional[columns[i]] = values[i];
+            additional.set(columns[i], values[i]);
         }
         const metadata: ISampleMetadata = {
             spikeAmount: spikeIn,

@@ -41,7 +41,7 @@ export class Imngs2CoreConfiguration {
         });
     }
 
-    public setSamples(samples: IFileSystemNode[]) {
+    public setSamples(samples: IFileSystemSample[]) {
         this.samples = samples;
     }
 
@@ -297,8 +297,8 @@ export class Imngs2CoreConfiguration {
                     }
                 }
                 for (let column in additionalColumns) {
-                    if (sample.metadata.additional && sample.metadata.additional[additionalColumns[column]]) {
-                        additional.push(sample.metadata.additional[additionalColumns[column]]);
+                    if (sample.metadata.additional && sample.metadata.additional.has(column)) {
+                        additional.push(sample.metadata.additional.get(column));
                     } else {
                         additional.push('');
                     }

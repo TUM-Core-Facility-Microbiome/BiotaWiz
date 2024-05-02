@@ -41,7 +41,7 @@ interface IFileSystemSample extends IFileSystemNode {
 interface ISampleMetadata {
     spikeAmount?: number;
     totalWeight?: number;
-    additional?: IDictionary<string>;
+    additional?: Map<string, string>;
 }
 
 interface IMergePairsArgs {
