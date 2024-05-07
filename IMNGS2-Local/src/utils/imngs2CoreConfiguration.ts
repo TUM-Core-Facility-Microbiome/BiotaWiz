@@ -7,6 +7,7 @@ import {taskQueue} from "./taskQueue";
 import {logForEnvironment, updateProgress} from "./logHandler";
 import {run} from "./backend";
 import {getOrDownloadUsearch32Binary} from "./usearch";
+import {helpPages} from "./helpPages";
 
 export class Imngs2CoreConfiguration {
     private baseDirectory = "";
@@ -204,12 +205,48 @@ export class Imngs2CoreConfiguration {
                         }
                     }).show()
                 } else {
-                    if (statusCode == 143 || statusCode == 137) {
+                    if (statusCode == 143 || statusCode == 137 || statusCode == 130) {  // SIGTERM, SIGKILL, SIGINT
                         updateProgress({
                             step: "Running IMNGS2-Core",
                             message: "Pipeline was terminated",
                             state: "warning",
                         });
+                    } else if (statusCode == 160) {  // USEARCH memory error
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `USEARCH process ran out of memory`,
+                                state: "error",
+                                error: {
+                                    code: "USEARCHMEM",
+                                    helpUrl: helpPages.USEARCHMEM,
+                                },
+                            }
+                        );
+                    } else if (statusCode == 161) {  // USEARCH binary is not an ELF
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Problem with given USEARCH binary. Binary is not an ELF.`,
+                                state: "error",
+                                error: {
+                                    code: "USEARCHELF",
+                                    helpUrl: helpPages.USEARCHELF,
+                                },
+                            }
+                        );
+                    } else if (statusCode == 162) {  // USEARCH binary is not v11
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Problem with given USEARCH binary. Version is not v11.`,
+                                state: "error",
+                                error: {
+                                    code: "USEARCHV",
+                                    helpUrl: helpPages.USEARCHV,
+                                },
+                            }
+                        );
                     } else {
                         updateProgress({
                             step: "Running IMNGS2-Core",
