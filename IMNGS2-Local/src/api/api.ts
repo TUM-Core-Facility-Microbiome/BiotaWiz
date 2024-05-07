@@ -1,10 +1,10 @@
-import {app, ipcMain, shell} from 'electron';
+import {app, BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
     deleteImage,
     getAssociatedImages,
     getCompatibleReleaseTagStrings,
-    getFixedImageTagString,
+    getFixedImageTagString, getImageTagOrLatestCompatible,
     initializeBackend,
     resetToDefaultBackend,
     setBackendByType,
@@ -19,6 +19,7 @@ import {taskQueue} from '../utils/taskQueue';
 import {imngs2CoreConfiguration} from "../utils/imngs2CoreConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
+import {getVersionString} from "../utils/releasetag";
 
 ipcMain.handle('app:getName', () => {
     return app.getName();
@@ -80,6 +81,18 @@ ipcMain.handle("getAssociatedImages", async (event, environment: Environment): P
 
 ipcMain.handle("deleteImage", async (event, name: string, tag: string) => {
     return await deleteImage(name, tag);
+});
+
+ipcMain.handle("changeEnvironment", async (event, environment: Environment | null) => {
+    const window = BrowserWindow.fromId(1);
+    if (window) {
+        window.webContents.send('envChange', environment, "");
+        if (environment) {
+            const releaseTag = await getImageTagOrLatestCompatible(environment);
+            const vString = getVersionString(releaseTag);
+            window.webContents.send('envChange', environment, `v${vString}`);
+        }
+    }
 });
 
 ipcMain.handle("runMockProcess", async () => {

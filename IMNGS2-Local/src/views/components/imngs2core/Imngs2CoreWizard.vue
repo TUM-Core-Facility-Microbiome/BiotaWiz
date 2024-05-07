@@ -63,6 +63,9 @@ onMounted(() => {
   }).catch(() => {
     console.log("Backend initialization failed");
   });
+
+  // inform about env change
+  indexBridge.changeEnvironment(Environment.IMNGS2CORE);
 });
 </script>
 
