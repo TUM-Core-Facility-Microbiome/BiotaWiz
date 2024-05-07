@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {API_BASIC_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
+import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag, setCurrentImageTag} from "./storage";
 import {
     getAllowedRange,
     getLatestVersion,
@@ -609,7 +609,7 @@ export async function setFixedImageTagString(environment: Environment, tag: stri
 /**
  * Get a fixed version of the image from storage or query GitHub for the latest compatible version.
  */
-async function getImageTagOrLatestCompatible(environment: Environment) {
+export async function getImageTagOrLatestCompatible(environment: Environment) {
     let releaseTag = getImageTag(environment);
     if (releaseTag === null) {
         logToDevTools("No image version specified in storage, querying GitHub for latest version");

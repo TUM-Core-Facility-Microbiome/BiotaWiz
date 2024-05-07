@@ -124,3 +124,35 @@ export function getImageTag(environment: Environment) {
         return semVerFromGitHubTag((imageTag as IImageTag).version);
     }
 }
+
+export function setCurrentImageTag(environment: Environment, version: string) {
+    return new Promise<void>((resolve, reject) => {
+        if (version == null) {
+            reject("Version cannot be null");
+        }
+        const imageTag: IImageTag = {version: version};
+        jsonStorage.set(`imageTag-current-${environment}`, imageTag, (error) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+export function getCurrentImageTag(environment: Environment) {
+    const imageTag = jsonStorage.getSync(`imageTag-current-${environment}`);
+    console.log(`In storage: ${JSON.stringify(imageTag)}`);
+    if (isEmpty(imageTag)) {
+        console.debug(`No image tag found in storage at ${jsonStorage.getDataPath()}`);
+        return null;
+    } else {
+        console.debug(`Resolving image tag from storage at ${jsonStorage.getDataPath()}`);
+        if ((imageTag as IImageTag).version == null) {
+            return null;
+        }
+        // reconstruct the SemVer object
+        return semVerFromGitHubTag((imageTag as IImageTag).version);
+    }
+}

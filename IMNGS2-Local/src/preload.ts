@@ -139,6 +139,9 @@ const indexBridge = {
     openExternalLink: async (url: string) => {
         return ipcRenderer.invoke('openExternalLink', url);
     },
+    changeEnvironment: async (environment: Environment | null) => {
+        return ipcRenderer.invoke('changeEnvironment', environment);
+    },
     // main to renderer
     handleChangeRouteTo: (callback: (route: string) => void) => {
         ipcRenderer.on('changeRouteTo', (event, route) => {
@@ -153,6 +156,11 @@ const indexBridge = {
     handleProgressUpdate: (callback: (progress: Progress) => void) => {
         ipcRenderer.on('progressUpdate', (event, progress: Progress) => {
             callback(progress);
+        });
+    },
+    handleEnvChange: (callback: (environment: Environment | null, version: string) => void) => {
+        ipcRenderer.on('envChange', (event, environment: Environment | null, version: string) => {
+            callback(environment, version);
         });
     },
     handleLogsForEnvironment: (callback: (environment: Environment, logMessage: string) => void) => {

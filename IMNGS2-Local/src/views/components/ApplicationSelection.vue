@@ -87,6 +87,9 @@
 <script setup lang="ts">
 import {reactive} from "vue";
 
+// inform about env change
+indexBridge.changeEnvironment(null);
+
 const state = reactive({
   name: null as string | null,
   version: null as string | null,
