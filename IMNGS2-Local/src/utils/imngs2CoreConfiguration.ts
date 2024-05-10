@@ -30,9 +30,9 @@ export class Imngs2CoreConfiguration {
                 taskQueue.defer(() => {
                     return getOrDownloadUsearch32Binary()
                 }).then((downloadedPath: string) => {
-                        this.usearchBinary = downloadedPath;
-                        console.log(`Usearch binary path set to ${downloadedPath}`);
-                        resolve();
+                    this.usearchBinary = downloadedPath;
+                    console.log(`Usearch binary path set to ${downloadedPath}`);
+                    resolve();
                 })
             } else {
                 this.usearchBinary = binPath;
