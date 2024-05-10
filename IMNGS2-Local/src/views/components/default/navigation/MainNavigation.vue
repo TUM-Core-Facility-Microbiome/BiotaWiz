@@ -27,11 +27,11 @@
               <li>
                 <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
                              active-class="bg-blue-50 text-blue-700"
-                             to="/application-shell/rhea">
-                  <code class="text-xs font-bold">Rhea</code>
+                             to="/application-shell/namco">
+                  <code class="text-xs font-bold">Namco</code>
                   <span
                       class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
-                      Microbial Profiles Analysis
+                      Microbiome Explorer
                   </span>
                 </router-link>
               </li>

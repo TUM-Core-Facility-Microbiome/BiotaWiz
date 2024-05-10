@@ -56,9 +56,13 @@ const index = createRouter({
                             ]
                         },
                         {
+                            path: '/application-shell/namco',
+                            component: () => import('../components/namco/OutLink.vue'),
+                        },
+/*                        {
                             path: '/application-shell/rhea',
                             component: () => import('../components/rhea/RheaOutLink.vue'),
-                        },
+                        },*/
                     ]
                 },
                 {
@@ -82,10 +86,10 @@ const index = createRouter({
                             path: '/settings/environment/imngs2core',
                             component: () => import('../components/settings/environments/Imngs2CoreEnvironmentSettings.vue'),
                         },
-                        {
+/*                        {
                             path: '/settings/environment/shiny-rhea',
                             component: () => import('../components/settings/environments/ShinyRheaEnvironmentSettings.vue'),
-                        },
+                        },*/
                     ]
                 },
                 {
