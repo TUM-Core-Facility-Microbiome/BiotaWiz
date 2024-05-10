@@ -5,7 +5,7 @@ import {VitePlugin} from '@electron-forge/plugin-vite';
 
 const config: ForgeConfig = {
     packagerConfig: {
-        executableName: "imngs2-core",
+        executableName: "imngs2-local",
         icon: "./assets/icons/icon",
     },
     rebuildConfig: {},
