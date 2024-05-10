@@ -203,9 +203,9 @@ export default class MenuBuilder {
                     },
                     {type: 'separator'},
                     {
-                        label: '&Rhea',
+                        label: '&Namco',
                         click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/application-shell/rhea');
+                            this.mainWindow.webContents.send('changeRouteTo', '/application-shell/namco');
                         }
                     },
                     {type: 'separator'},
