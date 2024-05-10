@@ -18,39 +18,44 @@ const index = createRouter({
                     children: [
                         {
                             path: '/',
-                            redirect: '/application-shell/base-selection',
+                            redirect: '/application-shell/imngs2core',
                         },
                         {
                             path: '/application-shell/imngs2core',
+                            component: () => import('../components/imngs2core/Imngs2CoreVersionChooser.vue'),
+                        },
+                        {
+                            path: '/application-shell/imngs2core/steps',
+                            name: 'imngs2core-wizard',
                             component: () => import('../components/imngs2core/Imngs2CoreWizard.vue'),
-                            redirect: '/application-shell/imngs2core/base-selection',
+                            redirect: '/application-shell/imngs2core/steps/base-selection',
                             children: [
                                 {
-                                    path: '/application-shell/imngs2core/base-selection',
+                                    path: '/application-shell/imngs2core/steps/base-selection',
                                     component: () => import('../components/imngs2core/steps/BaseSelection.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/study-selection',
+                                    path: '/application-shell/imngs2core/steps/study-selection',
                                     component: () => import('../components/imngs2core/steps/StudySelection.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/spike-mode',
+                                    path: '/application-shell/imngs2core/steps/spike-mode',
                                     component: () => import('../components/imngs2core/steps/SpikeMode.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/check-mapping',
+                                    path: '/application-shell/imngs2core/steps/check-mapping',
                                     component: () => import('../components/imngs2core/steps/CheckMappingFile.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/params',
+                                    path: '/application-shell/imngs2core/steps/params',
                                     component: () => import('../components/imngs2core/steps/Parameters.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/usearch',
+                                    path: '/application-shell/imngs2core/steps/usearch',
                                     component: () => import('../components/imngs2core/steps/Usearch.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/run',
+                                    path: '/application-shell/imngs2core/steps/run',
                                     component: () => import('../components/imngs2core/steps/Imngs2CoreRun.vue'),
                                 },
                             ]
