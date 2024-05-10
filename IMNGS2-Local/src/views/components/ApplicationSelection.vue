@@ -5,7 +5,7 @@
         <div class="flex">
           <div>Applications</div>
           <div class="ml-auto items-end justify-end select-text">
-            <span class="rounded-xl bg-tic-50 px-2 py-1 text-xs font-medium text-tic ring-1 ring-inset ring-tic-700/10"><strong>{{ state.name }}</strong> v{{ state.version }}</span>
+            <span class="rounded-xl bg-tic px-2 py-1 text-xs font-medium text-white"><strong>{{ state.name }}</strong> v{{ state.version }}</span>
           </div>
         </div>
       </h1>
