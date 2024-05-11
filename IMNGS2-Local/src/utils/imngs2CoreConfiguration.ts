@@ -19,9 +19,17 @@ export class Imngs2CoreConfiguration {
     private samples: IFileSystemSample[] = [];
     private parameters: IImngs2CoreArguments = null;
 
+    private analysisDirectory: string | null = null;
+
     public setBaseDirectory(baseDirectory: string) {
         this.baseDirectory = baseDirectory;
         console.log(`IMNGS2-Core base directory set to ${baseDirectory}`);
+    }
+
+    public setAnalysisDirectory(analysisDirectory: string) {
+        // analysis directory is relative to base directory
+        this.analysisDirectory = path.join(this.baseDirectory, analysisDirectory);
+        console.log(`IMNGS2-Core analysis directory set to ${analysisDirectory}`);
     }
 
     public setUsearchBinaryPath(binPath: string) {
@@ -295,6 +303,16 @@ export class Imngs2CoreConfiguration {
         }).catch((err: string) => {
             console.error(err);
         });
+    }
+
+    public openAnalysisDirectory() {
+        if (this.analysisDirectory) {
+            shell.openPath(this.analysisDirectory).then(() => {
+                console.log(`Opened analysis directory in default file explorer`);
+            }).catch((err: string) => {
+                console.error(err);
+            });
+        }
     }
 
     private generateMappingFileContent() {
