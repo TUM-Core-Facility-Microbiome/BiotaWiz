@@ -12,7 +12,7 @@ export const API_BASIC_AUTH = {username: 'githubuser', password: 'aHj2xBKrv588YA
 
 export const IMNGS2CORE_REPOSITORY_OWNER = 'tum-core-facility-microbiome';
 export const IMNGS2CORE_REPOSITORY_NAME = 'tic-pipeline';
-export const IMNGS2CORE_VRANGE = '~0.1.0';
+export const IMNGS2CORE_VRANGE = '~0.1.3';
 export const SHINY_RHEA_REPOSITORY_OWNER = 'tum-core-facility-microbiome';
 export const SHINY_RHEA_REPOSITORY_NAME = 'shiny-rhea';
 export const SHINY_RHEA_VRANGE = '^0.*';
