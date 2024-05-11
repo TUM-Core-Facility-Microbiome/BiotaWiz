@@ -4,6 +4,12 @@
     <div class="text-sm text-gray-700">
       Please select the samples you want to analyze. You can expand folders by clicking on the name.
     </div>
+    <div class="bg-red-100 border-t border-b border-red-500 text-red-700 px-4 py-3 mt-2 mb-2" role="alert">
+      <span class="font-bold text-sm">Notice:</span>
+      <span class="text-xs">
+        Only combine samples targeting the same region, i.e. the same primers were used.
+      </span>
+    </div>
   </div>
   <div>
     <StudyBrowser :base-dir="state.baseDir" @update:selectionChanged="onSelectionChanged($event)"/>
