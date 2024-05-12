@@ -39,6 +39,10 @@ function parseMetafile(metafile: string): Map<string, ISampleMetadata> {
         }
         const sampleId = values[0];
         let spikeIn = parseFloat(values[2]);
+        console.debug(`${sampleId}; spikeIn: ${spikeIn}`)
+        if (isNaN(spikeIn)) {
+            spikeIn = 0;
+        }
         let weight = parseFloat(values[1]);
         let additional: Map<string, string> = new Map<string, string>();
         for (let i = 3; i < columns.length; i++) {

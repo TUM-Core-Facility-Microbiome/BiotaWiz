@@ -322,9 +322,10 @@ export class Imngs2CoreConfiguration {
             // parent path relative to baseDirectory
 
             const parentPath = this.relativePathToBaseDirectory(path.dirname(sample.path));
-            let spike = {spikeIn: 'NaN', weight: 'NaN'};  // set to dummy values; will be ignored by pipeline
+            let spike = {spikeIn: '0', weight: 'NaN'};  // set to dummy values; will be ignored by pipeline
             const additional = [];
             if (sample.metadata) {
+                console.debug(sample.metadata);
                 if (this.spikeMode == SpikeMode.SPIKED) {
                     if (sample.metadata.spikeAmount) {
                         spike.spikeIn = sample.metadata.spikeAmount.toString();
