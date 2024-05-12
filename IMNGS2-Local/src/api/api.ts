@@ -133,6 +133,18 @@ ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: strin
     await setImngs2CoreBaseDirectory(baseDirectory);
 });
 
+ipcMain.handle("imngs2core:setAnalysisDirectory", async (event, analysisDirectory: string) => {
+    console.log(`Setting IMNGS2-Core analysis directory to ${analysisDirectory}`);
+    imngs2CoreConfiguration.setAnalysisDirectory(analysisDirectory);
+    console.log(imngs2CoreConfiguration);
+    await setImngs2CoreBaseDirectory(analysisDirectory);
+});
+
+ipcMain.handle("imngs2core:openAnalysisDirectory", async () => {
+    console.log("Opening analysis directory");
+    await imngs2CoreConfiguration.openAnalysisDirectory();
+});
+
 ipcMain.handle("imngs2core:setSamples", async (event, samples: IFileSystemSample[]) => {
     console.log(`Setting IMNGS2-Core samples to ${JSON.stringify(samples)}`);
     imngs2CoreConfiguration.setSamples(samples);

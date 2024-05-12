@@ -102,6 +102,12 @@ const indexBridge = {
     publishImngs2CoreBaseDirectory: async (baseDirectory: string) => {
         return ipcRenderer.invoke('imngs2core:setBaseDirectory', baseDirectory);
     },
+    publishImngs2CoreAnalysisDirectory: async (analysisDirectory: string) => {
+        return ipcRenderer.invoke('imngs2core:setAnalysisDirectory', analysisDirectory);
+    },
+    openImngs2CoreAnalysisDirectory: async () => {
+        return ipcRenderer.invoke('imngs2core:openAnalysisDirectory');
+    },
     getImngs2CoreBaseDirectory: async (): Promise<string> => {
         return ipcRenderer.invoke('imngs2core:getBaseDirectory');
     },
