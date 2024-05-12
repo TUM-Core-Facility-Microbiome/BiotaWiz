@@ -73,7 +73,7 @@ indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: stri
         state.analysisDir = m.groups?.message.replace("Analysis done. Results directory: ", "");
         indexBridge.publishImngs2CoreAnalysisDirectory(state.analysisDir);
       }
-      logMessage = `${m.groups?.asctime} - ${m.groups?.levelname} - ${m.groups?.message}`;
+      // logMessage = `${m.groups?.asctime} - ${m.groups?.levelname} - ${m.groups?.message}`;
     } else {
       console.log(`does not match: ${logMessage}`);
     }
