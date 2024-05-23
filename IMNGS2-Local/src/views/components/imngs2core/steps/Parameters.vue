@@ -19,6 +19,33 @@
       <p class="leading-relaxed">
         <form>
           <div class="pt-6">
+            <div class="text-lg font-bold">Threads</div>
+            <div class="text-sm text-gray-700">
+              Some pipeline steps might run in parallel to speed up the execution. You can restrict the number of threads
+              used by the pipeline, when you have other processes running or when you experience issues with memory usage.
+            </div>
+            <div class="mt-3">
+              <div>
+                <label for="threads">
+                  <div class="text-sm font-mono">threads</div>
+                  <div class="text-xs text-gray-500">Number of threads to be used by the pipeline.</div>
+                </label>
+                <div class="relative mb-6">
+                  <vue-slider
+                      v-model="pthreads"
+                      :min="1"
+                      :max="max_threads"
+                      :interval= "1"
+                      :marks="true"
+                      :adsorb="true"
+                      :tooltip-placement="'bottom'"
+                      class="m-2"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pt-6">
             <div class="text-lg font-bold">Trimming</div>
             <div class="text-sm text-gray-700">
               Remove primer artifacts at the beginning and end of reads.
@@ -371,8 +398,30 @@
 <script setup lang="ts">
 import {reactive, ref, watchEffect} from 'vue';
 import {useRouter} from "vue-router";
+import index from "../../../router";
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/antd.css'
 
 const router = useRouter();
+
+let pthreads = ref(1);
+let max_threads = ref(1);
+
+function setThreadDefaults() {
+  indexBridge.getMachineThreads().then((threads) => {
+    console.log("Machine threads: ", threads);
+    max_threads.value = threads;
+  }).catch(() => {
+    console.error("Could not get machine threads");
+  });
+  indexBridge.getRecommendedThreads().then((threads) => {
+    console.log("Recommended threads: ", threads);
+    pthreads.value = threads;
+  }).catch(() => {
+    console.error("Could not get pipeline threads");
+  });
+}
+setThreadDefaults();
 
 let stripleft = ref(15);
 let stripright = ref(15);

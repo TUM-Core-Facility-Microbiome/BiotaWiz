@@ -20,6 +20,7 @@ import {imngs2CoreConfiguration} from "../utils/imngs2CoreConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 import {getVersionString} from "../utils/releasetag";
+import {getMachineThreads, getRecommendedThreads} from "../utils/machine";
 
 ipcMain.handle('app:getName', () => {
     return app.getName();
@@ -205,4 +206,12 @@ ipcMain.handle("openIssues", async () => {
 
 ipcMain.handle("openCommunityDiscussions", async () => {
     openCommunityDiscussions();
+});
+
+ipcMain.handle("getMachineThreads", () => {
+    return getMachineThreads();
+});
+
+ipcMain.handle("getRecommendedThreads", () => {
+    return getRecommendedThreads();
 });
