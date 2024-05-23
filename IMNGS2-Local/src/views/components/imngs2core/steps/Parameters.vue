@@ -544,11 +544,17 @@ function generateImngs2CorePipelineArgumentsObj(): IImngs2CoreArguments {
 
 async function apply() {
   return new Promise<void>((resolve, reject) => {
-    indexBridge.publishImngs2CoreParameters(generateImngs2CorePipelineArgumentsObj()).then(() => {
-      console.log("Published IMNGS2-Core pipeline arguments");
-      resolve();
+    indexBridge.publishImngs2CoreThreads(pthreads.value).then(() => {
+      console.log("Published IMNGS2-Core threads");
+      indexBridge.publishImngs2CoreParameters(generateImngs2CorePipelineArgumentsObj()).then(() => {
+        console.log("Published IMNGS2-Core pipeline arguments");
+        resolve();
+      }).catch(() => {
+        console.error("Could not publish IMNGS2-Core pipeline arguments");
+        reject();
+      });
     }).catch(() => {
-      console.error("Could not publish IMNGS2-Core pipeline arguments");
+      console.error("Could not publish IMNGS2-Core threads");
       reject();
     });
   });

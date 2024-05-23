@@ -18,6 +18,7 @@ export class Imngs2CoreConfiguration {
     private spikeMode: SpikeMode = null;
     private samples: IFileSystemSample[] = [];
     private parameters: IImngs2CoreArguments = null;
+    private threads: Number = 1;
 
     private analysisDirectory: string | null = null;
 
@@ -162,6 +163,10 @@ export class Imngs2CoreConfiguration {
         this.writeParameterFile();
     }
 
+    public setThreads(threads: Number) {
+        this.threads = threads;
+    }
+
     public runPipeline() {
         console.log(this.yamlFile);
         const yamlFile = this.relativePathToBaseDirectory(this.yamlFile);
@@ -183,6 +188,7 @@ export class Imngs2CoreConfiguration {
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
                 "--usearch-bin", "/base/binaries/usearch",
+                "--threads", this.threads.toString(),
             ], {
                 binds: [
                     {

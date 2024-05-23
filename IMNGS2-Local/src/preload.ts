@@ -132,6 +132,9 @@ const indexBridge = {
     publishImngs2CoreParameters: async (parameters: IImngs2CoreArguments) => {
         return ipcRenderer.invoke('imngs2core:setParameters', parameters);
     },
+    publishImngs2CoreThreads: async (threads: Number) => {
+        return ipcRenderer.invoke('imngs2core:setThreads', threads);
+    },
     publishUsearchBinary: async (path: string) => {
         return ipcRenderer.invoke('imngs2core:setUsearchBinary', path);
     },

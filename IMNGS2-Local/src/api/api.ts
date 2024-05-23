@@ -172,6 +172,12 @@ ipcMain.handle("imngs2core:setParameters", async (event, parameters: IImngs2Core
     console.log(imngs2CoreConfiguration);
 });
 
+ipcMain.handle("imngs2core:setThreads", async (event, threads: Number) => {
+    imngs2CoreConfiguration.setThreads(threads);
+    console.log(imngs2CoreConfiguration);
+});
+
+
 ipcMain.handle("imngs2core:setUsearchBinary", async (event, path: string) => {
     await imngs2CoreConfiguration.setUsearchBinaryPath(path);
 });
