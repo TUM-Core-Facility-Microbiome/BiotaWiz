@@ -67,6 +67,7 @@
     "semver": "^7.6.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
+    "vue-slider-component": "^4.1.0-beta.7",
     "yaml": "^2.4.1"
   }
 }

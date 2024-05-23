@@ -20,6 +20,7 @@ import {imngs2CoreConfiguration} from "../utils/imngs2CoreConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 import {getVersionString} from "../utils/releasetag";
+import {getMachineThreads, getRecommendedThreads} from "../utils/machine";
 
 ipcMain.handle('app:getName', () => {
     return app.getName();
@@ -171,6 +172,12 @@ ipcMain.handle("imngs2core:setParameters", async (event, parameters: IImngs2Core
     console.log(imngs2CoreConfiguration);
 });
 
+ipcMain.handle("imngs2core:setThreads", async (event, threads: Number) => {
+    imngs2CoreConfiguration.setThreads(threads);
+    console.log(imngs2CoreConfiguration);
+});
+
+
 ipcMain.handle("imngs2core:setUsearchBinary", async (event, path: string) => {
     await imngs2CoreConfiguration.setUsearchBinaryPath(path);
 });
@@ -205,4 +212,12 @@ ipcMain.handle("openIssues", async () => {
 
 ipcMain.handle("openCommunityDiscussions", async () => {
     openCommunityDiscussions();
+});
+
+ipcMain.handle("getMachineThreads", () => {
+    return getMachineThreads();
+});
+
+ipcMain.handle("getRecommendedThreads", () => {
+    return getRecommendedThreads();
 });

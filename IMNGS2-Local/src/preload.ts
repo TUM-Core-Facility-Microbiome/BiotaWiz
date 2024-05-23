@@ -6,6 +6,12 @@ import {logToDevTools} from "./utils/logHandler";
 
 const indexBridge = {
     // renderer to main
+    getMachineThreads: async (): Promise<number> => {
+        return ipcRenderer.invoke('getMachineThreads');
+    },
+    getRecommendedThreads: async (): Promise<number> => {
+        return ipcRenderer.invoke('getRecommendedThreads');
+    },
     getName: async () => {
         return ipcRenderer.invoke('app:getName');
     },
@@ -125,6 +131,9 @@ const indexBridge = {
     },
     publishImngs2CoreParameters: async (parameters: IImngs2CoreArguments) => {
         return ipcRenderer.invoke('imngs2core:setParameters', parameters);
+    },
+    publishImngs2CoreThreads: async (threads: Number) => {
+        return ipcRenderer.invoke('imngs2core:setThreads', threads);
     },
     publishUsearchBinary: async (path: string) => {
         return ipcRenderer.invoke('imngs2core:setUsearchBinary', path);
