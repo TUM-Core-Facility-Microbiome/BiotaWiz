@@ -255,6 +255,78 @@ export class Imngs2CoreConfiguration {
                                 },
                             }
                         );
+                    } else if (statusCode == 163) {  // Argument file could not be placed in fastq directory to be read for analysis
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Argument file could not be placed in fastq directory to be read for analysis`,
+                                state: "error",
+                                error: {
+                                    code: "IMNARGC",
+                                    helpUrl: helpPages.IMNARGC,
+                                },
+                            }
+                        );
+                    } else if (statusCode == 164) {  // Any error in parsing argument file
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Error parsing argument file`,
+                                state: "error",
+                                error: {
+                                    code: "IMNARGF",
+                                    helpUrl: helpPages.IMNARGF,
+                                },
+                            }
+                        );
+                    } else if (statusCode == 165) {  // Failure in preprocessing interrupting Analysis
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Failure in preprocessing interrupting Analysis`,
+                                state: "error",
+                                error: {
+                                    code: "IMNPREF",
+                                    helpUrl: helpPages.IMNPREF,
+                                },
+                            }
+                        );
+                    } else if (statusCode == 166) {  // Failure in analysis
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Failure in analysis`,
+                                state: "error",
+                                error: {
+                                    code: "IMNANF",
+                                    helpUrl: helpPages.IMNANF,
+                                },
+                            }
+                        );
+                    } else if (statusCode == 167) {  // Failure in preprocessing but analysis completed (partial preprocessing)
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Failure in preprocessing but analysis completed (partial preprocessing)`,
+                                state: "error",
+                                error: {
+                                    code: "IMNPREC",
+                                    helpUrl: helpPages.IMNPREC,
+                                },
+                            }
+                        );
+                    } else if (statusCode == 168) {  // All samples failed to get preprocessed
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `All samples failed to get preprocessed`,
+                                state: "error",
+                                error: {
+                                    code: "IMNPREA",
+                                    helpUrl: helpPages.IMNPREA,
+                                },
+                            }
+                        );
                     } else {
                         updateProgress({
                             step: "Running IMNGS2-Core",
