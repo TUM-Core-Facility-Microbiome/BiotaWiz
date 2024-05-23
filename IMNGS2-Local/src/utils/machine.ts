@@ -13,5 +13,5 @@ export function getMachineMemory() {
 // get recommended number of threads
 export function getRecommendedThreads() {
     const threads = getMachineThreads();
-    return threads > 4 ? threads - 2 : threads;
+    return threads > 2 ? threads - 2 : threads;
 }
