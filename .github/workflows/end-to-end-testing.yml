@@ -29,4 +29,5 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
       - run: npm ci
+      - run: npm run package
       - run: npm run wdio
