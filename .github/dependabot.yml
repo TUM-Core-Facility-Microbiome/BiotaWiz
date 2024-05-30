@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/IMNGS2-Core" # Location of package manifests
+    directory: "/IMNGS2-Local" # Location of package manifests
     schedule:
       interval: "weekly"
 
