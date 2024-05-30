@@ -67,3 +67,12 @@ sudo dpkg -i <path-to-deb-file>
 ## Usage
 
 ## Misc
+
+## Development
+### Run end-to-end tests
+WebdriverIO is set up to run end-to-end tests on Linux.
+```bash
+cd IMNGS2-Local/  # move to the node application folder
+npm run package  # create an up-to-date executable that is expected at ./out/IMNGS2-Local-linux-x64/imngs2-local
+npm run wdio  # execute the tests
+```
