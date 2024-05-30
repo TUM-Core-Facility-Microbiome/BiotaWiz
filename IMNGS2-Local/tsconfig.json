@@ -11,7 +11,7 @@
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "types": ["node", "@wdio/globals/types", "@wdio/mocha-framework"]
+    "types": ["node", "jest", "@wdio/globals/types", "@wdio/mocha-framework"]
   },
   "include": ["src"]
 }
