@@ -10,7 +10,8 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "test": "jest"
+    "test": "jest",
+    "wdio": "wdio run ./wdio.conf.ts"
   },
   "keywords": [],
   "author": {
@@ -35,6 +36,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.2.0",
     "@electron-forge/publisher-github": "^7.3.1",
+    "@testing-library/webdriverio": "^3.2.1",
     "@types/command-line-args": "^5.2.3",
     "@types/dockerode": "^3.3.26",
     "@types/electron-json-storage": "^4.5.4",
@@ -42,6 +44,10 @@
     "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-vue": "^5.0.4",
+    "@wdio/cli": "^8.38.1",
+    "@wdio/local-runner": "^8.38.0",
+    "@wdio/mocha-framework": "^8.38.0",
+    "@wdio/spec-reporter": "^8.38.0",
     "autoprefixer": "^10.4.19",
     "electron": "^29.1.4",
     "eslint": "^8.57.0",
@@ -51,7 +57,9 @@
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "wdio-electron-service": "^6.6.1",
+    "wdio-wait-for": "^3.0.11"
   },
   "dependencies": {
     "@endevr-io/wsl-api": "^1.0.4",
