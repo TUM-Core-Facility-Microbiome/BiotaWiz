@@ -3,7 +3,6 @@ name: Release
 
 on:
   push:
-    branches: [ "add-macos-release" ]
     tags:
       - 'v*'
 
