@@ -41,7 +41,7 @@
     "@types/dockerode": "^3.3.26",
     "@types/electron-json-storage": "^4.5.4",
     "@types/jest": "^29.5.12",
-    "@typescript-eslint/eslint-plugin": "^7.6.0",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@wdio/cli": "^8.38.1",
