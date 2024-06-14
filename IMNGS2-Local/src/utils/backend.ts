@@ -915,6 +915,17 @@ async function runWithWsl(environment: Environment, command: string[], options: 
             }
         }
 
+        // ensure the source exists in mnt by remounting the drive; this might help with network shares and removable devices
+        const driveLetter = source.split(":")[0].lower();
+        const driveMountPath = `/mnt/${driveLetter}`;
+        logForEnvironment(environment, `Remounting drive ${driveLetter} to ${driveMountPath}...`);
+        const driveRemountProc = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "-t", "drvfs", driveLetter, driveMountPath], (msg) => {
+            logToDevTools(msg);
+        });
+        if (driveRemountProc !== 0) {
+            throw new Error(`Failed to remount drive ${driveLetter} to ${driveMountPath}`);
+        }
+
         console.log(`Mounting ${source} to ${target}`);
         logForEnvironment(environment, `Bind mounting ${source} to ${target}`);
         const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target], (msg) => {
