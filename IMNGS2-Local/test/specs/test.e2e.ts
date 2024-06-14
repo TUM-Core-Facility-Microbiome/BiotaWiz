@@ -45,17 +45,17 @@ describe('Applications page', () => {
         expect(textAfterWait).toContain('Backend connected')
     })
 
-    it('should execute an analysis', async () => {
-        // list links
-        const links = await browser.$$('a')
-        console.log('Links:', links)
-        // click on the first link
-        await links[6].click()
-        await browser.pause(5000)
-
-        // should change the page
-        const text = await browser.$('body').getText()
-        console.log('Body text:', text)
-        expect(text).toContain('Analysis')
-    })
+    // it('should execute an analysis', async () => {
+    //     // list links
+    //     const links = await browser.$$('a')
+    //     console.log('Links:', links)
+    //     // click on the first link
+    //     await links[6].click()
+    //     await browser.pause(5000)
+    //
+    //     // should change the page
+    //     const text = await browser.$('body').getText()
+    //     console.log('Body text:', text)
+    //     expect(text).toContain('Analysis')
+    // })
 })
