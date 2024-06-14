@@ -889,21 +889,30 @@ async function runWithWsl(environment: Environment, command: string[], options: 
 
         if (fs.lstatSync(bind.source).isDirectory()) {
             logForEnvironment(environment, "Ensuring mount point exists...");
-            await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
+            const mkdirProc = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
                 logToDevTools(msg);
             }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+            if (mkdirProc !== 0) {
+                throw new Error(`Failed to create directory ${target}`);
+            }
         } else {
             // create parent directory if necessary
             logForEnvironment(environment, "Ensuring mount point parent exists...");
             const parent = path.dirname(target);
-            await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", parent], (msg) => {
+            const mkdirProcNeeded = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", parent], (msg) => {
                 logToDevTools(msg);
             }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
+            if (mkdirProcNeeded !== 0) {
+                throw new Error(`Failed to create directory ${parent}`);
+            }
             // touch file
             logForEnvironment(environment, "Ensuring mount point file exists...");
-            await runSubprocess(backend.command, ["--distribution", distribution, "--", "touch", target], (msg) => {
+            const touchMountTargetProc = await runSubprocess(backend.command, ["--distribution", distribution, "--", "touch", target], (msg) => {
                 logToDevTools(msg);
             });
+            if (touchMountTargetProc !== 0) {
+                throw new Error(`Failed to create file at mount point ${target}`);
+            }
         }
 
         console.log(`Mounting ${source} to ${target}`);
