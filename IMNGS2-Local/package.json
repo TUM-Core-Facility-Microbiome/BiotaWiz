@@ -73,7 +73,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "form-wizard-vue3": "^1.1.0",
     "semver": "^7.6.0",
-    "vue": "^3.4.21",
+    "vue": "^3.4.29",
     "vue-router": "^4.3.0",
     "vue-slider-component": "^4.1.0-beta.7",
     "yaml": "^2.4.1"
