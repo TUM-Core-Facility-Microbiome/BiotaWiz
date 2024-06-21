@@ -932,14 +932,20 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         }
 
         // ensure the source exists in mnt by remounting the drive; this might help with network shares and removable devices
-        const driveLetter = source.split(":")[0].lower();
-        const driveMountPath = `/mnt/${driveLetter}`;
-        logForEnvironment(environment, `Remounting drive ${driveLetter} to ${driveMountPath}...`);
-        const driveRemountProc = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "-t", "drvfs", driveLetter, driveMountPath], (msg) => {
+        const driveLetter = bind.source.split(":")[0];
+        const driveIdentifier = `${driveLetter.toUpperCase()}:`
+        const driveMountPath = `/mnt/${driveLetter.toLowerCase()}`;
+        logForEnvironment(environment, `Remounting drive ${driveIdentifier} to ${driveMountPath}...`);
+        // ensure mountpoint exists
+        await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", driveMountPath], (msg) => {
+            logToDevTools(msg);
+        });
+        // mount NTFS-formatted drive to WSL; See https://learn.microsoft.com/en-us/windows/wsl/wsl2-mount-disk#differences-between-mounting-an-external-drive-with-windows-formatting-versus-linux-formatting
+        const driveRemountProc = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "-t", "drvfs", driveIdentifier, driveMountPath], (msg) => {
             logToDevTools(msg);
         });
         if (driveRemountProc !== 0) {
-            throw new Error(`Failed to remount drive ${driveLetter} to ${driveMountPath}`);
+            throw new Error(`Failed to remount drive ${driveIdentifier} to ${driveMountPath}`);
         }
 
         console.log(`Mounting ${source} to ${target}`);
