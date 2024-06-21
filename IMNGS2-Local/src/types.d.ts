@@ -87,9 +87,6 @@ interface IBuildZOTUTableArgs {
     id: number;
 }
 
-interface IFilterZOTUAbundanceArgs {
-    abundance_cutoff: number;
-}
 
 interface IAddTaxArgs {
     turn: string;
@@ -121,7 +118,6 @@ interface IImngs2CoreArguments {
     ClusterZOTUsArgs: IClusterZOTUsArgs;
     Filter16SArgs: IFilter16SArgs;
     BuildZOTUTableArgs: IBuildZOTUTableArgs;
-    FilterZOTUAbundanceArgs: IFilterZOTUAbundanceArgs;
     AddTaxArgs: IAddTaxArgs;
     TrimSidesArgs: ITrimSidesArgs;
     ComplexTICArgs: IComplexTICArgs;
