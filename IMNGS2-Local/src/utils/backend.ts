@@ -526,12 +526,20 @@ export async function terminateBackend(environment: Environment) {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
-            return await terminateDockerBackend();
+            await terminateDockerBackend();
+            break;
         case WSL.type:
-            return await terminateWslBackend();
+            await terminateWslBackend();
+            break;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
+    updateProgress({
+        step: "",
+        message: "",
+        state: "idle",
+    });
+    return;
 }
 
 async function terminateWslBackend() {
