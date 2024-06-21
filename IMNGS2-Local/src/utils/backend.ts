@@ -526,17 +526,29 @@ export async function terminateBackend(environment: Environment) {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
-            return await terminateDockerBackend();
+            await terminateDockerBackend();
+            break;
         case WSL.type:
-            return await terminateWslBackend();
+            await terminateWslBackend();
+            break;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
+    updateProgress({
+        step: "",
+        message: "",
+        state: "idle",
+    });
+    return;
 }
 
 async function terminateWslBackend() {
     return new Promise<void>(async (resolve, reject) => {
         console.log(`Number of running WSL main processes: ${runningWslMainProcesses.size}`)
+        if (runningWslMainProcesses.size == 0) {
+            console.log(`No WSL main processes running. Nothing to terminate.`);
+            resolve();
+        }
         return await Promise.all(Array.from(runningWslMainProcesses).map(async (childProcess) => {
             console.log(`Terminating process ${childProcess.pid}`);
             const success = childProcess.kill();
@@ -552,6 +564,10 @@ async function terminateWslBackend() {
 async function terminateDockerBackend() {
     return new Promise<void>(async (resolve, reject) => {
         console.log(`Number of running containers: ${runningContainers.size}`)
+        if (runningContainers.size == 0) {
+            console.log(`No containers running. Nothing to terminate.`);
+            resolve();
+        }
         return await Promise.all(Array.from(runningContainers).map(async (containerId) => {
             console.log(`Stopping container ${containerId}`);
             const container = docker.getContainer(containerId);
