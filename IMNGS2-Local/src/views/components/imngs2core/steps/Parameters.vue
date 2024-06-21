@@ -478,9 +478,6 @@ function generateImngs2CorePipelineArgumentsObj(): IImngs2CoreArguments {
     BuildZOTUTableArgs: {
       id: 0.99
     },
-    FilterZOTUAbundanceArgs: {
-      abundance_cutoff: 0
-    },
     AddTaxArgs: {
       turn: "all"
     },
