@@ -333,6 +333,18 @@ export class Imngs2CoreConfiguration {
                                 },
                             }
                         );
+                    } else if (statusCode == 169) {  // Anlysis skipped
+                        updateProgress(
+                            {
+                                step: `Running IMNGS2-Core`,
+                                message: `Analysis skipped`,
+                                state: "error",
+                                error: {
+                                    code: "IMNSKIP",
+                                    helpUrl: helpPages.IMNSKIP,
+                                },
+                            }
+                        );
                     } else {
                         updateProgress({
                             step: "Running IMNGS2-Core",
