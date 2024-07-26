@@ -26,10 +26,11 @@
     </p>
   </div>
   <br>
-  <div class="p-4 text-xs font-mono bg-gray-800 text-white rounded-lg text-wrap w-100 max-h-80 min-h-80 overflow-y-auto"
-       id="terminal">
-    <p v-for="log of logLines" class="whitespace-pre-wrap">{{ log }}</p>
-  </div>
+
+<!--  <div class="p-4 text-xs font-mono bg-gray-800 text-white rounded-lg text-wrap w-100 max-h-80 min-h-80 overflow-y-auto"-->
+<!--       id="terminal">-->
+<!--    <p v-for="log of logLines" class="whitespace-pre-wrap">{{ log }}</p>-->
+<!--  </div>-->
 
 <!--  &lt;!&ndash; Accordion with the steps &ndash;&gt;-->
 <!--  <div class="mt-4">-->
