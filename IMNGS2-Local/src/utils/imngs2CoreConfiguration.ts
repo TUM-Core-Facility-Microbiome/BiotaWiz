@@ -11,7 +11,6 @@ import {helpPages} from "./helpPages";
 
 export class Imngs2CoreConfiguration {
     private baseDirectory = "";
-    private usearchBinary = "";
     private mappingFile = "";
     private yamlFile = "";
 
@@ -31,24 +30,6 @@ export class Imngs2CoreConfiguration {
         // analysis directory is relative to base directory
         this.analysisDirectory = path.join(this.baseDirectory, analysisDirectory);
         console.log(`IMNGS2-Core analysis directory set to ${analysisDirectory}`);
-    }
-
-    public setUsearchBinaryPath(binPath: string) {
-        return new Promise<void>((resolve, reject) => {
-            if (binPath === "") {  // download and set to default path
-                taskQueue.defer(() => {
-                    return getOrDownloadUsearch32Binary()
-                }).then((downloadedPath: string) => {
-                    this.usearchBinary = downloadedPath;
-                    console.log(`Usearch binary path set to ${downloadedPath}`);
-                    resolve();
-                })
-            } else {
-                this.usearchBinary = binPath;
-                console.log(`Usearch binary path set to ${binPath}`);
-                resolve();
-            }
-        });
     }
 
     public setSamples(samples: IFileSystemSample[]) {
@@ -187,7 +168,6 @@ export class Imngs2CoreConfiguration {
                 "run_imngs2",
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
-                "--usearch-bin", "/base/binaries/usearch",
                 "--threads", this.threads.toString(),
             ], {
                 binds: [
@@ -195,10 +175,6 @@ export class Imngs2CoreConfiguration {
                         source: this.baseDirectory,
                         target: "/base/inputs",
                     },
-                    {
-                        source: this.usearchBinary,
-                        target: "/base/binaries/usearch",
-                    }
                 ],
             }).then((statusCode: number) => {
                 logForEnvironment(Environment.IMNGS2CORE, `Pipeline finished with status code ${statusCode}`);

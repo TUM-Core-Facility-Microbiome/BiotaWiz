@@ -177,11 +177,6 @@ ipcMain.handle("imngs2core:setThreads", async (event, threads: Number) => {
     console.log(imngs2CoreConfiguration);
 });
 
-
-ipcMain.handle("imngs2core:setUsearchBinary", async (event, path: string) => {
-    await imngs2CoreConfiguration.setUsearchBinaryPath(path);
-});
-
 ipcMain.handle("imngs2core:openMappingFile", async () => {
     console.log("Opening mapping file");
     await imngs2CoreConfiguration.openMappingFile();
