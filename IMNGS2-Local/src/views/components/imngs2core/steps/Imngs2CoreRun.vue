@@ -1,26 +1,26 @@
 <template>
-<!--  <div>-->
-<!--    <div class="text-lg font-bold">Running pipeline</div>-->
-<!--    <div class="text-sm text-gray-700">-->
-<!--      You should see the logs of IMNGS2-Core here. Output will be written to your selected base directory:-->
-<!--      <br>-->
-<!--      {{ state.baseDir }}-->
-<!--    </div>-->
-<!--    <p>-->
-<!--      <div v-if="state.analysisDir">-->
-<!--        <div class="flex">-->
-<!--          <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">-->
-<!--            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>-->
-<!--            </svg>-->
-<!--          </div>-->
-<!--          <div>&nbsp;Analysis done. Analysis directory ready.</div>-->
-<!--        </div>-->
-<!--        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="openAnalysisDirectory">Open analysis directory</button>-->
-<!--      </div>-->
-<!--    </p>-->
-<!--  </div>-->
-<!--  <br>-->
+  <div>
+    <div class="text-lg font-bold">Running pipeline</div>
+    <div class="text-sm text-gray-700">
+      You should see the logs of IMNGS2-Core here. Output will be written to your selected base directory:
+      <br>
+      {{ state.baseDir }}
+    </div>
+    <p>
+      <div v-if="state.analysisDir">
+        <div class="flex">
+          <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div>&nbsp;Analysis done. Analysis directory ready.</div>
+        </div>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="openAnalysisDirectory">Open analysis directory</button>
+      </div>
+    </p>
+  </div>
+  <br>
 <!--  <div class="p-4 text-xs font-mono bg-gray-800 text-white rounded-lg text-wrap w-100 max-h-80 min-h-80 overflow-y-auto"-->
 <!--       id="terminal">-->
 <!--    <p v-for="log of logLines" class="whitespace-pre-wrap">{{ log }}</p>-->
