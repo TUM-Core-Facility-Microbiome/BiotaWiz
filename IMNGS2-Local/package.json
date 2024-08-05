@@ -42,7 +42,7 @@
     "@types/electron-json-storage": "^4.5.4",
     "@types/jest": "^29.5.12",
     "@types/semver": "^7.5.8",
-    "@typescript-eslint/eslint-plugin": "^7.16.1",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@wdio/cli": "^8.38.1",
