@@ -464,10 +464,6 @@ function generateImngs2CorePipelineArgumentsObj(): IImngs2CoreArguments {
       fastq_maxee_rate: 0.002,
       fastq_truncqual: 10
     },
-    DereplicationArgs: {
-      sizein: true,
-      sizeout: true
-    },
     ClusterZOTUsArgs: {
       minsize: 2
     },
