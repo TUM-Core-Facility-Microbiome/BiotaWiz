@@ -51,10 +51,6 @@ const index = createRouter({
                                     component: () => import('../components/imngs2core/steps/Parameters.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/steps/usearch',
-                                    component: () => import('../components/imngs2core/steps/Usearch.vue'),
-                                },
-                                {
                                     path: '/application-shell/imngs2core/steps/run',
                                     component: () => import('../components/imngs2core/steps/Imngs2CoreRun.vue'),
                                 },

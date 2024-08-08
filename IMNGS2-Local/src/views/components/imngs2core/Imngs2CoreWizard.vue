@@ -19,9 +19,6 @@
             title: 'Parameters',
           },
           {
-            title: 'USEARCH',
-          },
-          {
             title: 'Run',
           },
         ]"
@@ -42,9 +39,6 @@
         <Parameters ref="step-3" @update:isValid="isChildValid = $event" />
       </h5>
       <h5 v-if="currentTabIndex === 4">
-        <Usearch ref="step-4" @update:isValid="isChildValid = $event" />
-      </h5>
-      <h5 v-if="currentTabIndex === 5">
         <Run ref="step-5" @update:isValid="isChildValid = $event" />
       </h5>
     </Wizard>
@@ -76,7 +70,6 @@ import BaseSelection from "./steps/BaseSelection.vue";
 import StudySelection from "./steps/StudySelection.vue";
 import SpikeMode from "./steps/SpikeMode.vue";
 import Parameters from "./steps/Parameters.vue";
-import Usearch from "./steps/Usearch.vue";
 import Run from "./steps/Imngs2CoreRun.vue";
 
 export default {
@@ -87,7 +80,6 @@ export default {
     StudySelection,
     SpikeMode,
     Parameters,
-    Usearch,
     Run,
   },
   data() {
