@@ -9,3 +9,8 @@ export enum Environment {
     SHINY_RHEA = "shiny-Rhea",
     NAMCO = "Namco",
 }
+
+export enum Imngs2CoreAnalysisMode {
+    TIC = 'TIC',
+    DE_NOVO = 'de-novo',
+}
