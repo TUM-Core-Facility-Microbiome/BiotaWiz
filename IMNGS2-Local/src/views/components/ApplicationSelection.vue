@@ -3,7 +3,7 @@
     <div>
       <h1 class="text-2xl font-semibold mb-4">
         <div class="flex">
-          <div>Applications</div>
+          <div>Select the analysis mode</div>
           <div class="ml-auto items-end justify-end select-text">
             <span class="rounded-xl bg-tic px-2 py-1 text-xs font-medium text-white"><strong>{{ state.name }}</strong> v{{ state.version }}</span>
           </div>
@@ -62,23 +62,23 @@
       </p>
       <ul v-if="state.backendAvailable" class="mt-4 space-y-2">
         <li>
-          <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic">
-            <strong class="font-medium text-black">IMNGS2-Core</strong>
+          <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic" @click="setAnalysisMode(Imngs2CoreAnalysisMode.TIC)">
+            <strong class="font-medium text-black">IMNGS2-Core: TIC</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
               Analyze raw 16S rRNA amplicon data with the core pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2
             </p>
           </router-link>
         </li>
-        <!--        <li>-->
-        <!--          <router-link to="/application-shell/rhea" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-orange-400">-->
-        <!--            <strong class="font-medium text-black">shiny-Rhea</strong>-->
+        <li>
+          <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-orange-400" @click="setAnalysisMode(Imngs2CoreAnalysisMode.DE_NOVO)">
+            <strong class="font-medium text-black">IMNGS2-Core: De-novo Clustering</strong>
 
-        <!--            <p class="mt-1 text-xs font-medium text-gray-800">-->
-        <!--              Tool for analysis of microbial profiles.-->
-        <!--            </p>-->
-        <!--          </router-link>-->
-        <!--        </li>-->
+            <p class="mt-1 text-xs font-medium text-gray-800">
+              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et.
+            </p>
+          </router-link>
+        </li>
       </ul>
     </div>
 
@@ -86,6 +86,7 @@
 </template>
 <script setup lang="ts">
 import {reactive} from "vue";
+import {Imngs2CoreAnalysisMode} from "../../enums";
 
 // inform about env change
 indexBridge.changeEnvironment(null);
@@ -142,4 +143,9 @@ function getBackendInfo() {
 getName();
 getVersion();
 getBackendInfo();
+
+
+async function setAnalysisMode(mode: Imngs2CoreAnalysisMode) {
+  await indexBridge.publishImngs2CoreAnalysisMode(mode);
+}
 </script>
