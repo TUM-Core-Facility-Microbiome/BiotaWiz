@@ -20,10 +20,12 @@
   },
   "contributors": [
     {
-      "name": "Mohsen Pourjam"
+      "name": "Mohsen Pourjam",
+      "email": "pourjam.cs@hotmail.com"
     },
     {
-      "name": "Zeno Sewald"
+      "name": "Zeno Sewald",
+      "email": "zeno.sewald@tum.de"
     }
   ],
   "license": "MIT",
