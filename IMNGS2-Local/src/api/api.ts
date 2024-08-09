@@ -14,7 +14,7 @@ import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFileOpen, handleFolderOpen} from "./dialogs";
 import {getBackend, getImngs2CoreBaseDirectory, setImngs2CoreBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "../utils/file-explorer";
-import {Environment, SpikeMode} from "../enums";
+import {Environment, Imngs2CoreAnalysisMode, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
 import {imngs2CoreConfiguration} from "../utils/imngs2CoreConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
@@ -125,6 +125,15 @@ ipcMain.handle("initializeEnvironment", async (event, environment: Environment) 
             });
         });
     });
+});
+
+ipcMain.handle("imngs2core:setAnalysisMode", async (event, analysisMode: Imngs2CoreAnalysisMode) => {
+    console.log(`Setting IMNGS2-Core analysis mode to ${analysisMode}`);
+    imngs2CoreConfiguration.setAnalysisMode(analysisMode);
+});
+
+ipcMain.handle("imngs2core:getAnalysisMode", async () => {
+    await imngs2CoreConfiguration.getAnalysisMode();
 });
 
 ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: string) => {

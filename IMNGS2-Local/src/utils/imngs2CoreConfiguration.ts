@@ -1,4 +1,4 @@
-import {Environment, SpikeMode} from "../enums";
+import {Environment, SpikeMode, Imngs2CoreAnalysisMode} from "../enums";
 import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
 import {existsSync, readFileSync, writeFile} from "fs";
@@ -10,6 +10,7 @@ import {getOrDownloadUsearch32Binary} from "./usearch";
 import {helpPages} from "./helpPages";
 
 export class Imngs2CoreConfiguration {
+    private analysisMode = Imngs2CoreAnalysisMode.TIC;
     private baseDirectory = "";
     private mappingFile = "";
     private yamlFile = "";
@@ -20,6 +21,15 @@ export class Imngs2CoreConfiguration {
     private threads: Number = 1;
 
     private analysisDirectory: string | null = null;
+
+    public setAnalysisMode(analysisMode: Imngs2CoreAnalysisMode) {
+        this.analysisMode = analysisMode;
+        console.log(`Analysis mode set to ${analysisMode}`);
+    }
+
+    public getAnalysisMode() {
+        return this.analysisMode;
+    }
 
     public setBaseDirectory(baseDirectory: string) {
         this.baseDirectory = baseDirectory;
