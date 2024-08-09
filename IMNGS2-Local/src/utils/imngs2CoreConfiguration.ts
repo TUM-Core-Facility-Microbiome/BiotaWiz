@@ -139,6 +139,57 @@ export class Imngs2CoreConfiguration {
         });
     }
 
+    public getDefaultParameters(): IImngs2CoreArguments {
+        return {
+            MergePairsArgs: {
+                fastq_maxdiffs: 50,
+                fastq_pctid: 50,
+                fastq_minmergelen: 200,
+                fastq_maxmergelen: 600
+            },
+            TrimBothSidesArgs: {
+                stripleft: 15,
+                stripright: 15
+            },
+            TrimOneSideArgs: {
+                stripleft: 15
+            },
+            FilterBothSidesArgs: {
+                fastq_maxee_rate: 0.002
+            },
+            FilterOneSideArgs: {
+                fastq_maxee_rate: 0.002,
+                fastq_truncqual: 10
+            },
+            ClusterZOTUsArgs: {
+                minsize: 2
+            },
+            Filter16SArgs: {
+                e: 0.1,
+                num_alignments: 1
+            },
+            BuildZOTUTableArgs: {
+                id: 0.99
+            },
+            AddTaxArgs: {
+                turn: "all"
+            },
+            TrimSidesArgs: {
+                stripleft: 5,
+                stripright: 5
+            },
+            ComplexTICArgs: {
+                family_sim: 0.9,
+                genus_sim: 0.95,
+                species_sim: 0.97
+            },
+            CreateTableTICArgs: {
+                abund_limit: 0,
+                sample_wise_correction: false
+            }
+        }
+    }
+
     public setParameters(parameters: IImngs2CoreArguments) {
         this.parameters = parameters;
         this.writeParameterFile();

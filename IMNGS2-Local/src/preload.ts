@@ -129,6 +129,9 @@ const indexBridge = {
     checkMappingFile: async () => {
         return ipcRenderer.invoke('imngs2core:checkMapping');
     },
+    getImngs2coreDefaultParameters: async () =>{
+        return ipcRenderer.invoke('imngs2core:getDefaultParameters');
+    },
     publishImngs2CoreParameters: async (parameters: IImngs2CoreArguments) => {
         return ipcRenderer.invoke('imngs2core:setParameters', parameters);
     },

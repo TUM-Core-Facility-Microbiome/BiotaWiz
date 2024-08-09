@@ -167,6 +167,10 @@ ipcMain.handle("imngs2core:setSpikeMode", async (event, spikeModeName: string) =
     return imngs2CoreConfiguration.getSpikeMode();
 });
 
+ipcMain.handle("imngs2core:getDefaultParameters", async () => {
+    return imngs2CoreConfiguration.getDefaultParameters();
+});
+
 ipcMain.handle("imngs2core:setParameters", async (event, parameters: IImngs2CoreArguments) => {
     imngs2CoreConfiguration.setParameters(parameters);
     console.log(imngs2CoreConfiguration);

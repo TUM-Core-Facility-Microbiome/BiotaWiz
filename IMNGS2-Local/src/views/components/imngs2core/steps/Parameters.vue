@@ -442,104 +442,64 @@ watchEffect(() => {
   emit('update:isValid', true);
 });
 
-function generateImngs2CorePipelineArgumentsObj(): IImngs2CoreArguments {
-  const DEFAULT_IMNGS2CORE_ARGUMENTS: IImngs2CoreArguments = {
-    MergePairsArgs: {
-      fastq_maxdiffs: 50,
-      fastq_pctid: 50,
-      fastq_minmergelen: 200,
-      fastq_maxmergelen: 600
-    },
-    TrimBothSidesArgs: {
-      stripleft: 15,
-      stripright: 15
-    },
-    TrimOneSideArgs: {
-      stripleft: 15
-    },
-    FilterBothSidesArgs: {
-      fastq_maxee_rate: 0.002
-    },
-    FilterOneSideArgs: {
-      fastq_maxee_rate: 0.002,
-      fastq_truncqual: 10
-    },
-    ClusterZOTUsArgs: {
-      minsize: 2
-    },
-    Filter16SArgs: {
-      e: 0.1,
-      num_alignments: 1
-    },
-    BuildZOTUTableArgs: {
-      id: 0.99
-    },
-    AddTaxArgs: {
-      turn: "all"
-    },
-    TrimSidesArgs: {
-      stripleft: 5,
-      stripright: 5
-    },
-    ComplexTICArgs: {
-      family_sim: 0.9,
-      genus_sim: 0.95,
-      species_sim: 0.97
-    },
-    CreateTableTICArgs: {
-      abund_limit: 0,
-      sample_wise_correction: false
-    }
-  }
+async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArguments> {
+  return new Promise<IImngs2CoreArguments>((resolve, reject) => {
+    const trimBothSidesArgs: ITrimBothSidesArgs = {
+      stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
+      stripright: Number(stripright.value),
+    };
 
-  const trimBothSidesArgs: ITrimBothSidesArgs = {
-    stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
-    stripright: Number(stripright.value),
-  };
+    const trimOneSideArgs: ITrimOneSideArgs = {
+      stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
+    };
 
-  const trimOneSideArgs: ITrimOneSideArgs = {
-    stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
-  };
+    const createTableTICArgs: ICreateTableTICArgs = {
+      abund_limit: Number(abund_limit.value),
+      sample_wise_correction: Boolean(sample_wise_correction.value),
+    };
 
-  const createTableTICArgs: ICreateTableTICArgs = {
-    abund_limit: Number(abund_limit.value),
-    sample_wise_correction: Boolean(sample_wise_correction.value),
-  };
+    const mergePairsArgs: IMergePairsArgs = {
+      fastq_maxdiffs: Number(fastq_maxdiffs.value),
+      fastq_pctid: Number(fastq_pctid.value),
+      fastq_minmergelen: Number(fastq_minmergelen.value),
+      fastq_maxmergelen: Number(fastq_maxmergelen.value),
+    };
 
-  const mergePairsArgs: IMergePairsArgs = {
-    fastq_maxdiffs: Number(fastq_maxdiffs.value),
-    fastq_pctid: Number(fastq_pctid.value),
-    fastq_minmergelen: Number(fastq_minmergelen.value),
-    fastq_maxmergelen: Number(fastq_maxmergelen.value),
-  };
+    const clusterZOTUsArgs: IClusterZOTUsArgs = {
+      minsize: Number(minsize.value),
+    };
 
-  const clusterZOTUsArgs: IClusterZOTUsArgs = {
-    minsize: Number(minsize.value),
-  };
+    const complexTICArgs: IComplexTICArgs = {
+      family_sim: Number(family_sim.value),
+      genus_sim: Number(genus_sim.value),
+      species_sim: Number(species_sim.value),
+    };
 
-  const complexTICArgs: IComplexTICArgs = {
-    family_sim: Number(family_sim.value),
-    genus_sim: Number(genus_sim.value),
-    species_sim: Number(species_sim.value),
-  };
+    // get default arguments and patch with user input
+    indexBridge.getImngs2coreDefaultParameters().then((defaultArgs) => {
+      const args = defaultArgs;
+      args.TrimBothSidesArgs = trimBothSidesArgs;
+      args.TrimOneSideArgs = trimOneSideArgs;
+      args.CreateTableTICArgs = createTableTICArgs;
+      args.MergePairsArgs = mergePairsArgs;
+      args.ClusterZOTUsArgs = clusterZOTUsArgs;
+      args.ComplexTICArgs = complexTICArgs;
 
-  // patch args
-  const args = DEFAULT_IMNGS2CORE_ARGUMENTS;
-  args.TrimBothSidesArgs = trimBothSidesArgs;
-  args.TrimOneSideArgs = trimOneSideArgs;
-  args.CreateTableTICArgs = createTableTICArgs;
-  args.MergePairsArgs = mergePairsArgs;
-  args.ClusterZOTUsArgs = clusterZOTUsArgs;
-  args.ComplexTICArgs = complexTICArgs;
-
-  return args;
+      resolve(args);
+    }).catch(() => {
+      console.error("Could not get default IMNGS2-Core parameters");
+      reject();
+    });
+  });
 }
 
 async function apply() {
   return new Promise<void>((resolve, reject) => {
-    indexBridge.publishImngs2CoreThreads(pthreads.value).then(() => {
+    indexBridge.publishImngs2CoreThreads(pthreads.value).then(async () => {
       console.log("Published IMNGS2-Core threads");
-      indexBridge.publishImngs2CoreParameters(generateImngs2CorePipelineArgumentsObj()).then(() => {
+      const pipelineArgs = await generateImngs2CorePipelineArgumentsObj();
+      console.log("Pipeline arguments: ", pipelineArgs);
+      indexBridge.publishImngs2CoreParameters(pipelineArgs).then(() => {
         console.log("Published IMNGS2-Core pipeline arguments");
         resolve();
       }).catch(() => {
