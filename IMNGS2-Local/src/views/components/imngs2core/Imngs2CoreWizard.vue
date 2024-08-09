@@ -126,7 +126,7 @@ export default {
   },
   computed: {
     nextButtonOptions() {
-      if (this.currentTabIndex === 5) {
+      if (this.currentTabIndex === 4) {
         return {
           hidden: true,
         };
@@ -138,7 +138,7 @@ export default {
       }
     },
     backButtonOptions() {
-      if (this.currentTabIndex === 5) {
+      if (this.currentTabIndex === 4) {
         return {
           text: 'Stop processing and go back'
         };
