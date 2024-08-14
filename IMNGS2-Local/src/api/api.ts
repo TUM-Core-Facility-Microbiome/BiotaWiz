@@ -133,7 +133,7 @@ ipcMain.handle("imngs2core:setAnalysisMode", async (event, analysisMode: Imngs2C
 });
 
 ipcMain.handle("imngs2core:getAnalysisMode", async () => {
-    await imngs2CoreConfiguration.getAnalysisMode();
+    return imngs2CoreConfiguration.getAnalysisMode();
 });
 
 ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: string) => {
