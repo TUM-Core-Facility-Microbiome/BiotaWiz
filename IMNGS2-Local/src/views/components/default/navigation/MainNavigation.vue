@@ -11,31 +11,19 @@
 
         <div class="border-t border-gray-100">
           <div class="px-2">
-            <ul class="space-y-1 pt-4">
-              <li>
-                <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
-                             active-class="bg-blue-50 text-blue-700"
-                             to="/application-shell/imngs2core">
-                  <code class="text-xs font-bold">IMNGS2-Core</code>
-                  <span
-                      class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible min-w-60">
-                      Core Pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2
-                  </span>
-                </router-link>
-              </li>
-
-              <li>
-                <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
-                             active-class="bg-blue-50 text-blue-700"
-                             to="/application-shell/namco">
-                  <code class="text-xs font-bold">Namco</code>
-                  <span
-                      class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
-                      Microbiome Explorer
-                  </span>
-                </router-link>
-              </li>
-            </ul>
+<!--            <ul class="space-y-1 pt-4">-->
+<!--              <li>-->
+<!--                <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"-->
+<!--                             active-class="bg-blue-50 text-blue-700"-->
+<!--                             to="/application-shell/imngs2core">-->
+<!--                  <code class="text-xs font-bold">IMNGS2-Core</code>-->
+<!--                  <span-->
+<!--                      class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible min-w-60">-->
+<!--                      Core Pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2-->
+<!--                  </span>-->
+<!--                </router-link>-->
+<!--              </li>-->
+<!--            </ul>-->
           </div>
         </div>
       </div>
