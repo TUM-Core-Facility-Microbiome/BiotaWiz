@@ -44,11 +44,6 @@ function getRepository(environment: Environment): Repository {
                 owner: cmArgs['imngs2core-repository-owner'],
                 repo: cmArgs['imngs2core-repository-name'],
             }
-        case Environment.SHINY_RHEA:
-            return {
-                owner: cmArgs['shiny-rhea-repository-owner'],
-                repo: cmArgs['shiny-rhea-repository-name'],
-            }
     }
 }
 
