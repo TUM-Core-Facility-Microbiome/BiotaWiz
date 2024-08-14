@@ -289,7 +289,32 @@
               </div>
             </div>
           </div>
-          <div class="pt-6">
+          {{analysisMode.value}}
+          {{analysisMode}}
+          <div class="pt-6" v-if="analysisMode == 'de-novo'">
+
+            <div class="text-lg font-bold">De-novo clustering ZOTU cluster size</div>
+            <div class="text-sm text-gray-700">
+              Parameters for ZOTU clustering in de-novo clustering mode.
+            </div>
+            <div class="mt-3">
+              <div>
+                <label for="de_novo_minsize">
+                  <div class="text-sm font-mono">minsize</div>
+                  <div class="text-xs text-gray-500">Any sequence in pool of unique sequences across your samples with less than the set number of duplicates will be discarded for ZOTU creation.
+                  </div>
+                </label>
+                <input
+                    id="de_novo_minsize"
+                    type="text"
+                    v-model="de_novo_minsize"
+                    placeholder="default: 8"
+                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                >
+              </div>
+            </div>
+          </div>
+          <div class="pt-6" v-if="analysisMode == 'TIC'">
             <div class="text-lg font-bold">Complex TIC arguments</div>
             <div class="text-sm text-gray-700">
               Thresholds for taxonomy informed clustering. Watch out to not set the threshold of a lower rank higher
@@ -396,16 +421,25 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref, watchEffect} from 'vue';
+import {ref, watchEffect} from 'vue';
 import {useRouter} from "vue-router";
-import index from "../../../router";
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
+import {Imngs2CoreAnalysisMode} from "../../../../enums";
 
 const router = useRouter();
 
+let analysisMode = ref("TIC");
 let pthreads = ref(1);
 let max_threads = ref(1);
+
+function getAnalysisMode() {
+  indexBridge.getImngs2CoreAnalysisMode().then((mode) => {
+    console.log("Analysis mode: ", mode);
+    analysisMode.value = mode.valueOf();
+  });
+}
+getAnalysisMode();
 
 function setThreadDefaults() {
   indexBridge.getMachineThreads().then((threads) => {
@@ -433,6 +467,7 @@ let fastq_pctid = ref(50);
 let fastq_minmergelen = ref(200);
 let fastq_maxmergelen = ref(600);
 let minsize = ref(2);
+let de_novo_minsize = ref(8);
 let family_sim = ref(0.90);
 let genus_sim = ref(0.95);
 let species_sim = ref(0.97);
@@ -469,12 +504,6 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
       minsize: Number(minsize.value),
     };
 
-    const complexTICArgs: IComplexTICArgs = {
-      family_sim: Number(family_sim.value),
-      genus_sim: Number(genus_sim.value),
-      species_sim: Number(species_sim.value),
-    };
-
     // get default arguments and patch with user input
     indexBridge.getImngs2coreDefaultParameters().then((defaultArgs) => {
       const args = defaultArgs;
@@ -483,7 +512,18 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
       args.CreateTableTICArgs = createTableTICArgs;
       args.MergePairsArgs = mergePairsArgs;
       args.ClusterZOTUsArgs = clusterZOTUsArgs;
-      args.ComplexTICArgs = complexTICArgs;
+
+      if (analysisMode.value == "TIC") {
+        // set arguments specific for TIC mode
+        args.ComplexTICArgs = {
+          family_sim: Number(family_sim.value),
+          genus_sim: Number(genus_sim.value),
+          species_sim: Number(species_sim.value),
+        };
+      } else if (analysisMode.value == "de-novo") {
+        // set arguments specific for de-novo clustering mode
+        args.DeNovoClusterZOTUsArgs = {minsize: Number(minsize.value)};
+      }
 
       resolve(args);
     }).catch(() => {
