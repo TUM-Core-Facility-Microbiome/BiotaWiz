@@ -37,7 +37,7 @@
               </div>
               <div class="inline-flex pl-2.5 text-xs text-white" v-if="state.status !== 'idle'">
                 <span class="font-semibold">{{ state.step }}</span>:
-                {{ state.progress }}
+                {{ state.progress }}&nbsp;
                 <span v-if="state.error">
                   <a @click="openExternal(state.error.helpUrl)"
                      class="underline cursor-pointer text-blue-500">Help page</a>
