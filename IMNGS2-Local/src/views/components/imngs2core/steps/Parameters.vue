@@ -289,8 +289,6 @@
               </div>
             </div>
           </div>
-          {{analysisMode.value}}
-          {{analysisMode}}
           <div class="pt-6" v-if="analysisMode == 'de-novo'">
 
             <div class="text-lg font-bold">De-novo clustering ZOTU cluster size</div>
