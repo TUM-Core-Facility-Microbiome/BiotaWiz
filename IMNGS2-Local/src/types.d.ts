@@ -78,6 +78,10 @@ interface IClusterZOTUsArgs {
     minsize: number;
 }
 
+interface IDeNovoClusterZOTUsArgs {
+    minsize: number;
+}
+
 interface IFilter16SArgs {
     e: number;
     num_alignments: number;
@@ -120,8 +124,15 @@ interface IImngs2CoreArguments {
     BuildZOTUTableArgs: IBuildZOTUTableArgs;
     AddTaxArgs: IAddTaxArgs;
     TrimSidesArgs: ITrimSidesArgs;
-    ComplexTICArgs: IComplexTICArgs;
     CreateTableTICArgs: ICreateTableTICArgs;
+}
+
+interface IImngs2CoreArgumentsTICMode extends IImngs2CoreArguments {
+    ComplexTICArgs: IComplexTICArgs;
+}
+
+interface IImngs2CoreArgumentsDeNovoMode extends IImngs2CoreArguments {
+    DeNovoClusterZOTUsArgs: IDeNovoClusterZOTUsArgs;
 }
 
 interface IImngs2CoreBaseDirectory {

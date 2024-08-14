@@ -150,7 +150,8 @@ export class Imngs2CoreConfiguration {
     }
 
     public getDefaultParameters(): IImngs2CoreArguments {
-        return {
+        // Set up with defaults common to TIC and De-Novo Clustering mode
+        const DEFAULTS = {
             MergePairsArgs: {
                 fastq_maxdiffs: 50,
                 fastq_pctid: 50,
@@ -188,15 +189,30 @@ export class Imngs2CoreConfiguration {
                 stripleft: 5,
                 stripright: 5
             },
-            ComplexTICArgs: {
-                family_sim: 0.9,
-                genus_sim: 0.95,
-                species_sim: 0.97
-            },
             CreateTableTICArgs: {
                 abund_limit: 0,
                 sample_wise_correction: false
             }
+        }
+
+        // set mode specific arguments
+        if (this.analysisMode == Imngs2CoreAnalysisMode.TIC) {
+            DEFAULTS.ComplexTICArgs ={
+                family_sim: 0.9,
+                genus_sim: 0.95,
+                species_sim: 0.97
+            }
+
+            return DEFAULTS as IImngs2CoreArgumentsTICMode
+        } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
+            DEFAULTS.DeNovoClusterZOTUsArgs = {
+                minsize: 8
+            }
+
+            return DEFAULTS as IImngs2CoreArgumentsDeNovoMode
+        } else {
+            console.error(`Unknown analysis mode ${this.analysisMode}`);
+            return null;
         }
     }
 
