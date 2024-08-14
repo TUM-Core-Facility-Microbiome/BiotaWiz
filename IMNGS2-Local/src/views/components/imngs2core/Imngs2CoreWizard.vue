@@ -39,7 +39,7 @@
         <Parameters ref="step-3" @update:isValid="isChildValid = $event" />
       </h5>
       <h5 v-if="currentTabIndex === 4">
-        <Run ref="step-5" @update:isValid="isChildValid = $event" />
+        <Run ref="step-4" @update:isValid="isChildValid = $event" />
       </h5>
     </Wizard>
   </div>
