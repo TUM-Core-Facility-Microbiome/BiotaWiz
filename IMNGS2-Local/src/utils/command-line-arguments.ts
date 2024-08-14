@@ -5,9 +5,6 @@ import {
     IMNGS2CORE_REPOSITORY_OWNER,
     IMNGS2CORE_REPOSITORY_NAME,
     IMNGS2CORE_VRANGE,
-    SHINY_RHEA_REPOSITORY_OWNER,
-    SHINY_RHEA_REPOSITORY_NAME,
-    SHINY_RHEA_VRANGE
 } from "../config";
 
 const optionDefinitions = [
@@ -55,24 +52,6 @@ const optionDefinitions = [
         defaultValue: IMNGS2CORE_VRANGE,
         description: 'Semantic version range for IMNGS2-Core.'
     },
-    {
-        name: 'shiny-rhea-repository-owner',
-        type: String,
-        defaultValue: SHINY_RHEA_REPOSITORY_OWNER,
-        description: 'GitHub repository owner of shiny-Rhea.'
-    },
-    {
-        name: 'shiny-rhea-repository-name',
-        type: String,
-        defaultValue: SHINY_RHEA_REPOSITORY_NAME,
-        description: 'GitHub repository name of shiny-Rhea.'
-    },
-    {
-        name: 'shiny-rhea-vrange',
-        type: String,
-        defaultValue: SHINY_RHEA_VRANGE,
-        description: 'Semantic version range for shiny-Rhea.'
-    }
 ]
 
 

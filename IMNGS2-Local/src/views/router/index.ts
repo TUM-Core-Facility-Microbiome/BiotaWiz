@@ -56,14 +56,6 @@ const index = createRouter({
                                 },
                             ]
                         },
-                        {
-                            path: '/application-shell/namco',
-                            component: () => import('../components/namco/OutLink.vue'),
-                        },
-/*                        {
-                            path: '/application-shell/rhea',
-                            component: () => import('../components/rhea/RheaOutLink.vue'),
-                        },*/
                     ]
                 },
                 {

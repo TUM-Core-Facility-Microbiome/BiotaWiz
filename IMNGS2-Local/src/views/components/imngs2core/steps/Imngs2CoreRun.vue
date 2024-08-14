@@ -16,6 +16,11 @@
           </div>
           <div>&nbsp;Analysis done. Analysis directory ready.</div>
         </div>
+        <p>We recommend the
+          <a @click="openExternal('https://exbio.wzw.tum.de/namco/')"
+             class="underline cursor-pointer text-blue-500">Namco microbiome explorer</a>
+          for downstream analysis.
+        </p>
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" @click="openAnalysisDirectory">Open analysis directory</button>
       </div>
     </p>
@@ -59,6 +64,10 @@ function getImngs2CoreBaseDirectory() {
 
 function openAnalysisDirectory() {
   indexBridge.openImngs2CoreAnalysisDirectory();
+}
+
+function openExternal(url: string) {
+  indexBridge.openExternalLink(url);
 }
 
 const regex = /(?<asctime>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) - (?<name>.*):(?<filename>.*):(?<lineno>[0-9]*) - (?<levelname>[A-Z]{4,5}) - (?<message>.*)/;
