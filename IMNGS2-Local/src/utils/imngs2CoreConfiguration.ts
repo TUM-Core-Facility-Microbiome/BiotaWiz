@@ -243,6 +243,7 @@ export class Imngs2CoreConfiguration {
 
             await run(Environment.IMNGS2CORE, [
                 "run_imngs2",
+                "--analysis-mode", this.analysisMode.valueOf(),
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
                 "--threads", this.threads.toString(),
