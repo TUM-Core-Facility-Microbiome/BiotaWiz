@@ -1,4 +1,4 @@
-import {Environment, SpikeMode} from "../enums";
+import {Environment, SpikeMode, Imngs2CoreAnalysisMode} from "../enums";
 import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
 import {existsSync, readFileSync, writeFile} from "fs";
@@ -10,6 +10,7 @@ import {getOrDownloadUsearch32Binary} from "./usearch";
 import {helpPages} from "./helpPages";
 
 export class Imngs2CoreConfiguration {
+    private analysisMode = Imngs2CoreAnalysisMode.TIC;
     private baseDirectory = "";
     private mappingFile = "";
     private yamlFile = "";
@@ -20,6 +21,15 @@ export class Imngs2CoreConfiguration {
     private threads: Number = 1;
 
     private analysisDirectory: string | null = null;
+
+    public setAnalysisMode(analysisMode: Imngs2CoreAnalysisMode) {
+        this.analysisMode = analysisMode;
+        console.log(`Analysis mode set to ${analysisMode}`);
+    }
+
+    public getAnalysisMode() {
+        return this.analysisMode;
+    }
 
     public setBaseDirectory(baseDirectory: string) {
         this.baseDirectory = baseDirectory;
@@ -139,6 +149,73 @@ export class Imngs2CoreConfiguration {
         });
     }
 
+    public getDefaultParameters(): IImngs2CoreArguments {
+        // Set up with defaults common to TIC and De-Novo Clustering mode
+        const DEFAULTS = {
+            MergePairsArgs: {
+                fastq_maxdiffs: 50,
+                fastq_pctid: 50,
+                fastq_minmergelen: 200,
+                fastq_maxmergelen: 600
+            },
+            TrimBothSidesArgs: {
+                stripleft: 15,
+                stripright: 15
+            },
+            TrimOneSideArgs: {
+                stripleft: 15
+            },
+            FilterBothSidesArgs: {
+                fastq_maxee_rate: 0.002
+            },
+            FilterOneSideArgs: {
+                fastq_maxee_rate: 0.002,
+                fastq_truncqual: 10
+            },
+            ClusterZOTUsArgs: {
+                minsize: 2
+            },
+            Filter16SArgs: {
+                e: 0.1,
+                num_alignments: 1
+            },
+            BuildZOTUTableArgs: {
+                id: 0.99
+            },
+            AddTaxArgs: {
+                turn: "all"
+            },
+            TrimSidesArgs: {
+                stripleft: 5,
+                stripright: 5
+            },
+            CreateTableTICArgs: {
+                abund_limit: 0,
+                sample_wise_correction: false
+            }
+        }
+
+        // set mode specific arguments
+        if (this.analysisMode == Imngs2CoreAnalysisMode.TIC) {
+            DEFAULTS.ComplexTICArgs ={
+                family_sim: 0.9,
+                genus_sim: 0.95,
+                species_sim: 0.97
+            }
+
+            return DEFAULTS as IImngs2CoreArgumentsTICMode
+        } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
+            DEFAULTS.DeNovoClusterZOTUsArgs = {
+                minsize: 8
+            }
+
+            return DEFAULTS as IImngs2CoreArgumentsDeNovoMode
+        } else {
+            console.error(`Unknown analysis mode ${this.analysisMode}`);
+            return null;
+        }
+    }
+
     public setParameters(parameters: IImngs2CoreArguments) {
         this.parameters = parameters;
         this.writeParameterFile();
@@ -166,6 +243,7 @@ export class Imngs2CoreConfiguration {
 
             await run(Environment.IMNGS2CORE, [
                 "run_imngs2",
+                "--analysis-mode", this.analysisMode.valueOf(),
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
                 "--threads", this.threads.toString(),

@@ -289,7 +289,30 @@
               </div>
             </div>
           </div>
-          <div class="pt-6">
+          <div class="pt-6" v-if="analysisMode == 'de-novo'">
+
+            <div class="text-lg font-bold">De-novo clustering ZOTU cluster size</div>
+            <div class="text-sm text-gray-700">
+              Parameters for ZOTU clustering in de-novo clustering mode.
+            </div>
+            <div class="mt-3">
+              <div>
+                <label for="de_novo_minsize">
+                  <div class="text-sm font-mono">minsize</div>
+                  <div class="text-xs text-gray-500">Any sequence in pool of unique sequences across your samples with less than the set number of duplicates will be discarded for ZOTU creation.
+                  </div>
+                </label>
+                <input
+                    id="de_novo_minsize"
+                    type="text"
+                    v-model="de_novo_minsize"
+                    placeholder="default: 8"
+                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                >
+              </div>
+            </div>
+          </div>
+          <div class="pt-6" v-if="analysisMode == 'TIC'">
             <div class="text-lg font-bold">Complex TIC arguments</div>
             <div class="text-sm text-gray-700">
               Thresholds for taxonomy informed clustering. Watch out to not set the threshold of a lower rank higher
@@ -396,16 +419,25 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref, watchEffect} from 'vue';
+import {ref, watchEffect} from 'vue';
 import {useRouter} from "vue-router";
-import index from "../../../router";
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
+import {Imngs2CoreAnalysisMode} from "../../../../enums";
 
 const router = useRouter();
 
+let analysisMode = ref("TIC");
 let pthreads = ref(1);
 let max_threads = ref(1);
+
+function getAnalysisMode() {
+  indexBridge.getImngs2CoreAnalysisMode().then((mode) => {
+    console.log("Analysis mode: ", mode);
+    analysisMode.value = mode.valueOf();
+  });
+}
+getAnalysisMode();
 
 function setThreadDefaults() {
   indexBridge.getMachineThreads().then((threads) => {
@@ -433,6 +465,7 @@ let fastq_pctid = ref(50);
 let fastq_minmergelen = ref(200);
 let fastq_maxmergelen = ref(600);
 let minsize = ref(2);
+let de_novo_minsize = ref(8);
 let family_sim = ref(0.90);
 let genus_sim = ref(0.95);
 let species_sim = ref(0.97);
@@ -442,104 +475,69 @@ watchEffect(() => {
   emit('update:isValid', true);
 });
 
-function generateImngs2CorePipelineArgumentsObj(): IImngs2CoreArguments {
-  const DEFAULT_IMNGS2CORE_ARGUMENTS: IImngs2CoreArguments = {
-    MergePairsArgs: {
-      fastq_maxdiffs: 50,
-      fastq_pctid: 50,
-      fastq_minmergelen: 200,
-      fastq_maxmergelen: 600
-    },
-    TrimBothSidesArgs: {
-      stripleft: 15,
-      stripright: 15
-    },
-    TrimOneSideArgs: {
-      stripleft: 15
-    },
-    FilterBothSidesArgs: {
-      fastq_maxee_rate: 0.002
-    },
-    FilterOneSideArgs: {
-      fastq_maxee_rate: 0.002,
-      fastq_truncqual: 10
-    },
-    ClusterZOTUsArgs: {
-      minsize: 2
-    },
-    Filter16SArgs: {
-      e: 0.1,
-      num_alignments: 1
-    },
-    BuildZOTUTableArgs: {
-      id: 0.99
-    },
-    AddTaxArgs: {
-      turn: "all"
-    },
-    TrimSidesArgs: {
-      stripleft: 5,
-      stripright: 5
-    },
-    ComplexTICArgs: {
-      family_sim: 0.9,
-      genus_sim: 0.95,
-      species_sim: 0.97
-    },
-    CreateTableTICArgs: {
-      abund_limit: 0,
-      sample_wise_correction: false
-    }
-  }
+async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArguments> {
+  return new Promise<IImngs2CoreArguments>((resolve, reject) => {
+    const trimBothSidesArgs: ITrimBothSidesArgs = {
+      stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
+      stripright: Number(stripright.value),
+    };
 
-  const trimBothSidesArgs: ITrimBothSidesArgs = {
-    stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
-    stripright: Number(stripright.value),
-  };
+    const trimOneSideArgs: ITrimOneSideArgs = {
+      stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
+    };
 
-  const trimOneSideArgs: ITrimOneSideArgs = {
-    stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
-  };
+    const createTableTICArgs: ICreateTableTICArgs = {
+      abund_limit: Number(abund_limit.value),
+      sample_wise_correction: Boolean(sample_wise_correction.value),
+    };
 
-  const createTableTICArgs: ICreateTableTICArgs = {
-    abund_limit: Number(abund_limit.value),
-    sample_wise_correction: Boolean(sample_wise_correction.value),
-  };
+    const mergePairsArgs: IMergePairsArgs = {
+      fastq_maxdiffs: Number(fastq_maxdiffs.value),
+      fastq_pctid: Number(fastq_pctid.value),
+      fastq_minmergelen: Number(fastq_minmergelen.value),
+      fastq_maxmergelen: Number(fastq_maxmergelen.value),
+    };
 
-  const mergePairsArgs: IMergePairsArgs = {
-    fastq_maxdiffs: Number(fastq_maxdiffs.value),
-    fastq_pctid: Number(fastq_pctid.value),
-    fastq_minmergelen: Number(fastq_minmergelen.value),
-    fastq_maxmergelen: Number(fastq_maxmergelen.value),
-  };
+    const clusterZOTUsArgs: IClusterZOTUsArgs = {
+      minsize: Number(minsize.value),
+    };
 
-  const clusterZOTUsArgs: IClusterZOTUsArgs = {
-    minsize: Number(minsize.value),
-  };
+    // get default arguments and patch with user input
+    indexBridge.getImngs2coreDefaultParameters().then((defaultArgs) => {
+      const args = defaultArgs;
+      args.TrimBothSidesArgs = trimBothSidesArgs;
+      args.TrimOneSideArgs = trimOneSideArgs;
+      args.CreateTableTICArgs = createTableTICArgs;
+      args.MergePairsArgs = mergePairsArgs;
+      args.ClusterZOTUsArgs = clusterZOTUsArgs;
 
-  const complexTICArgs: IComplexTICArgs = {
-    family_sim: Number(family_sim.value),
-    genus_sim: Number(genus_sim.value),
-    species_sim: Number(species_sim.value),
-  };
+      if (analysisMode.value == "TIC") {
+        // set arguments specific for TIC mode
+        args.ComplexTICArgs = {
+          family_sim: Number(family_sim.value),
+          genus_sim: Number(genus_sim.value),
+          species_sim: Number(species_sim.value),
+        };
+      } else if (analysisMode.value == "de-novo") {
+        // set arguments specific for de-novo clustering mode
+        args.DeNovoClusterZOTUsArgs = {minsize: Number(minsize.value)};
+      }
 
-  // patch args
-  const args = DEFAULT_IMNGS2CORE_ARGUMENTS;
-  args.TrimBothSidesArgs = trimBothSidesArgs;
-  args.TrimOneSideArgs = trimOneSideArgs;
-  args.CreateTableTICArgs = createTableTICArgs;
-  args.MergePairsArgs = mergePairsArgs;
-  args.ClusterZOTUsArgs = clusterZOTUsArgs;
-  args.ComplexTICArgs = complexTICArgs;
-
-  return args;
+      resolve(args);
+    }).catch(() => {
+      console.error("Could not get default IMNGS2-Core parameters");
+      reject();
+    });
+  });
 }
 
 async function apply() {
   return new Promise<void>((resolve, reject) => {
-    indexBridge.publishImngs2CoreThreads(pthreads.value).then(() => {
+    indexBridge.publishImngs2CoreThreads(pthreads.value).then(async () => {
       console.log("Published IMNGS2-Core threads");
-      indexBridge.publishImngs2CoreParameters(generateImngs2CorePipelineArgumentsObj()).then(() => {
+      const pipelineArgs = await generateImngs2CorePipelineArgumentsObj();
+      console.log("Pipeline arguments: ", pipelineArgs);
+      indexBridge.publishImngs2CoreParameters(pipelineArgs).then(() => {
         console.log("Published IMNGS2-Core pipeline arguments");
         resolve();
       }).catch(() => {

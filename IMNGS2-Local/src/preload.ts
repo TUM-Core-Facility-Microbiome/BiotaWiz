@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import {contextBridge, ipcRenderer} from "electron";
-import {Environment} from "./enums";
+import {Environment, Imngs2CoreAnalysisMode} from "./enums";
 import {logToDevTools} from "./utils/logHandler";
 
 const indexBridge = {
@@ -105,6 +105,12 @@ const indexBridge = {
     deleteImage: async (name: string, tag: string) => {
         return ipcRenderer.invoke('deleteImage', name, tag);
     },
+    publishImngs2CoreAnalysisMode: async (analysisMode: Imngs2CoreAnalysisMode) => {
+        return ipcRenderer.invoke('imngs2core:setAnalysisMode', analysisMode);
+    },
+    getImngs2CoreAnalysisMode: async (): Promise<Imngs2CoreAnalysisMode> => {
+        return ipcRenderer.invoke('imngs2core:getAnalysisMode');
+    },
     publishImngs2CoreBaseDirectory: async (baseDirectory: string) => {
         return ipcRenderer.invoke('imngs2core:setBaseDirectory', baseDirectory);
     },
@@ -128,6 +134,9 @@ const indexBridge = {
     },
     checkMappingFile: async () => {
         return ipcRenderer.invoke('imngs2core:checkMapping');
+    },
+    getImngs2coreDefaultParameters: async () =>{
+        return ipcRenderer.invoke('imngs2core:getDefaultParameters');
     },
     publishImngs2CoreParameters: async (parameters: IImngs2CoreArguments) => {
         return ipcRenderer.invoke('imngs2core:setParameters', parameters);
