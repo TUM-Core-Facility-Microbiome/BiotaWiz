@@ -31,8 +31,9 @@
       <div class="sticky inset-x-0 bottom-0 border-gray-100 bg-white p-2">
         <div class="py-1">
           <a @click="openCommunityDiscussions"
-              class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
+             class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100"
           >
+            <code class="absolute mt-6 text-xs">Discuss</code>
             <ChatBubbleLeftRightIcon></ChatBubbleLeftRightIcon>
             <span
                 class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
@@ -42,8 +43,9 @@
         </div>
         <div class="py-1">
           <a @click="openIssues"
-              class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
+             class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100"
           >
+            <code class="absolute mt-6 text-xs">Issues</code>
             <FireIcon></FireIcon>
             <span
                 class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
@@ -52,9 +54,10 @@
           </a>
         </div>
         <div class="py-1">
-          <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"
+          <router-link class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100"
                        active-class="bg-blue-50 text-blue-700"
                        to="/settings">
+            <code class="absolute mt-6 text-xs">Settings</code>
             <SettingsIcon></SettingsIcon>
             <span
                 class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
