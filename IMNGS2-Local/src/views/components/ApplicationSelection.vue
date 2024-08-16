@@ -66,7 +66,7 @@
             <strong class="font-medium text-black">IMNGS2-Core: TIC</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
-              Analyze raw 16S rRNA amplicon data with the core pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2
+              By choosing this option sequences of ZOTUs (unique, denoised and chimera-free sequences) from your selected samples will be gathered and passed to TIC algorithm for taxonomy-informed clustering.
             </p>
           </router-link>
         </li>
@@ -75,7 +75,7 @@
             <strong class="font-medium text-black">IMNGS2-Core: De-novo Clustering</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et.
+              By choosing this option quality-checked amplicons from your selected samples will be gathered, dereplicated, denoised, and cleaned for chimera and clustered using usearch 11.
             </p>
           </router-link>
         </li>
