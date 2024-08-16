@@ -29,6 +29,7 @@
 
   <div class="p-2 text-xs font-mono bg-gray-800 text-white rounded-lg text-wrap w-100 max-h-80 min-h-80 overflow-y-auto" id="terminal">
     <div class="space-y-2">
+      <div v-if="logsByStep.length == 0">Waiting for logs...</div>
       <details class="group [&_summary::-webkit-details-marker]:hidden" v-for="step of logsByStep" open>
         <summary class="flex cursor-pointer items-center justify-between gap-1.5 rounded-lg bg-gray-900 group-open:bg-gray-600 p-2 pl-3 text-white">
           <h2 class="font-medium group-open:font-bold">{{ step.name }}</h2>
