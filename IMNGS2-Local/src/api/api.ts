@@ -1,6 +1,7 @@
 import {app, BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
+    checkBackendConnection,
     deleteImage,
     getAssociatedImages,
     getCompatibleReleaseTagStrings,
@@ -48,6 +49,10 @@ ipcMain.handle("getPlatformName", () => {
 
 ipcMain.handle("getBackend", () => {
     return getBackend();
+});
+
+ipcMain.handle("checkBackendConnection", async () => {
+    return checkBackendConnection();
 });
 
 ipcMain.handle("getBackendVersion", async () => {
