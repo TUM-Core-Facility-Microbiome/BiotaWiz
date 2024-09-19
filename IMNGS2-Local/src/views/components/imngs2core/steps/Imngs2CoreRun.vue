@@ -196,7 +196,7 @@ indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: stri
         lineno: parseInt(m.groups?.lineno),
       });
 
-      const currentStep = logsByStep.value.length - 1;
+      currentStep = logsByStep.value.length - 1;
       logsByStep.value[currentStep].messages.push(message);
 
       lastMessage = message;
@@ -239,7 +239,7 @@ indexBridge.handleLogsForEnvironment((environment: Environment, logMessage: stri
           messages: msgs,
         });
 
-        const currentStep = logsByStep.value.length - 1;
+        currentStep = logsByStep.value.length - 1;
         logsByStep.value[currentStep].messages.push(message);
       } else {
         // add string array to previous string array
