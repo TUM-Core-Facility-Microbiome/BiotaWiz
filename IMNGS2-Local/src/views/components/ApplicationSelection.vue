@@ -96,7 +96,6 @@ const state = reactive({
   version: null as string | null,
   backendAvailable: null as boolean | null,
   backendName: null,
-  backendVersion: null,
 });
 
 function getName() {
@@ -124,13 +123,11 @@ function getBackendInfo() {
   indexBridge.getBackend().then((backend: IBackend) => {
     state.backendName = backend.name;
     // get backend version
-    indexBridge.getBackendVersion().then((version: string) => {
-      console.log("Backend version: ", version);
-      state.backendVersion = version;
+    indexBridge.checkBackendConnection().then(() => {
+      console.log("Successfully connected to backend");
       setBackendAvailable(true);
     }).catch(() => {
-      console.log("Could not determine backend version");
-      state.backendVersion = null;
+      console.log("Could not connect to backend");
       setBackendAvailable(false);
     });
   }).catch(() => {

@@ -94,6 +94,51 @@ export async function setBackendByType(type: string) {
     }
 }
 
+export async function checkBackendConnection() {
+    return new Promise<string>(async (resolve, reject) => {
+        const backend = await getBackend();
+        switch (backend.type) {
+            case DOCKER.type:
+                // check if we can connect to the docker daemon
+                // just checking if docker --version works showed to be unreliable
+                // as this does not check e.g. if the daemon is running or the user is in the docker group
+                docker.info().then(() => {
+                    resolve(true);
+                }).catch((error) => {
+                    reject(error);
+                });
+                break;
+            case WSL.type:
+                // for WSL for now let's just check if the wsl command is available and returns version 2
+                const subprocess = child_process.spawn(
+                    backend.command,
+                    ["--version"],
+                );
+
+                subprocess.stdout.on('data', (data) => {
+                    if (data instanceof Buffer) {
+                        // remove null bytes as WSL likes to output them
+                        // eslint-disable-next-line no-control-regex
+                        const msg = data.toString('utf8').replace(/\x00/g, '');
+                        console.log(msg);
+                        resolve(msg);
+                    }
+                });
+                subprocess.on('close', (code, signal) => {
+                    console.log(`Child closed with code ${code} and signal ${signal}`);
+                    reject(code);
+                });
+                subprocess.on('error', (err) => {
+                    console.error(`Error starting process: ${err}`);
+                    reject(err);
+                });
+                break;
+            default:
+                throw new Error(`Backend ${backend.type} not supported`);
+        }
+    });
+}
+
 export async function resetToDefaultBackend() {
     await setBackend(getDefaultBackend());
 }
