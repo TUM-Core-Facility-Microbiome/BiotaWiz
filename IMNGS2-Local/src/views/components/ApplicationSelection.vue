@@ -47,7 +47,7 @@
               You can change the selected backend in the <router-link class="underline cursor-pointer text-blue-500" to="/settings/backend">Settings</router-link>.
             </p>
             <p class="mt-3" v-if="state.backendName == 'Docker'">
-              Make sure your docker daemon is running.
+              Make sure your docker is installed, the docker daemon is running and that you can connect to it from the current account (e.g. your user should be added to the docker group).
             </p>
             <p class="mt-3">
               For Windows, we currently support Windows Subsystem for Linux [WSL2] (recommended) and Docker.
