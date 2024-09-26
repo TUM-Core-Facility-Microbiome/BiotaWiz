@@ -13,7 +13,7 @@ export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
 
     // recursively list all files in baseDirectory and build file tree
     listDirectory(baseDirectory, root, baseDirectory);
-    return root.children;
+    return root;
 }
 
 function parseMetafile(metafile: string): Map<string, ISampleMetadata> {

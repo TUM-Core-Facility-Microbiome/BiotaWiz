@@ -1,6 +1,6 @@
 <template>
   <ul class="text-sm">
-    <li v-for="(item, index) in items" :key="index">
+    <li v-for="(item, index) in tree" :key="index">
       <div @click="toggleCollapse(item)">
         <span :class="{ 'font-bold': item.expanded }">
           <div class="flex cursor-pointer mt-1" @mousedown.prevent>
@@ -44,7 +44,7 @@
           </div>
         </span>
       </div>
-      <StudyBrowserElement v-if="item.expanded && item.type === 'directory'" :items="item.children"
+      <StudyBrowserElement v-if="item.expanded && item.type === 'directory'" :tree="item.children"
                            @selection-changed="selectItem"/>
     </li>
   </ul>
@@ -71,7 +71,7 @@ li {
 import {defineEmits, defineProps} from 'vue'
 import {DocumentIcon, FolderIcon, FolderOpenIcon} from '@heroicons/vue/24/outline'
 
-const props = defineProps(['items']); // Define the 'items' prop
+const props = defineProps(['tree']); // Define the 'items' prop
 const emit = defineEmits(['selection-changed']);
 
 const handleCheckboxChange = (node) => {
@@ -137,7 +137,7 @@ const selectItem = (item) => {
 
 const getSelectedItems = () => {
   const selectedItems = [];
-  collectSelectedItems(props.items, selectedItems);
+  collectSelectedItems(props.tree, selectedItems);
   return selectedItems;
 }
 
