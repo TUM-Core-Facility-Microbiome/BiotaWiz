@@ -3,7 +3,7 @@
     and reload
   </div>
   <div class="study-browser">
-    <StudyBrowserElement :items="state.tree" @selection-changed="handleSelect"/>
+    <StudyBrowserElement :tree="[state.tree]" @selection-changed="handleSelect"/>
   </div>
   <div class="text-sm" v-if="state.selectedItems.length > 0">Selected {{ state.selectedItems.length }} samples</div>
   <div class="text-sm" v-else>Please select at least one sample to continue</div>
@@ -41,6 +41,7 @@ const updateStudies = () => {
   indexBridge.loadStudiesFromBaseDirectory().then((studies: IFileSystemNode[]) => {
     console.log("Studies: ", studies);
     state.tree = studies;
+    state.tree.expanded = true;  // expand the root node
   }).catch(() => {
     console.log("Could not load studies");
   });

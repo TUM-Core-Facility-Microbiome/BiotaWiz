@@ -1,11 +1,11 @@
 // list files in a directory
 import * as fs from "fs";
 import {readdirSync} from "fs";
-import {join} from "path";
+import {join, basename} from "path";
 
-export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
+export function detectStudyFolders(baseDirectory: string): IFileSystemNode {
     const root: IFileSystemNode = {
-        name: baseDirectory,
+        name: basename(baseDirectory),
         type: "directory",
         path: baseDirectory,
         children: [],
@@ -13,7 +13,7 @@ export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
 
     // recursively list all files in baseDirectory and build file tree
     listDirectory(baseDirectory, root, baseDirectory);
-    return root.children;
+    return root;
 }
 
 function parseMetafile(metafile: string): Map<string, ISampleMetadata> {
