@@ -110,8 +110,8 @@ ipcMain.handle("imngs2core:getBaseDirectory", async () => {
     return await getImngs2CoreBaseDirectory();
 });
 
-ipcMain.handle("loadStudiesFromBaseDirectory", async (): Promise<IFileSystemNode[]> => {
-    return new Promise<IFileSystemNode[]>((resolve) => {
+ipcMain.handle("loadStudiesFromBaseDirectory", async (): Promise<IFileSystemNode> => {
+    return new Promise<IFileSystemNode>((resolve) => {
         getImngs2CoreBaseDirectory().then((baseDirectory) => {
             resolve(detectStudyFolders(baseDirectory));
         });
