@@ -1,11 +1,11 @@
 // list files in a directory
 import * as fs from "fs";
 import {readdirSync} from "fs";
-import {join} from "path";
+import {join, basename} from "path";
 
 export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
     const root: IFileSystemNode = {
-        name: baseDirectory,
+        name: basename(baseDirectory),
         type: "directory",
         path: baseDirectory,
         children: [],
