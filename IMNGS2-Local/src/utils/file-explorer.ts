@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {readdirSync} from "fs";
 import {join, basename} from "path";
 
-export function detectStudyFolders(baseDirectory: string): IFileSystemNode[] {
+export function detectStudyFolders(baseDirectory: string): IFileSystemNode {
     const root: IFileSystemNode = {
         name: basename(baseDirectory),
         type: "directory",
