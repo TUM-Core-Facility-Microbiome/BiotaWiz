@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted} from "vue";
+import {onBeforeUnmount, onMounted} from "vue";
 import {Environment} from "../../../enums";
 
 onMounted(() => {
@@ -60,6 +60,15 @@ onMounted(() => {
 
   // inform about env change
   indexBridge.changeEnvironment(Environment.IMNGS2CORE);
+});
+
+onBeforeUnmount(async () => {
+  console.debug("unmounting imngs2core wizard");
+  await indexBridge.terminateImngs2CoreBackend().then(() => {
+    console.log("IMNGS2-Core backend terminated");
+  }).catch(() => {
+    console.log("IMNGS2-Core backend termination failed");
+  });
 });
 </script>
 
