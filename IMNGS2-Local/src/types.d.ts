@@ -33,6 +33,7 @@ interface IFileSystemNode {
 
 interface IFileSystemSample extends IFileSystemNode {
     type: "sample";
+    folder: string;
     isPaired: boolean;
     isCompressed: boolean;
     metadata?: ISampleMetadata;

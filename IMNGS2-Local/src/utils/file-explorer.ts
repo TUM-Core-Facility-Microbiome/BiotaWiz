@@ -59,6 +59,17 @@ function parseMetafile(metafile: string): Map<string, ISampleMetadata> {
     return metaMap;
 }
 
+function isForward(pairFileIndicator: string): boolean {
+    const forwardFileIndicators = [
+        "_R1_",  // Illumina-style
+        "_F_",
+        "_R1",
+        "@F",
+        "_1",  // SRA-style
+    ];
+    // check if any of the allowed forward indicators is present as a substring of the pairFileIndicator
+    return forwardFileIndicators.some((indicator) => pairFileIndicator.includes(indicator));
+}
 
 function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path: string) {
     try {
@@ -77,7 +88,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
         console.log(metaMap)
 
         files.forEach((nodeName) => {
-            if (fs.statSync(join(path, nodeName)).isDirectory()) {
+            if (fs.statSync(join(path, nodeName)).isDirectory()) {  // handle directories
                 // ignore __processed directories as these store the results of the preprocessing
                 if (nodeName.endsWith("__processed")) {
                     return;
@@ -87,6 +98,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                     return;
                 }
 
+                // create a new node for the directory and add it to the current root
                 const currentNode: IFileSystemNode = {
                     name: nodeName,
                     type: "directory",
@@ -95,12 +107,18 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                 }
                 currentRoot.children.push(currentNode);
                 listDirectory(baseDirectory, currentNode, join(path, nodeName));
-            } else {
+            } else {  // handle files
                 let match;
                 if ((match = matchFastqFile(nodeName)) !== null) {
                     const sampleId = match[1];
-                    const forward = match[3] === "1";
-                    const extension = match[4];
+
+                    // use match 3 if exists (for non-trailing indicators), otherwise use match 2 (for identifiers ending the file name)
+                    const pairFileIndicator = match[3] || match[2];
+                    const forward = isForward(pairFileIndicator);
+                    const extension = match[15];
+
+                    console.debug(`Matched file ${nodeName} with sampleId ${sampleId}, pFI ${pairFileIndicator}, forward ${forward}, extension ${extension}`);
+
                     // check for metadata
                     let metadata = null;
                     if (metaMap.has(sampleId)) {
@@ -109,6 +127,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                     const currentNode: IFileSystemSample = {
                         name: sampleId,
                         path: join(path, nodeName),
+                        folder: path,
                         type: "sample",
                         isPaired: false,
                         isCompressed: extension.endsWith(".gz"),
@@ -119,7 +138,14 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                     } else {
                         // check for node with same sampleId and modify it
                         let forwardNode;
-                        if ((forwardNode = currentRoot.children.find((node) => node.name === sampleId)) !== undefined) {
+                        if ((forwardNode = currentRoot.children.find((node) => {
+                            if (node.type === "sample") {
+                                const snode = node as IFileSystemSample;
+                                return snode.name === sampleId && snode.folder === path;
+                            } else {
+                                return false;
+                            }
+                        })) !== undefined) {
                             (forwardNode as IFileSystemSample).isPaired = true;
                         }
                     }
@@ -133,11 +159,12 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
 }
 
 export function matchFastqFile(fileName: string): RegExpExecArray | null {
-    if (fileName.endsWith(".fastq") || fileName.endsWith(".fastq.gz")) {
-        const regex = new RegExp('((^.*)_S\\d+_L\\d{3})_R([1,2])_\\d{3}\\.(fastq(\\.gz)?)', 'gm')
+    if (fileName.endsWith(".fastq") || fileName.endsWith(".fastq.gz") || fileName.endsWith(".fq") || fileName.endsWith(".fq.gz")) {
+        const regex = new RegExp('(.*)(((_R1_).*|(_F_).*|(_R1)|(@F)|(_1))|((_R2_).*|(_R_).*|(_R2)|(@R)|(_2)))\\.((fastq|fq)(\\.gz)?)', 'gm')
         let match;
 
         if ((match = regex.exec(fileName)) !== null) {
+            console.debug(`Matched file ${fileName}`);
             return match;
         }
     }
