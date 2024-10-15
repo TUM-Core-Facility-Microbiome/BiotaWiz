@@ -197,7 +197,7 @@ export class Imngs2CoreConfiguration {
 
         // set mode specific arguments
         if (this.analysisMode == Imngs2CoreAnalysisMode.TIC) {
-            DEFAULTS.ComplexTICArgs ={
+            (DEFAULTS as IImngs2CoreArgumentsTICMode).ComplexTICArgs ={
                 family_sim: 0.9,
                 genus_sim: 0.95,
                 species_sim: 0.97
@@ -205,7 +205,7 @@ export class Imngs2CoreConfiguration {
 
             return DEFAULTS as IImngs2CoreArgumentsTICMode
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
-            DEFAULTS.DeNovoClusterZOTUsArgs = {
+            (DEFAULTS as IImngs2CoreArgumentsDeNovoMode).DeNovoClusterZOTUsArgs = {
                 minsize: 8
             }
 

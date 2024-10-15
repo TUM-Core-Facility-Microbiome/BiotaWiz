@@ -95,7 +95,7 @@ export async function setBackendByType(type: string) {
 }
 
 export async function checkBackendConnection() {
-    return new Promise<string>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
         const backend = await getBackend();
         switch (backend.type) {
             case DOCKER.type:
@@ -103,8 +103,8 @@ export async function checkBackendConnection() {
                 // just checking if docker --version works showed to be unreliable
                 // as this does not check e.g. if the daemon is running or the user is in the docker group
                 docker.info().then(() => {
-                    resolve(true);
-                }).catch((error) => {
+                    resolve();
+                }).catch((error: any) => {
                     reject(error);
                 });
                 break;
@@ -121,7 +121,7 @@ export async function checkBackendConnection() {
                         // eslint-disable-next-line no-control-regex
                         const msg = data.toString('utf8').replace(/\x00/g, '');
                         console.log(msg);
-                        resolve(msg);
+                        resolve();
                     }
                 });
                 subprocess.on('close', (code, signal) => {
