@@ -2,6 +2,7 @@
 import * as fs from "fs";
 import {readdirSync} from "fs";
 import {join, basename} from "path";
+import * as zlib from "node:zlib";
 
 export function detectStudyFolders(baseDirectory: string): IFileSystemNode {
     const root: IFileSystemNode = {
@@ -69,6 +70,58 @@ function isForward(pairFileIndicator: string): boolean {
     ];
     // check if any of the allowed forward indicators is present as a substring of the pairFileIndicator
     return forwardFileIndicators.some((indicator) => pairFileIndicator.includes(indicator));
+}
+
+
+/**
+ * Check if a file is a (optionally compressed) FASTQ file by reading into the file.
+ * @param filePath
+ */
+export function isFastqFile(filePath: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        // ensure file exists and is a file
+        if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+            return resolve(false);
+        }
+
+        // check if file is gz compressed
+        const buffer = Buffer.alloc(2);
+        const file = fs.openSync(filePath, 'r');
+        fs.readSync(file, buffer, 0, 2, 0);
+        fs.closeSync(file);
+        const isCompressed = buffer[0] === 0x1f && buffer[1] === 0x8b;
+
+        // Function to check the first line in plain or compressed stream
+        const checkFirstLine = (stream: fs.ReadStream | zlib.Gunzip) => {
+            let firstLine = '';
+            stream.on('data', (chunk) => {
+                firstLine += chunk.toString();
+                const lines = firstLine.split(/\r?\n/);
+                if (lines.length > 0) {
+                    stream.destroy(); // stop reading after the first line
+                    resolve(lines[0].startsWith('@'));
+                }
+            });
+            stream.on('error', (err) => {
+                reject(err);
+            });
+            stream.on('end', () => {
+                if (firstLine.length === 0) {
+                    resolve(false);
+                }
+            });
+        };
+
+        // Process the file depending on whether it's compressed or not
+        if (isCompressed) {
+            const gunzip = zlib.createGunzip();
+            const stream = fs.createReadStream(filePath).pipe(gunzip).setEncoding('utf8');
+            checkFirstLine(stream);
+        } else {
+            const stream = fs.createReadStream(filePath).setEncoding('utf8');
+            checkFirstLine(stream);
+        }
+    });
 }
 
 function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path: string) {

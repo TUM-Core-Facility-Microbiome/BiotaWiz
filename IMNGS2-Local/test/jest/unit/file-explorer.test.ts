@@ -1,4 +1,5 @@
-import { matchFastqFile } from '../../../src/utils/file-explorer';
+import { matchFastqFile, isFastqFile } from '../../../src/utils/file-explorer';
+import fs from "fs";
 
 describe('matchFastqFile', () => {
     it('should correctly capture the sample number and lane for Illumina-style files', () => {
@@ -47,5 +48,29 @@ describe('matchFastqFile', () => {
         const fileName = 'invalid_file_name.fastq';
         const match = matchFastqFile(fileName);
         expect(match).toBeNull();
+    });
+});
+
+describe('isFastqFile', () => {
+    it('should return true for uncomporessed FASTA files', async () => {
+        // iterate over test_files/SRR13005987 folder
+        const folder = 'test/test_files/SRR13005987';
+        // get all files in the folder
+        const files = fs.readdirSync(folder);
+        for (const file of files) {
+            const path = `${folder}/${file}`;
+            expect(await isFastqFile(path)).toBe(true);
+        }
+    });
+
+    it('should return true for compressed FASTA files', async () => {
+        // iterate over test_files/SRR13005987 folder
+        const folder = 'test/test_files/SRR13005987_gzipped';
+        // get all files in the folder
+        const files = fs.readdirSync(folder);
+        for (const file of files) {
+            const path = `${folder}/${file}`;
+            expect(await isFastqFile(path)).toBe(true);
+        }
     });
 });
