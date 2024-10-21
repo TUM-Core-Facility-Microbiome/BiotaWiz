@@ -182,7 +182,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                         path: join(path, nodeName),
                         folder: path,
                         type: "sample",
-                        isPaired: false,
+                        isPaired: true,  // currently only paired-end samples are supported
                         isCompressed: extension.endsWith(".gz"),
                         metadata: metadata,
                     }

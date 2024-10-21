@@ -27,8 +27,13 @@
             <template v-else-if="item.type === 'directory' && item.expanded">
               <FolderOpenIcon class="h-4 w-4 text-blue-500  mr-1"/>
             </template>
-            <template v-else>
-              <DocumentIcon class="h-4 w-4 text-blue-500 mr-1"/>
+            <template v-if="item.type === 'sample'">
+              <template v-if="item.isPaired">
+                <DocumentDuplicateIcon class="h-4 w-4 text-blue-500 mr-1"/>
+              </template>
+              <template v-else>
+                <DocumentIcon class="h-4 w-4 text-blue-500 mr-1"/>
+              </template>
             </template>
             <p class="font-mono">
               {{ item.name }}
@@ -69,7 +74,7 @@ li {
 
 <script setup>
 import {defineEmits, defineProps} from 'vue'
-import {DocumentIcon, FolderIcon, FolderOpenIcon} from '@heroicons/vue/24/outline'
+import {DocumentIcon, DocumentDuplicateIcon, FolderIcon, FolderOpenIcon} from '@heroicons/vue/24/outline'
 
 const props = defineProps(['tree']); // Define the 'items' prop
 const emit = defineEmits(['selection-changed']);
