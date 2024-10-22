@@ -211,6 +211,12 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
     }
 }
 
+/**
+ * Match a FASTQ file name to extract the sample ID and pair indicator.
+ * Supports Illumina-style (_R1_, _R2_), SRA-style (_1, _2), and custom ((_F_, _R_), (@F, @R), (_R1, _R2)) indicators.
+ * File are matched if they end with .fastq, .fastq.gz, .fq, or .fq.gz.
+ * @param fileName
+ */
 export function matchFastqFile(fileName: string): RegExpExecArray | null {
     if (fileName.endsWith(".fastq") || fileName.endsWith(".fastq.gz") || fileName.endsWith(".fq") || fileName.endsWith(".fq.gz")) {
         const regex = new RegExp('(.*)(((_R1_).*|(_F_).*|(_R1)|(@F)|(_1))|((_R2_).*|(_R_).*|(_R2)|(@R)|(_2)))\\.((fastq|fq)(\\.gz)?)', 'gm')
