@@ -75,6 +75,7 @@ function isForward(pairFileIndicator: string): boolean {
 
 /**
  * Check if a file is a (optionally compressed) FASTQ file by reading into the file.
+ * Files are considered if they end with .fastq, .fastq.gz, .fq, or .fq.gz.
  * @param filePath
  */
 export function isFastqFile(filePath: string): Promise<boolean> {
@@ -83,7 +84,9 @@ export function isFastqFile(filePath: string): Promise<boolean> {
         if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
             return resolve(false);
         }
-
+        if (!(fileName.endsWith(".fastq") || fileName.endsWith(".fastq.gz") || fileName.endsWith(".fq") || fileName.endsWith(".fq.gz"))) {
+            return resolve(false);
+        }
         // check if file is gz compressed
         const buffer = Buffer.alloc(2);
         const file = fs.openSync(filePath, 'r');
