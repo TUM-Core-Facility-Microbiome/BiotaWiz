@@ -7,12 +7,7 @@
     <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-2 py-1 mt-2 mb-2" role="alert">
       <span class="font-bold text-sm">Notice: </span>
       <span class="text-sm">Files are expected to follow a naming scheme listed
-        <a
-            @click="openDocumentationOnFileNaming()"
-            class="underline cursor-pointer text-blue-500"
-        >
-          in the documentation
-        </a>
+        <a @click="openDocumentationOnFileNaming()" class="underline cursor-pointer text-blue-500">here</a>
       </span>
     </div>
     <div class="bg-red-100 border-t border-b border-red-500 text-red-700 px-2 py-1 mt-2 mb-2" role="alert">
