@@ -16,6 +16,7 @@
       Searching for sequence files in your base directory
     </div>
   </div>
+  <br>
   <div class="text-sm float-right text-gray-800" v-if="state.selectedItems.length > 0">Selected {{ state.selectedItems.length }} samples</div>
   <div class="text-sm float-right text-red-800" v-else>Please select at least one sample to continue</div>
   <br>
