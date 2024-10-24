@@ -4,22 +4,26 @@
     <div class="text-sm text-gray-700">
       Please select the samples you want to analyze. You can expand folders by clicking on the name.
     </div>
-    <div class="bg-red-100 border-t border-b border-red-500 text-red-700 px-4 py-3 mt-2 mb-2" role="alert">
-      <span class="font-bold text-sm">Notice:</span>
-      <span class="text-xs">
+    <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-2 py-1 mt-2 mb-2" role="alert">
+      <span class="font-bold text-sm">Notice: </span>
+      <span class="text-sm">Files are expected to follow a naming scheme listed
+        <a
+            @click="openDocumentationOnFileNaming()"
+            class="underline cursor-pointer text-blue-500"
+        >
+          in the documentation
+        </a>
+      </span>
+    </div>
+    <div class="bg-red-100 border-t border-b border-red-500 text-red-700 px-2 py-1 mt-2 mb-2" role="alert">
+      <span class="font-bold text-sm">Warning:</span>
+      <span class="text-sm">
         Only combine samples targeting the same region, i.e. the same primers were used.
       </span>
     </div>
   </div>
   <div>
     <StudyBrowser :base-dir="state.baseDir" @update:selectionChanged="onSelectionChanged($event)"/>
-    <div class="bg-blue-100 border-t border-b border-blue-500 text-blue-700 px-4 py-3 mb-4 mt-10" role="alert">
-      <p class="font-bold text-sm">Development notice:</p>
-      <p class="text-xs">
-        Currently, samples must follow the Illumina naming scheme and be paired to be detected.
-        <br>
-        A more flexible approach is planned for the final application (Issue #35).</p>
-    </div>
   </div>
 </template>
 
@@ -53,6 +57,11 @@ async function apply() {
       reject();
     });
   });
+}
+
+async function openDocumentationOnFileNaming() {
+  const url = "https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core-docs/discussions/21";
+  await indexBridge.openExternalLink(url);
 }
 
 defineExpose({
