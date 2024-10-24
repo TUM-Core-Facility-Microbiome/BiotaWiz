@@ -13,6 +13,8 @@ export function detectStudyFolders(baseDirectory: string): IFileSystemNode {
 
     // recursively list all files in baseDirectory and build file tree
     listDirectory(baseDirectory, root, baseDirectory);
+    // remove empty directories
+    pruneEmptyDirectories(root);
     return root;
 }
 
@@ -156,6 +158,23 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
         console.error(`Error reading directory ${path}: ${error}`);
         return;
     }
+}
+
+function pruneEmptyDirectories(node: IFileSystemNode) {
+    if (node.children.length === 0) {
+        return;
+    }
+    node.children.forEach((child) => {
+        if (child.type === "directory") {
+            pruneEmptyDirectories(child);
+        }
+    });
+    node.children = node.children.filter((child) => {
+        if (child.type === "directory") {
+            return (child as IFileSystemNode).children.length > 0;
+        }
+        return true;
+    });
 }
 
 export function matchFastqFile(fileName: string): RegExpExecArray | null {

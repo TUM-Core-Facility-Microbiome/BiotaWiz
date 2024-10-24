@@ -27,11 +27,17 @@
             <template v-else-if="item.type === 'directory' && item.expanded">
               <FolderOpenIcon class="h-4 w-4 text-blue-500  mr-1"/>
             </template>
-            <template v-else>
-              <DocumentIcon class="h-4 w-4 text-blue-500 mr-1"/>
+            <template v-if="item.type === 'sample'">
+              <template v-if="item.isPaired">
+                <DocumentDuplicateIcon class="h-4 w-4 text-blue-500 mr-1"/>
+              </template>
+              <template v-else>
+                <DocumentIcon class="h-4 w-4 text-blue-500 mr-1"/>
+              </template>
             </template>
             <p class="font-mono">
               {{ item.name }}
+              <span v-if="item.type === 'directory'" class="font-medium text-gray-500">[{{ countSelectedSamples(item) }}/{{ countSamples(item) }} samples]</span>
 <!--              <span v-if="item.type === 'sample'">-->
 <!--                <span v-if="item.isCompressed">gz </span>-->
 <!--                <span v-else>non-gz </span>-->
@@ -67,9 +73,9 @@ li {
 }
 </style>
 
-<script setup>
+<script setup lang="ts">
 import {defineEmits, defineProps} from 'vue'
-import {DocumentIcon, FolderIcon, FolderOpenIcon} from '@heroicons/vue/24/outline'
+import {DocumentIcon, DocumentDuplicateIcon, FolderIcon, FolderOpenIcon} from '@heroicons/vue/24/outline'
 
 const props = defineProps(['tree']); // Define the 'items' prop
 const emit = defineEmits(['selection-changed']);
@@ -149,5 +155,29 @@ const collectSelectedItems = (items, selectedItems) => {
       selectedItems.push(item);
     }
   }
+}
+
+function countSelectedSamples(node: IFileSystemNode): number {
+  let count = 0;
+  if (node.type === 'sample' && node.selected) {
+    count++;
+  } else if (node.children) {
+    for (const child of node.children) {
+      count += countSelectedSamples(child);
+    }
+  }
+  return count;
+}
+
+function countSamples(node: IFileSystemNode): number {
+  let count = 0;
+  if (node.type === 'sample') {
+    count++;
+  } else if (node.children) {
+    for (const child of node.children) {
+      count += countSamples(child);
+    }
+  }
+  return count;
 }
 </script>
