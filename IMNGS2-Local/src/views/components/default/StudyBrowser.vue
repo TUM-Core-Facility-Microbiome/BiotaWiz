@@ -37,6 +37,7 @@ const state = reactive({
 const updateStudies = () => {
   // clear the selected items
   state.selectedItems = [];
+  state.tree = [];
   // load the studies
   indexBridge.loadStudiesFromBaseDirectory().then((studies: IFileSystemNode[]) => {
     console.log("Studies: ", studies);
