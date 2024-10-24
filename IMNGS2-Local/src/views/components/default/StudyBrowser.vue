@@ -1,7 +1,7 @@
 <template>
   <div class="cursor-pointer text-blue-700 text-sm select-none float-right" @click="updateStudies">Reset and reload
   </div>
-  <div v-if="state.tree.children?.length > 0"
+  <div v-if="state.tree.type === 'directory'"
        class="study-browser"
   >
     <StudyBrowserElement :tree="[state.tree]" @selection-changed="handleSelect"/>
