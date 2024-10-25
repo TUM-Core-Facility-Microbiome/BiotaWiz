@@ -2,6 +2,7 @@ import type {ForgeConfig} from '@electron-forge/shared-types';
 import {MakerSquirrel} from '@electron-forge/maker-squirrel';
 import {MakerDeb} from '@electron-forge/maker-deb';
 import {VitePlugin} from '@electron-forge/plugin-vite';
+import {MakerRpm} from "@electron-forge/maker-rpm";
 
 const config: ForgeConfig = {
     packagerConfig: {
@@ -14,7 +15,11 @@ const config: ForgeConfig = {
             setupIcon: "./assets/icons/icon.ico",
         }),
         // new MakerZIP({}, ['darwin']),
-        // new MakerRpm({}),
+        new MakerRpm({
+            options: {
+                icon: "./assets/icons/icon.png",
+            }
+        }),
         new MakerDeb({
             options: {
                 icon: "./assets/icons/icon.png",
