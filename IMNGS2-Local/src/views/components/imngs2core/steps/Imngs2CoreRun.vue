@@ -5,19 +5,17 @@
   <br>
   <div>
     <!-- Iterate over preprocessingLogs -->
-    <div v-for="(logs, loggerName) in preprocessingLogs" :key="loggerName">
+    <div v-for="(logProcessor, loggerName) in logProcessors" :key="loggerName">
       <div class="text-lg font-bold">{{ loggerName }}</div>
       <div>
-        <div v-for="(logarr, timestamp) in logs" :key="logarr" class="text-sm pb-1 border-2 border-amber-950">
-          <div class="text-sm font-bold">{{ timestamp }}</div>
-          <div v-for="log in logarr" :key="log" class="text-sm pb-2 border-2 border-amber-300">{{ log }}</div>
-          <small class="text-red-800">{{ logarr }}</small>
+        <div v-for="stage in logProcessor.logLines" class="text-sm pb-1 border-2 border-amber-950">
+          <div v-for="log in stage" class="text-sm pb-2 border-2 border-amber-300">{{ log }}</div>
         </div>
       </div>
     </div>
   </div>
   <br>
-  {{ preprocessingLogs }}
+  {{ logProcessors }}
   <br>
   <div>
     <div v-for="log in logs" :key="log" class="text-sm pb-1 border-2">{{ log }}</div>
@@ -30,46 +28,71 @@ import {Environment, LogSection} from "../../../../enums";
 
 
 class LogProcessor {
-  logLines: string[][];  // log lines are grouped by section
-  sectionPointer: number;
-  insertPointer: number;
+  public logLines: string[][];  // log lines are grouped by section
+  stagePointer: number;
+  linePointer: number;
+  carriagePosition: number;
 
   constructor() {
-    this.logLines = [[]];
-    this.sectionPointer = 0;
-    this.insertPointer = 0;
+    this.logLines = [];
+    this.stagePointer = -1;
+    this.linePointer = 0;
+    this.carriagePosition = 0;
   }
 
-  private addSection() {
-    this.logLines.push([]);
-    this.sectionPointer++;
-    this.insertPointer = 0;
+  private newStage() {
+    this.logLines.push([[]]);
+    this.stagePointer++;
+    this.linePointer = 0;
+    this.carriagePosition = 0;
   }
 
   /**
    * Add a new line at the current section
    * @private
    */
-  private newLine() {
+  private lineFeed() {
     // new line at array
-    this.logLines[this.sectionPointer].push('');
-    this.insertPointer++;
+    this.logLines[this.stagePointer].push('');
+    this.linePointer++;
+    this.carriagePosition = 0;
   }
 
-  public addLogLine(logLine: string, newSection: boolean = false) {
-    if (newSection) {
-      this.addSection();
+  private carriageReturn() {
+    // carriage return
+    this.carriagePosition = 0;
+  }
+
+  public addLogLine(logLine: string, newStage: boolean = false) {
+    if (newStage || this.stagePointer === -1) {
+      this.newStage();
     }
-    this.logLines[this.sectionPointer][this.insertPointer] += logLine;
-    this.newLine();
+    console.log(`Adding log line '${JSON.stringify(logLine)}' at stage ${this.stagePointer}`);
+    // add character by character
+    for (let i = 0; i < logLine.length; i++) {
+      if (logLine[i] === '\n') {
+        // interpret as CRLF
+        this.carriageReturn();
+        this.lineFeed();
+      } else if (logLine[i] === '\r') {
+        this.carriageReturn();
+      } else {
+        // insert character at current line
+        let currentLine = this.logLines[this.stagePointer][this.linePointer];
+        // convert to array to insert character
+        let lineArray = Array.from(currentLine);
+        lineArray.splice(this.carriagePosition, 0, logLine[i]);
+        this.logLines[this.stagePointer][this.linePointer] = lineArray.join('');
+        this.carriagePosition++;
+      }
+    }
   }
 }
 
 const logs = ref<string[]>([]);
-const preprocessingLogs = ref<Map<string, Map<string, string[]>>>({});
-let preprocessingLastLoggedTo: string | null = null;
-const preprocessingPerLoggerLastLoggedTo = ref<Map<string, string>>({});
-
+const logProcessors = ref<Map<string, LogProcessor>>({});
+let lastLoggerName: string | null = null;
+const PYTHON_LOGGER_REGEX = /(?<asctime>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) - (?<name>.*):(?<filename>.*):(?<lineno>[0-9]*) - (?<levelname>[A-Z]{4,5}) - (?<message>.*)/;
 
 onMounted(() => {
   // prepare the environment
@@ -84,40 +107,39 @@ onMounted(() => {
   }).catch(() => {
     console.log("IMNGS2-Core pipeline failed");
   });
-});
+  // handle log messages
+  indexBridge.handleLogToSection((section: LogSection, logMessage: string) => {
+    if (section === LogSection.CONTAINER_STREAM) {
+      console.log(logProcessors.value);
+      console.log("IMNGS2-Core log: " + logMessage);
 
-const PYTHON_LOGGER_REGEX = /(?<asctime>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) - (?<name>.*):(?<filename>.*):(?<lineno>[0-9]*) - (?<levelname>[A-Z]{4,5}) - (?<message>.*)/;
+      let m;
+      if ((m = PYTHON_LOGGER_REGEX.exec(logMessage)) !== null) {  // regex matches; log line is first line in python logger
+        logs.value.push(logMessage);
 
-indexBridge.handleLogToSection((section: LogSection, logMessage: string) => {
-  if (section === LogSection.CONTAINER_STREAM) {
-    console.log("IMNGS2-Core log: " + logMessage);
-
-    let m;
-    if ((m = PYTHON_LOGGER_REGEX.exec(logMessage)) !== null) {  // regex matches; log line is first line in python logger
-      logs.value.push(logMessage);
-      const loggerName = m.groups?.name;
-      if (loggerName.startsWith('run_imngs2.preprocessing.')) {
-        if (!preprocessingLogs.value.hasOwnProperty(m.groups?.name)) {
-          preprocessingLogs.value[m.groups?.name] = {};
+        const loggerName = m.groups?.name;
+        lastLoggerName = loggerName;
+        if (!logProcessors.value.hasOwnProperty(m.groups?.name)) {
+          logProcessors.value[loggerName] = new LogProcessor();
         }
-        preprocessingLogs.value[m.groups?.name][m.groups?.asctime] = [m.groups?.message];
-        preprocessingLastLoggedTo = m.groups?.name;
-        preprocessingPerLoggerLastLoggedTo.value[m.groups?.name] = m.groups?.asctime;
-      } else {
-        preprocessingLastLoggedTo = null;
-      }
-    } else {  // log line is a continuation of the previous log line
-      logs.value[logs.value.length - 1] += '\n' + logMessage;
-      if (preprocessingLastLoggedTo !== null) {
-        const timestamp = preprocessingPerLoggerLastLoggedTo.value[preprocessingLastLoggedTo];
-        preprocessingLogs.value[preprocessingLastLoggedTo][timestamp].push(logMessage);
+
+        let logProcessor = logProcessors.value[loggerName];
+        logProcessor.addLogLine(logMessage, true);
+      } else {  // log line is a continuation of the previous log line
+        if (lastLoggerName !== null) {
+          let logProcessor = logProcessors.value[lastLoggerName];
+          logProcessor.addLogLine(logMessage, false);
+        } else {
+          console.error("No logger found for log line: " + logMessage);
+        }
       }
     }
-  }
+  });
 });
 
 async function rollback() {
   return new Promise<void>(async (resolve, reject) => {
+    // send termination request
     await indexBridge.terminateImngs2CoreBackend();
     resolve();
   });
