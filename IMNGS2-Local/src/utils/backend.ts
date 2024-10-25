@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {API_BASIC_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag, setCurrentImageTag} from "./storage";
+import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag} from "./storage";
 import {
     getAllowedRange,
     getLatestVersion,
@@ -11,17 +11,18 @@ import {
     getVersionString,
     semVerFromGitHubTag
 } from "./releasetag";
-import {logForEnvironment, logToDevTools, updateProgress} from "./logHandler";
+import {logForEnvironment, logToDevTools, logToSection, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
 import {runSubprocess} from "./process";
-import {Environment} from "../enums";
+import {Environment, LogSection} from "../enums";
 import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
 import {app} from "electron";
 import Dockerode from "dockerode";
 import {getLocalAppDataPath} from "./helpers";
 import * as child_process from "node:child_process";
+
 const wsl = require("@endevr-io/wsl-api");
 const { windowsToWsl } = require("@endevr-io/wsl-path");
 
@@ -911,6 +912,7 @@ async function runWithDocker(environment: Environment, command: string[], option
         stream.on('data', (data: Buffer) => {
             const msg = data.toString();
             logForEnvironment(environment, msg);
+            logToSection(LogSection.CONTAINER_STREAM, msg);
         });
     });
     const statusCode: { StatusCode: number } = await container.wait();

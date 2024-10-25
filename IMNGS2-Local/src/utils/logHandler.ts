@@ -1,5 +1,5 @@
 import {BrowserWindow} from "electron";
-import {Environment} from "../enums";
+import {Environment, LogSection} from "../enums";
 
 export function logToDevTools(message: string, level = 'info') {
     try {
@@ -36,5 +36,12 @@ export function logForEnvironment(environment: Environment, logMessage: string) 
     const window = BrowserWindow.fromId(1);
     if (window) {
         window.webContents.send('logsForEnvironment', environment, logMessage);
+    }
+}
+
+export function logToSection(section: LogSection, logMessage: string) {
+    const window = BrowserWindow.fromId(1);
+    if (window) {
+        window.webContents.send('logForSection', section, logMessage);
     }
 }

@@ -12,4 +12,4 @@ export const API_BASIC_AUTH = {username: 'githubuser', password: 'aHj2xBKrv588YA
 
 export const IMNGS2CORE_REPOSITORY_OWNER = 'tum-core-facility-microbiome';
 export const IMNGS2CORE_REPOSITORY_NAME = 'tic-pipeline';
-export const IMNGS2CORE_VRANGE = '~0.3.0';
+export const IMNGS2CORE_VRANGE = '~0.3.1';
