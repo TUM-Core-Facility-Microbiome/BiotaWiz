@@ -193,6 +193,7 @@ const indexBridge = {
         });
     },
     handleLogToSection: (callback: (section: LogSection, logMessage: string) => void) => {
+        ipcRenderer.removeAllListeners('logForSection');
         ipcRenderer.on('logForSection', (event, section: LogSection, logMessage: string) => {
             callback(section, logMessage);
         });
