@@ -64,7 +64,5 @@ export function getLatestVersion(tags: SemVer[]) {
 }
 
 export function isNewerVersion(current: SemVer, latest: SemVer) {
-    return semver.gt(latest, current, {
-        includePrerelease: cmArgs['allow-prerelease-tags']  // default: false; set by command line
-    });
+    return semver.gt(latest, current);
 }

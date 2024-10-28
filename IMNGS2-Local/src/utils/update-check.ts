@@ -17,7 +17,7 @@ function newerVersion(tags: string[]) {
     });
     console.log("SemverTags:", semverTags);
 
-    const currentVersion = app.getVersion();
+    const currentVersion = new SemVer(app.getVersion());
     const latestVersion = getLatestVersion(semverTags);
 
     if (isNewerVersion(currentVersion, latestVersion)) {
@@ -31,9 +31,9 @@ export async function checkForUpdates() {
     return new Promise<string>( (resolve, reject) => {
         logToDevTools('Checking for updates');
         fetch(`https://api.github.com/repos/${GITHUB_REPO}/tags`).then(response => {
-            response.json().then((tags: never) => {
+            response.json().then((tags: { name: string }[]) => {
                 console.log(tags);
-                const tagNames: string[] = tags.map((tag: never) => tag.name);
+                const tagNames: string[] = tags.map((tag: { name: string }) => tag.name);
                 console.log("Tag Names:", tagNames);
                 const latestVersion: string | null = newerVersion(tagNames);
                 if (latestVersion !== null) {
