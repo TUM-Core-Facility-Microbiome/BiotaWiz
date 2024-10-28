@@ -6,6 +6,9 @@ import {logToDevTools} from "./utils/logHandler";
 
 const indexBridge = {
     // renderer to main
+    updateAvailable: async (): Promise<string> => {
+        return ipcRenderer.invoke('app:updateAvailable');
+    },
     getMachineThreads: async (): Promise<number> => {
         return ipcRenderer.invoke('getMachineThreads');
     },
