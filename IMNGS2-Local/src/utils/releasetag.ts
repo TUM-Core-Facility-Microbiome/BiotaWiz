@@ -53,8 +53,18 @@ export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
  * @param tags
  */
 export function getLatestVersion(tags: SemVer[]) {
+    // filter out pre-releases
+    if (!cmArgs['allow-prerelease-tags']) {
+        tags = tags.filter(tag => !tag.prerelease.length);
+    }
     // sort by descending version
     tags.sort((a, b) => semver.rcompare(a, b));
     console.debug(`Sorted: ${tags.map(getVersionString).join(', ')}`);
     return tags[0];
+}
+
+export function isNewerVersion(current: SemVer, latest: SemVer) {
+    return semver.gt(latest, current, {
+        includePrerelease: cmArgs['allow-prerelease-tags']  // default: false; set by command line
+    });
 }
