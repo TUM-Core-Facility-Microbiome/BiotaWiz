@@ -47,14 +47,14 @@ function getRepository(environment: Environment): Repository {
     }
 }
 
-const DOCKER: IBackend = {
+export const DOCKER: IBackend = {
     type: "Docker",
     name: "Docker",
     command: "docker",
     argsPrefix: ["run", "--rm"],
 }
 
-const WSL: IBackend = {
+export const WSL: IBackend = {
     type: "WSL",
     name: "Windows Subsystem for Linux",
     command: "wsl",

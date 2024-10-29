@@ -6,15 +6,13 @@ import path from 'path';
 import "./api/api";
 
 import {Environment} from "./enums";
-import {terminateBackend, setBackend, cleanUpBackend, WSL, Docker} from "./utils/backend";
+import {terminateBackend, setBackend, cleanUpBackend, WSL, DOCKER} from "./utils/backend";
 import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
 import {logToDevTools} from "./utils/logHandler";
-import electronSquirrelStartup from 'electron-squirrel-startup';
 
 
-
-if (electronSquirrelStartup) {
+if (require('electron-squirrel-startup')) {
     const squirrelEvent = process.argv[1];
     if (squirrelEvent === '--squirrel-uninstall') {  // uninstallation
         console.log("Running cleanup tasks for uninstallation");
@@ -26,7 +24,7 @@ if (electronSquirrelStartup) {
 
         // clean up Docker backend
         logToDevTools("Cleaning up Docker backend");
-        await setBackend(Docker);
+        await setBackend(DOCKER);
         await cleanUpBackend(Environment.IMNGS2CORE);
 
         // handle removing shortcuts on Windows when uninstalling
