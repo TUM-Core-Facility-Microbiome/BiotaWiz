@@ -864,6 +864,18 @@ async function deleteImageWsl(image: IImage) {
 }
 
 /**
+ * Clean up the backend by deleting all associated images.
+ * @param environment
+ */
+export async function cleanUpBackend(environment: Environment) {
+    const images = await getAssociatedImages(environment);
+    const deletionPromises = images.map(async (image) => {
+        await deleteImage(image.name, image.tag);
+    });
+    await Promise.all(deletionPromises);
+}
+
+/**
  * Run a command using the backend.
  * @param environment The environment for which to run the command.
  * @param command The command to run as an array of strings.
