@@ -67,6 +67,11 @@ export const WSL: IBackend = {
     argsPrefix: ["-l", "-v"],
 }
 
+export const BACKENDS = [
+    DOCKER,
+    WSL,
+]
+
 export function getDefaultBackend(): IBackend {
     return byOS({
         [platforms.LINUX]: () => {
