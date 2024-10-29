@@ -87,10 +87,10 @@ export function getDefaultBackend(): IBackend {
 export async function setBackendByType(type: string) {
     switch (type) {
         case DOCKER.type:
-            await storeBackend(DOCKER);
+            await setBackend(DOCKER);
             break;
         case WSL.type:
-            await storeBackend(WSL);
+            await setBackend(WSL);
             break;
         case "default":
             await resetToDefaultBackend();
@@ -98,6 +98,17 @@ export async function setBackendByType(type: string) {
         default:
             throw new Error(`Backend type ${type} not supported`);
     }
+}
+
+export async function setBackend(backend: IBackend) {
+    // clean up if the backend is changed
+    const currentBackend = await getBackend();
+    if (currentBackend.type !== backend.type) {
+        await terminateBackend(Environment.IMNGS2CORE);
+        await cleanUpBackend();
+    }
+    // store the backend
+    return await storeBackend(backend);
 }
 
 export async function checkBackendConnection() {
@@ -146,7 +157,7 @@ export async function checkBackendConnection() {
 }
 
 export async function resetToDefaultBackend() {
-    await storeBackend(getDefaultBackend());
+    await setBackend(getDefaultBackend());
 }
 
 /**
