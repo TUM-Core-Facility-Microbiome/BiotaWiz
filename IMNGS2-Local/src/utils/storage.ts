@@ -15,7 +15,7 @@ function isEmpty(obj: object) {
     return true;
 }
 
-export async function setBackend(backend: IBackend) {
+export async function storeBackend(backend: IBackend) {
     return new Promise<void>((resolve, reject) => {
         jsonStorage.set('backend', backend, (error) => {
             if (error) {

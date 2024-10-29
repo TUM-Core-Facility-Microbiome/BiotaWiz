@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {API_BASIC_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag, setCurrentImageTag} from "./storage";
+import {deleteImageTag, getBackend, getImageTag, storeBackend, setImageTag, setCurrentImageTag} from "./storage";
 import {
     getAllowedRange,
     getLatestVersion,
@@ -47,19 +47,30 @@ function getRepository(environment: Environment): Repository {
     }
 }
 
-const DOCKER: IBackend = {
+/**
+ * Docker backend.
+ */
+export const DOCKER: IBackend = {
     type: "Docker",
     name: "Docker",
     command: "docker",
     argsPrefix: ["run", "--rm"],
 }
 
-const WSL: IBackend = {
+/**
+ * Windows Subsystem for Linux backend.
+ */
+export const WSL: IBackend = {
     type: "WSL",
     name: "Windows Subsystem for Linux",
     command: "wsl",
     argsPrefix: ["-l", "-v"],
 }
+
+export const BACKENDS = [
+    DOCKER,
+    WSL,
+]
 
 export function getDefaultBackend(): IBackend {
     return byOS({
@@ -92,6 +103,17 @@ export async function setBackendByType(type: string) {
         default:
             throw new Error(`Backend type ${type} not supported`);
     }
+}
+
+export async function setBackend(backend: IBackend) {
+    // clean up if the backend is changed
+    const currentBackend = await getBackend();
+    if (currentBackend.type !== backend.type) {
+        await terminateBackend(Environment.IMNGS2CORE);
+        await cleanUpBackend();
+    }
+    // store the backend
+    return await storeBackend(backend);
 }
 
 export async function checkBackendConnection() {
@@ -855,6 +877,18 @@ async function deleteImageWsl(image: IImage) {
             resolve();
         });
     });
+}
+
+/**
+ * Clean up the backend by deleting all associated images.
+ * @param environment
+ */
+export async function cleanUpBackend(environment: Environment) {
+    const images = await getAssociatedImages(environment);
+    const deletionPromises = images.map(async (image) => {
+        await deleteImage(image.name, image.tag);
+    });
+    await Promise.all(deletionPromises);
 }
 
 /**
