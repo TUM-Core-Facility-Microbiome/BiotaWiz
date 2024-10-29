@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {API_BASIC_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag, setCurrentImageTag} from "./storage";
+import {deleteImageTag, getBackend, getImageTag, storeBackend, setImageTag, setCurrentImageTag} from "./storage";
 import {
     getAllowedRange,
     getLatestVersion,
@@ -81,10 +81,10 @@ export function getDefaultBackend(): IBackend {
 export async function setBackendByType(type: string) {
     switch (type) {
         case DOCKER.type:
-            await setBackend(DOCKER);
+            await storeBackend(DOCKER);
             break;
         case WSL.type:
-            await setBackend(WSL);
+            await storeBackend(WSL);
             break;
         case "default":
             await resetToDefaultBackend();
@@ -140,7 +140,7 @@ export async function checkBackendConnection() {
 }
 
 export async function resetToDefaultBackend() {
-    await setBackend(getDefaultBackend());
+    await storeBackend(getDefaultBackend());
 }
 
 /**
