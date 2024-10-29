@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {API_BASIC_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {deleteImageTag, getBackend, getImageTag, setBackend, setImageTag, setCurrentImageTag} from "./storage";
+import {deleteImageTag, getBackend, getImageTag, setImageTag, setCurrentImageTag, storeBackend} from "./storage";
 import {
     getAllowedRange,
     getLatestVersion,
@@ -141,6 +141,16 @@ export async function checkBackendConnection() {
 
 export async function resetToDefaultBackend() {
     await setBackend(getDefaultBackend());
+}
+
+export async function setBackend(backend: IBackend) {
+    // clean up if the backend is changed
+    const currentBackend = await getBackend();
+    if (currentBackend.type !== backend.type) {
+        await terminateBackend(Environment.IMNGS2CORE);
+        await cleanUpBackend();
+    }
+    await storeBackend(backend);
 }
 
 /**
@@ -854,6 +864,21 @@ async function deleteImageWsl(image: IImage) {
             // somehow this fails even if the distribution is deleted
             resolve();
         });
+    });
+}
+
+/**
+ * Cleanup the backend by deleting all images.
+ * Useful for uninstallation.
+ */
+export async function cleanUpBackend() {
+    // get trailing images
+    getAssociatedImages(Environment.IMNGS2CORE).then(async (images) => {
+        for (const image of images) {
+            if (image.tag !== "latest") {
+                await deleteImage(image.name, image.tag);
+            }
+        }
     });
 }
 

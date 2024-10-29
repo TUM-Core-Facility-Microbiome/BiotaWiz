@@ -6,13 +6,35 @@ import path from 'path';
 import "./api/api";
 
 import {Environment} from "./enums";
-import {terminateBackend} from "./utils/backend";
+import {terminateBackend, setBackend, cleanUpBackend, WSL, Docker} from "./utils/backend";
 import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
+import {logToDevTools} from "./utils/logHandler";
+import electronSquirrelStartup from 'electron-squirrel-startup';
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-    app.exit();
+
+
+if (electronSquirrelStartup) {
+    const squirrelEvent = process.argv[1];
+    if (squirrelEvent === '--squirrel-uninstall') {  // uninstallation
+        console.log("Running cleanup tasks for uninstallation");
+
+        // clean up WSL backend
+        logToDevTools("Cleaning up WSL backend");
+        await setBackend(WSL);
+        await cleanUpBackend(Environment.IMNGS2CORE);
+
+        // clean up Docker backend
+        logToDevTools("Cleaning up Docker backend");
+        await setBackend(Docker);
+        await cleanUpBackend(Environment.IMNGS2CORE);
+
+        // handle removing shortcuts on Windows when uninstalling
+        app.exit();
+    } else {  // installation
+        // handle creating shortcuts on Windows when installing
+        app.exit();
+    }
 }
 
 // when started with --version or -v, print the version and exit
