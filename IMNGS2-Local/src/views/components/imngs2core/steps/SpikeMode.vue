@@ -87,7 +87,6 @@
       </label>
     </div>
   </fieldset>
- Continue with selected mode: <span class="font-mono">{{ state.mode }}</span>
 </template>
 
 <script setup lang="ts">
