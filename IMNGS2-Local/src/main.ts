@@ -66,7 +66,9 @@ const createWindow = () => {
 
         // open the DevTools when in not packaged (proxy for development environment)
         if (!app.isPackaged) {
-            mainWindow.webContents.openDevTools();
+            mainWindow.webContents.openDevTools({
+                mode: 'detach',
+            });
         }
     });
 };
