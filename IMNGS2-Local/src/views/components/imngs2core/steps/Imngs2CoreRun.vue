@@ -15,6 +15,26 @@
 <!--    </div>-->
 <!--  </div>-->
 
+  <!--    <li class="flex items-center">-->
+  <!--      <div role="status">-->
+  <!--        <svg class="w-4 h-4 me-2 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">-->
+  <!--          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>-->
+  <!--        </svg>-->
+  <!--        <span class="sr-only">Finished</span>-->
+  <!--      </div>-->
+  <!--      Upload your file to our website-->
+  <!--    </li>-->
+
+  <div>
+    <!-- Iterate over main Logs -->
+    <h2 class="pt-2 mb-2 text-lg font-semibold text-gray-900 dark:text-white">Main Log</h2>
+    <div>
+      <div v-for="stage in mainLogProcessor.logLines" class="text-sm pb-1 border-2 border-amber-950">
+        <div v-for="log in stage" class="text-sm pb-2 border-2 border-amber-300">{{ log }}</div>
+      </div>
+    </div>
+  </div>
+  <br>
   <h2 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Preprocessing samples</h2>
   <ul class="max-w-md space-y-1 text-gray-500 list-inside dark:text-gray-400">
 
@@ -39,26 +59,6 @@
       {{ loggerName }}
     </li>
   </ul>
-
-  <!--    <li class="flex items-center">-->
-  <!--      <div role="status">-->
-  <!--        <svg class="w-4 h-4 me-2 text-green-500 dark:text-green-400 flex-shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">-->
-  <!--          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>-->
-  <!--        </svg>-->
-  <!--        <span class="sr-only">Finished</span>-->
-  <!--      </div>-->
-  <!--      Upload your file to our website-->
-  <!--    </li>-->
-
-  <div>
-    <!-- Iterate over main Logs -->
-    <h2 class="pt-2 mb-2 text-lg font-semibold text-gray-900 dark:text-white">Main Log</h2>
-    <div>
-      <div v-for="stage in mainLogProcessor.logLines" class="text-sm pb-1 border-2 border-amber-950">
-        <div v-for="log in stage" class="text-sm pb-2 border-2 border-amber-300">{{ log }}</div>
-      </div>
-    </div>
-  </div>
   <br>
 </template>
 
