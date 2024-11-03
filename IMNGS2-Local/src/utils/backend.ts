@@ -11,7 +11,7 @@ import {
     getVersionString,
     semVerFromGitHubTag
 } from "./releasetag";
-import {logForEnvironment, logToDevTools, logToSection, updateProgress} from "./logHandler";
+import {logToDevTools, logToSection, updateProgress} from "./logHandler";
 import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
 import {runSubprocess} from "./process";
@@ -911,7 +911,6 @@ async function runWithDocker(environment: Environment, command: string[], option
     container.attach({stream: true, stdout: true, stderr: true}, function (err: (Error | null), stream: NodeJS.ReadableStream) {
         stream.on('data', (data: Buffer) => {
             const msg = data.toString();
-            logForEnvironment(environment, msg);
             logToSection(LogSection.CONTAINER_STREAM, msg);
         });
     });
@@ -933,20 +932,20 @@ async function runWithWsl(environment: Environment, command: string[], options: 
     const distribution = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
 
     // run command to make bind mounts
-    logForEnvironment(environment, `Running setup (bind mounts)`);
+    logToSection(LogSection.PREPARE_ENVIRONMENT, `Running setup (bind mounts)`);
     for (const bind of options.binds) {
         const source = windowsToWsl(bind.source);
         const target = bind.target;
 
         console.log(`Preparing mount point ${target}`);
-        logForEnvironment(environment, `Preparing mount point ${target}`);
-        logForEnvironment(environment, "Clearing previous mounts...");
+        logToSection(LogSection.PREPARE_ENVIRONMENT, `Preparing mount point ${target}`);
+        logToSection(LogSection.PREPARE_ENVIRONMENT, "Clearing previous mounts...");
         await runSubprocess(backend.command, ["--distribution", distribution, "--", "umount", target], (msg) => {
             logToDevTools(msg);
         });  // might return non-zero if the mount point is not used
 
         if (fs.lstatSync(bind.source).isDirectory()) {
-            logForEnvironment(environment, "Ensuring mount point exists...");
+            logToSection(LogSection.PREPARE_ENVIRONMENT, "Ensuring mount point exists...");
             const mkdirProc = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", target], (msg) => {
                 logToDevTools(msg);
             }); // flag -p creates parent directories if necessary and ignores errors if the directory already exists
@@ -955,7 +954,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
             }
         } else {
             // create parent directory if necessary
-            logForEnvironment(environment, "Ensuring mount point parent exists...");
+            logToSection(LogSection.PREPARE_ENVIRONMENT, "Ensuring mount point parent exists...");
             const parent = path.dirname(target);
             const mkdirProcNeeded = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", parent], (msg) => {
                 logToDevTools(msg);
@@ -964,7 +963,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
                 throw new Error(`Failed to create directory ${parent}`);
             }
             // touch file
-            logForEnvironment(environment, "Ensuring mount point file exists...");
+            logToSection(LogSection.PREPARE_ENVIRONMENT, "Ensuring mount point file exists...");
             const touchMountTargetProc = await runSubprocess(backend.command, ["--distribution", distribution, "--", "touch", target], (msg) => {
                 logToDevTools(msg);
             });
@@ -977,7 +976,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         const driveLetter = bind.source.split(":")[0];
         const driveIdentifier = `${driveLetter.toUpperCase()}:`
         const driveMountPath = `/mnt/${driveLetter.toLowerCase()}`;
-        logForEnvironment(environment, `Remounting drive ${driveIdentifier} to ${driveMountPath}...`);
+        logToSection(LogSection.PREPARE_ENVIRONMENT, `Remounting drive ${driveIdentifier} to ${driveMountPath}...`);
         // ensure mountpoint exists
         await runSubprocess(backend.command, ["--distribution", distribution, "--", "mkdir", "-p", driveMountPath], (msg) => {
             logToDevTools(msg);
@@ -991,7 +990,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         }
 
         console.log(`Mounting ${source} to ${target}`);
-        logForEnvironment(environment, `Bind mounting ${source} to ${target}`);
+        logToSection(LogSection.PREPARE_ENVIRONMENT, `Bind mounting ${source} to ${target}`);
         const exitCode = await runSubprocess(backend.command, ["--distribution", distribution, "--", "mount", "--bind", source, target], (msg) => {
             logToDevTools(msg);
         });
@@ -1000,11 +999,11 @@ async function runWithWsl(environment: Environment, command: string[], options: 
         }
     }
 
-    logForEnvironment(environment, `Running command`);
+    logToSection(LogSection.PREPARE_ENVIRONMENT, `Running command`);
     runningDistributions.add(distribution);
     const args = ["--distribution", distribution, "--", ...command];
     return await runSubprocess(backend.command, args, (msg: string) => {
-        logForEnvironment(environment, msg);
+        logToSection(LogSection.CONTAINER_STREAM, msg);
     }, runningWslMainProcesses).finally(() => {
         runningDistributions.delete(distribution);
     });

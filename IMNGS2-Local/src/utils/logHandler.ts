@@ -32,6 +32,9 @@ export function updateProgress(progress: Progress) {
     }
 }
 
+/**
+ * @deprecated
+ */
 export function logForEnvironment(environment: Environment, logMessage: string) {
     const window = BrowserWindow.fromId(1);
     if (window) {

@@ -1,10 +1,10 @@
-import {Environment, SpikeMode, Imngs2CoreAnalysisMode} from "../enums";
+import {Environment, SpikeMode, Imngs2CoreAnalysisMode, LogSection} from "../enums";
 import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
 import {existsSync, readFileSync, writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
-import {logForEnvironment, updateProgress} from "./logHandler";
+import {logToSection, updateProgress} from "./logHandler";
 import {run} from "./backend";
 import {getOrDownloadUsearch32Binary} from "./usearch";
 import {helpPages} from "./helpPages";
@@ -230,7 +230,7 @@ export class Imngs2CoreConfiguration {
         const yamlFile = this.relativePathToBaseDirectory(this.yamlFile);
         const mappingFile = this.relativePathToBaseDirectory(this.mappingFile);
 
-        logForEnvironment(Environment.IMNGS2CORE, "Pipeline will start after environment is initialized...");
+        logToSection(LogSection.PREPARE_BACKEND, "Pipeline will start after environment is initialized...");
 
         console.log(`Running pipeline`);
         // add to task queue
@@ -240,7 +240,7 @@ export class Imngs2CoreConfiguration {
                 message: "Running Analysis...",
                 state: "running",
             });
-
+            logToSection(LogSection.PREPARE_BACKEND, "Creating mounts");
             await run(Environment.IMNGS2CORE, [
                 "run_imngs2",
                 "--analysis-mode", this.analysisMode.valueOf(),
@@ -255,7 +255,7 @@ export class Imngs2CoreConfiguration {
                     },
                 ],
             }).then((statusCode: number) => {
-                logForEnvironment(Environment.IMNGS2CORE, `Pipeline finished with status code ${statusCode}`);
+                logToSection(LogSection.PREPARE_BACKEND, `Pipeline finished with status code ${statusCode}`);
                 console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
                     updateProgress({
