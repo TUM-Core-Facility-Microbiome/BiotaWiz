@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import {contextBridge, ipcRenderer} from "electron";
-import {Environment, Imngs2CoreAnalysisMode} from "./enums";
+import {Environment, Imngs2CoreAnalysisMode, LogSection} from "./enums";
 import {logToDevTools} from "./utils/logHandler";
 
 const indexBridge = {
@@ -193,6 +193,12 @@ const indexBridge = {
     handleLogsForEnvironment: (callback: (environment: Environment, logMessage: string) => void) => {
         ipcRenderer.on('logsForEnvironment', (event, environment: Environment, logMessage: string) => {
             callback(environment, logMessage);
+        });
+    },
+    handleLogToSection: (callback: (section: LogSection, logMessage: string) => void) => {
+        ipcRenderer.removeAllListeners('logForSection');
+        ipcRenderer.on('logForSection', (event, section: LogSection, logMessage: string) => {
+            callback(section, logMessage);
         });
     }
 }
