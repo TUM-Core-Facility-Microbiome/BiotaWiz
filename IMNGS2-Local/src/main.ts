@@ -6,13 +6,31 @@ import path from 'path';
 import "./api/api";
 
 import {Environment} from "./enums";
-import {terminateBackend} from "./utils/backend";
+import {BACKENDS, cleanUpBackend, setBackend, terminateBackend} from "./utils/backend";
 import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
+import {logToDevTools} from "./utils/logHandler";
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+
 if (require('electron-squirrel-startup')) {
-    app.exit();
+    const squirrelEvent = process.argv[1];
+    if (squirrelEvent === '--squirrel-uninstall') {  // on uninstall
+        console.log("Running cleanup tasks for uninstallation");
+
+        // clean up WSL backend
+        logToDevTools("Cleaning up WSL backend");
+        for (const backend in BACKENDS) {
+            logToDevTools(`Cleaning up backend ${backend}`);
+            setBackend(backend).then(async () => {
+                await cleanUpBackend(Environment.IMNGS2CORE);
+            });
+        }
+
+        // handle removing shortcuts on Windows when uninstalling
+        app.exit();
+    } else {  // on install
+        app.exit();
+    }
 }
 
 // when started with --version or -v, print the version and exit
@@ -48,7 +66,9 @@ const createWindow = () => {
 
         // open the DevTools when in not packaged (proxy for development environment)
         if (!app.isPackaged) {
-            mainWindow.webContents.openDevTools();
+            mainWindow.webContents.openDevTools({
+                mode: 'detach',
+            });
         }
     });
 };

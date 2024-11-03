@@ -203,13 +203,6 @@ export default class MenuBuilder {
                     },
                     {type: 'separator'},
                     {
-                        label: '&Namco',
-                        click: () => {
-                            this.mainWindow.webContents.send('changeRouteTo', '/application-shell/namco');
-                        }
-                    },
-                    {type: 'separator'},
-                    {
                         label: '&Settings',
                         click: () => {
                             this.mainWindow.webContents.send('changeRouteTo', '/settings');
