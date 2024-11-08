@@ -67,7 +67,7 @@ export const config: Options.Testrunner = {
             // custom application args
             appArgs: [],
             // path to compiled application binary
-            appBinaryPath: './out/IMNGS2-Local-linux-x64/imngs2-local'
+            appBinaryPath: './out/BiotaWiz-linux-x64/biotawiz'
         }
     }],
 

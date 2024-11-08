@@ -6,7 +6,7 @@ import {MakerRpm} from "@electron-forge/maker-rpm";
 
 const config: ForgeConfig = {
     packagerConfig: {
-        executableName: "imngs2-local",
+        executableName: "biotawiz",
         icon: "./assets/icons/icon",
     },
     rebuildConfig: {},
