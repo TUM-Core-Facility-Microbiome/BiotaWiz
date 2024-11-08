@@ -33,7 +33,7 @@ jobs:
     - run: npm ci
     - run: npm test
     - name: Test run the app (output version number)
-      run: npm start -- -- --version |& grep --color -E "IMNGS2-Local v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?"
+      run: npm start -- -- --version |& grep --color -E "BiotaWiz v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?"
 
   end-to-end-tests:
     runs-on: ubuntu-latest
