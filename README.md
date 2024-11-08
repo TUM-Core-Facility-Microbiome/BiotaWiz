@@ -19,9 +19,9 @@ WSL2 is the underlying technology that allows us to execute the pipeline on Wind
 
 #### Download
 Please download the installer from the Releases page.
-You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core/releases/latest).
+You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest).
 
-For Windows, please download the file ending with `Setup.exe`, e.g., `IMNGS2-Core-0.0.1-Setup.exe` for version `v0.0.1`.
+For Windows, please download the file ending with `Setup.exe`, e.g., `BiotaWiz-0.0.1-Setup.exe` for version `v0.0.1`.
 
 #### Setup
 Microsoft might warn you that the installer is not commonly downloaded and could be dangerous.
@@ -57,7 +57,7 @@ Docker Engine is the underlying technology that allows us to execute the pipelin
 #### Download and installation
 ##### Debian-based distributions (e.g., Ubuntu)
 Please download the `.deb` file from the Releases page.
-You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core/releases/latest).
+You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest).
 
 To install use Eddy, a graphical package manager, or the terminal:
 ```bash

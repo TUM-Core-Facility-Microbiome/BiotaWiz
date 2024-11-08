@@ -158,7 +158,7 @@ getBackendInfo();
 checkForUpdate();
 
 function openUpdateInstructions() {
-  const url = 'https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core-docs/discussions/22';
+  const url = 'https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/22';
   indexBridge.openExternalLink(url);
 }
 
