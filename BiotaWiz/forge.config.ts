@@ -6,7 +6,7 @@ import {MakerRpm} from "@electron-forge/maker-rpm";
 
 const config: ForgeConfig = {
     packagerConfig: {
-        executableName: "imngs2-local",
+        executableName: "biotawiz",
         icon: "./assets/icons/icon",
     },
     rebuildConfig: {},
@@ -54,7 +54,7 @@ const config: ForgeConfig = {
             config: {
                 repository: {
                     owner: 'TUM-Core-Facility-Microbiome',
-                    name: 'IMNGS2-Core'
+                    name: 'BiotaWiz'
                 },
                 draft: true,
                 // take the token from the environment

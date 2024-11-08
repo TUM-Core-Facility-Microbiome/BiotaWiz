@@ -68,7 +68,7 @@
       <ul v-if="state.backendAvailable" class="mt-4 space-y-2">
         <li>
           <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic" @click="setAnalysisMode(Imngs2CoreAnalysisMode.TIC)">
-            <strong class="font-medium text-black">IMNGS2-Core: TIC</strong>
+            <strong class="font-medium text-black">TIC (IMNGS2-Core)</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
               By choosing this option sequences of ZOTUs (unique, denoised and chimera-free sequences) from your selected samples will be gathered and passed to TIC algorithm for taxonomy-informed clustering.
@@ -77,10 +77,10 @@
         </li>
         <li>
           <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-orange-400" @click="setAnalysisMode(Imngs2CoreAnalysisMode.DE_NOVO)">
-            <strong class="font-medium text-black">IMNGS2-Core: De-novo Clustering</strong>
+            <strong class="font-medium text-black">De-novo Clustering</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
-              By choosing this option quality-checked amplicons from your selected samples will be gathered, dereplicated, denoised, and cleaned for chimera and clustered using usearch 11.
+              By choosing this option quality-checked amplicons from your selected samples will be gathered, dereplicated, denoised, and cleaned for chimera and clustered using usearch 12.
             </p>
           </router-link>
         </li>
@@ -158,7 +158,7 @@ getBackendInfo();
 checkForUpdate();
 
 function openUpdateInstructions() {
-  const url = 'https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core-docs/discussions/22';
+  const url = 'https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/22';
   indexBridge.openExternalLink(url);
 }
 

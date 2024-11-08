@@ -1,4 +1,4 @@
-export const GITHUB_REPO = "TUM-Core-Facility-Microbiome/IMNGS2-Core-docs";
+export const GITHUB_REPO = "TUM-Core-Facility-Microbiome/BiotaWiz-docs";
 export const GITHUB_BASE_URL = `https://github.com/${GITHUB_REPO}`;
 export const IMAGE_ASSET_NAME = 'image.tar.gz';
 

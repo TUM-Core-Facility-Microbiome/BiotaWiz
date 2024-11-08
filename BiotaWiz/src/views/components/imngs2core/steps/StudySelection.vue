@@ -55,7 +55,7 @@ async function apply() {
 }
 
 async function openDocumentationOnFileNaming() {
-  const url = "https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core-docs/discussions/21";
+  const url = "https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/21";
   await indexBridge.openExternalLink(url);
 }
 

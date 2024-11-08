@@ -1,9 +1,9 @@
-# IMNGS2-Core
+# BiotaWiz
 A desktop application for the analysis of 16S rRNA amplicon sequencing data.
 
-The application provides multiple tools that you might find useful for analyzing 16S rRNA amplicon data:
-- [x] IMNGS2-Core. Core pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2.
-- [ ] Namco. Co-occurrence network analysis of microbial communities.
+The application provides multiple modes that you might find useful for analyzing 16S rRNA amplicon data:
+- TIC (IMNGS2-Core)
+- De-novo Clustering
 
 When reviewing this application before the repos for the TIC pipeline is made public, please
 follow the instructions in `mock`.
@@ -19,9 +19,9 @@ WSL2 is the underlying technology that allows us to execute the pipeline on Wind
 
 #### Download
 Please download the installer from the Releases page.
-You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core/releases/latest).
+You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest).
 
-For Windows, please download the file ending with `Setup.exe`, e.g., `IMNGS2-Core-0.0.1-Setup.exe` for version `v0.0.1`.
+For Windows, please download the file ending with `Setup.exe`, e.g., `BiotaWiz-0.0.1-Setup.exe` for version `v0.0.1`.
 
 #### Setup
 Microsoft might warn you that the installer is not commonly downloaded and could be dangerous.
@@ -57,7 +57,7 @@ Docker Engine is the underlying technology that allows us to execute the pipelin
 #### Download and installation
 ##### Debian-based distributions (e.g., Ubuntu)
 Please download the `.deb` file from the Releases page.
-You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core/releases/latest).
+You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest).
 
 To install use Eddy, a graphical package manager, or the terminal:
 ```bash
@@ -72,7 +72,7 @@ sudo dpkg -i <path-to-deb-file>
 ### Run end-to-end tests
 WebdriverIO is set up to run end-to-end tests on Linux.
 ```bash
-cd IMNGS2-Local/  # move to the node application folder
-npm run package  # create an up-to-date executable that is expected at ./out/IMNGS2-Local-linux-x64/imngs2-local
+cd BiotaWiz/  # move to the node application folder
+npm run package  # create an up-to-date executable that is expected at ./out/BiotaWiz-linux-x64/imngs2-local
 npm run wdio  # execute the tests
 ```
