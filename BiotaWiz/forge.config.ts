@@ -54,7 +54,7 @@ const config: ForgeConfig = {
             config: {
                 repository: {
                     owner: 'TUM-Core-Facility-Microbiome',
-                    name: 'IMNGS2-Core'
+                    name: 'BiotaWiz'
                 },
                 draft: true,
                 // take the token from the environment
