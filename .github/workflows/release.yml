@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         if: matrix.os == 'windows-latest'
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Remove package-lock and regenerate on specified platform (npm issue with optional dependencies)
         if: matrix.os == 'windows-latest'
