@@ -73,6 +73,6 @@ sudo dpkg -i <path-to-deb-file>
 WebdriverIO is set up to run end-to-end tests on Linux.
 ```bash
 cd BiotaWiz/  # move to the node application folder
-npm run package  # create an up-to-date executable that is expected at ./out/BiotaWiz-linux-x64/imngs2-local
+npm run package  # create an up-to-date executable that is expected at ./out/BiotaWiz-linux-x64/biotawiz
 npm run wdio  # execute the tests
 ```
