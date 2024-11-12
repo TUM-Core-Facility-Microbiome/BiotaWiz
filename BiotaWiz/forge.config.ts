@@ -2,10 +2,11 @@ import type {ForgeConfig} from '@electron-forge/shared-types';
 import {MakerSquirrel} from '@electron-forge/maker-squirrel';
 import {MakerDeb} from '@electron-forge/maker-deb';
 import {VitePlugin} from '@electron-forge/plugin-vite';
+import {MakerRpm} from "@electron-forge/maker-rpm";
 
 const config: ForgeConfig = {
     packagerConfig: {
-        executableName: "imngs2-local",
+        executableName: "biotawiz",
         icon: "./assets/icons/icon",
     },
     rebuildConfig: {},
@@ -14,7 +15,11 @@ const config: ForgeConfig = {
             setupIcon: "./assets/icons/icon.ico",
         }),
         // new MakerZIP({}, ['darwin']),
-        // new MakerRpm({}),
+        new MakerRpm({
+            options: {
+                icon: "./assets/icons/icon.png",
+            }
+        }),
         new MakerDeb({
             options: {
                 icon: "./assets/icons/icon.png",
@@ -49,7 +54,7 @@ const config: ForgeConfig = {
             config: {
                 repository: {
                     owner: 'TUM-Core-Facility-Microbiome',
-                    name: 'IMNGS2-Core'
+                    name: 'BiotaWiz'
                 },
                 draft: true,
                 // take the token from the environment

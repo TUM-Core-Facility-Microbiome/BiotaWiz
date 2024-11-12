@@ -1,6 +1,12 @@
 <template>
   <div>
     <div>
+      <div v-if="state.updateAvailable" class="bg-yellow-200 px-2 py-1 mb-2">
+        <p class="text-sm font-medium text-yellow-800">
+          <strong>Update available:</strong> A new version of <strong>{{ state.name }}</strong> is available. Please update to version <strong>{{ state.updateAvailable }}</strong>.
+          <a @click="openUpdateInstructions" class="underline cursor-pointer">Click here to find out how.</a>
+        </p>
+      </div>
       <h1 class="text-2xl font-semibold mb-4">
         <div class="flex">
           <div>Select the analysis mode</div>
@@ -9,7 +15,6 @@
           </div>
         </div>
       </h1>
-
       <p>
         <div v-if="state.backendAvailable === null">
           <div class="flex">
@@ -63,7 +68,7 @@
       <ul v-if="state.backendAvailable" class="mt-4 space-y-2">
         <li>
           <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic" @click="setAnalysisMode(Imngs2CoreAnalysisMode.TIC)">
-            <strong class="font-medium text-black">IMNGS2-Core: TIC</strong>
+            <strong class="font-medium text-black">TIC (IMNGS2-Core)</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
               By choosing this option sequences of ZOTUs (unique, denoised and chimera-free sequences) from your selected samples will be gathered and passed to TIC algorithm for taxonomy-informed clustering.
@@ -72,10 +77,10 @@
         </li>
         <li>
           <router-link to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-orange-400" @click="setAnalysisMode(Imngs2CoreAnalysisMode.DE_NOVO)">
-            <strong class="font-medium text-black">IMNGS2-Core: De-novo Clustering</strong>
+            <strong class="font-medium text-black">De-novo Clustering</strong>
 
             <p class="mt-1 text-xs font-medium text-gray-800">
-              By choosing this option quality-checked amplicons from your selected samples will be gathered, dereplicated, denoised, and cleaned for chimera and clustered using usearch 11.
+              By choosing this option quality-checked amplicons from your selected samples will be gathered, dereplicated, denoised, and cleaned for chimera and clustered using usearch 12.
             </p>
           </router-link>
         </li>
@@ -94,6 +99,7 @@ indexBridge.changeEnvironment(null);
 const state = reactive({
   name: null as string | null,
   version: null as string | null,
+  updateAvailable: null as string | null,
   backendAvailable: null as boolean | null,
   backendName: null,
 });
@@ -137,10 +143,24 @@ function getBackendInfo() {
   });
 }
 
+function checkForUpdate() {
+  indexBridge.updateAvailable().then((latestTag: string) => {
+    state.updateAvailable = latestTag;
+  }).catch(() => {
+    state.updateAvailable = null;
+  });
+}
+
+
 getName();
 getVersion();
 getBackendInfo();
+checkForUpdate();
 
+function openUpdateInstructions() {
+  const url = 'https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/22';
+  indexBridge.openExternalLink(url);
+}
 
 async function setAnalysisMode(mode: Imngs2CoreAnalysisMode) {
   await indexBridge.publishImngs2CoreAnalysisMode(mode);

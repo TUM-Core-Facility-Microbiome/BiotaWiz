@@ -18,21 +18,8 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Setup node
-        uses: actions/setup-node@v4
-        if: matrix.os == 'windows-latest'
-        with:
-          node-version: 20
-
-      - name: Remove package-lock and regenerate on specified platform (npm issue with optional dependencies)
-        if: matrix.os == 'windows-latest'
-        run: |
-          rm ./IMNGS2-Local/package-lock.json
-          cd IMNGS2-Local && npm i --package-lock-only
-          npm i
-
       - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
         with:
           node-installer: 'npm'
-          folder: 'IMNGS2-Local'
+          folder: 'BiotaWiz'

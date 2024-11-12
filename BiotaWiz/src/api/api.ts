@@ -22,6 +22,7 @@ import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 import {getVersionString} from "../utils/releasetag";
 import {getMachineThreads, getRecommendedThreads} from "../utils/machine";
+import {checkForUpdates} from "../utils/update-check";
 
 ipcMain.handle('app:getName', () => {
     return app.getName();
@@ -29,6 +30,10 @@ ipcMain.handle('app:getName', () => {
 
 ipcMain.handle('app:getVersion', () => {
     return app.getVersion();
+});
+
+ipcMain.handle('app:updateAvailable', async () => {
+    return await checkForUpdates();
 });
 
 ipcMain.handle('openExternal', async (event, url: string) => {

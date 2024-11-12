@@ -47,12 +47,15 @@ const state = reactive({
   selectedItems: [] as IFileSystemNode[],
 });
 
-const updateStudies = () => {
+const updateStudies = async () => {
   // clear the selected items
   state.selectedItems = [];
   state.tree = [];
+  // start a timer to have a minimum loading time
+  const delay = new Promise(resolve => setTimeout(resolve, 500));
   // load the studies
-  indexBridge.loadStudiesFromBaseDirectory().then((studies: IFileSystemNode[]) => {
+  indexBridge.loadStudiesFromBaseDirectory().then(async (studies: IFileSystemNode[]) => {
+    await delay;  // wait for the delay to finish
     console.log("Studies: ", studies);
     state.tree = studies;
     state.tree.expanded = true;  // expand the root node
