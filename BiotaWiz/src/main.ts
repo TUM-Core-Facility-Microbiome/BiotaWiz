@@ -11,6 +11,10 @@ import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
 import {logToDevTools} from "./utils/logHandler";
 
+if (process.platform === "linux") {
+    // https://github.com/electron/electron/issues/18265#issuecomment-604912302
+    app.commandLine.appendSwitch("no-sandbox");
+}
 
 if (require('electron-squirrel-startup')) {
     const squirrelEvent = process.argv[1];
