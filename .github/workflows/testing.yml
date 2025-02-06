@@ -32,6 +32,8 @@ jobs:
         cache-dependency-path: '**/package-lock.json'
     - run: npm ci
     - run: npm test
+    - name: Enable unprivileged access to CLONE_NEWUSER in kernel  # https://github.com/electron/electron/issues/17972#issuecomment-516957971
+      run: sysctl kernel.unprivileged_userns_clone=1
     - run: npm start -- -- --version
     - name: Test run the app (output version number)
       run: npm start -- -- --version |& grep --color -E "BiotaWiz v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?"
