@@ -11,7 +11,6 @@ import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
 import {logToDevTools} from "./utils/logHandler";
 
-
 if (require('electron-squirrel-startup')) {
     const squirrelEvent = process.argv[1];
     if (squirrelEvent === '--squirrel-uninstall') {  // on uninstall

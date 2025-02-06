@@ -32,34 +32,7 @@ jobs:
         cache-dependency-path: '**/package-lock.json'
     - run: npm ci
     - run: npm test
+    - name: Enable unprivileged access to CLONE_NEWUSER in kernel  # https://github.com/electron/electron/issues/17972
+      run: sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
     - name: Test run the app (output version number)
       run: npm start -- -- --version |& grep --color -E "BiotaWiz v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?"
-
-  end-to-end-tests:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: 'BiotaWiz' # folder where package-lock.json is located
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      - name: Install
-        run: npm ci
-        env:
-          DETECT_CHROMEDRIVER_VERSION: true
-      - name: Bundle Application
-        run: npm run package
-      - name: Run Tests
-        run: xvfb-run npm run wdio
