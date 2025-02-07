@@ -146,6 +146,11 @@ ipcMain.handle("imngs2core:getAnalysisMode", async () => {
     return imngs2CoreConfiguration.getAnalysisMode();
 });
 
+ipcMain.handle("imngs2core:setPreprocessToIndividualZOTUs", async(event, preprocessToIndividualZOTUs: boolean) => {
+    console.log(`Setting IMNGS2-Core preprocess to individual ZOTUs to ${preprocessToIndividualZOTUs}`);
+    imngs2CoreConfiguration.setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs);
+});
+
 ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: string) => {
     console.log(`Setting IMNGS2-Core base directory to ${baseDirectory}`);
     imngs2CoreConfiguration.setBaseDirectory(baseDirectory);

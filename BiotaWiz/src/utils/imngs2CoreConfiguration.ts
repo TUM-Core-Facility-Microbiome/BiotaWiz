@@ -20,6 +20,8 @@ export class Imngs2CoreConfiguration {
     private parameters: IImngs2CoreArguments = null;
     private threads: Number = 1;
 
+    private preprocessToIndividualZOTUs: boolean = false;
+
     private analysisDirectory: string | null = null;
 
     public setAnalysisMode(analysisMode: Imngs2CoreAnalysisMode) {
@@ -40,6 +42,11 @@ export class Imngs2CoreConfiguration {
         // analysis directory is relative to base directory
         this.analysisDirectory = path.join(this.baseDirectory, analysisDirectory);
         console.log(`IMNGS2-Core analysis directory set to ${analysisDirectory}`);
+    }
+
+    public setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs: boolean) {
+        this.preprocessToIndividualZOTUs = preprocessToIndividualZOTUs;
+        console.log(`Preprocess to individual ZOTUs set to ${preprocessToIndividualZOTUs}`);
     }
 
     public setSamples(samples: IFileSystemSample[]) {
@@ -241,13 +248,19 @@ export class Imngs2CoreConfiguration {
                 state: "running",
             });
             logToSection(LogSection.PREPARE_BACKEND, "Creating mounts");
-            await run(Environment.IMNGS2CORE, [
+            // build the base command
+            const baseCommand = [
                 "run_imngs2",
                 "--analysis-mode", this.analysisMode.valueOf(),
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
                 "--threads", this.threads.toString(),
-            ], {
+            ];
+            // add flags
+            if (this.preprocessToIndividualZOTUs) {  // set flag to preprocess up to individual ZOTUs
+                baseCommand.push("--individual-zotus");
+            }
+            await run(Environment.IMNGS2CORE, baseCommand, {
                 binds: [
                     {
                         source: this.baseDirectory,
