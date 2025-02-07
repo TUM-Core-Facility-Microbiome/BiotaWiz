@@ -1,13 +1,6 @@
-import {Environment, SpikeMode, Imngs2CoreAnalysisMode, LogSection} from "../enums";
-import {app, BrowserWindow, Notification, shell} from "electron";
+import {Imngs2CoreAnalysisMode, SpikeMode} from "../enums";
 import path from "path";
-import {existsSync, readFileSync, writeFile} from "fs";
-import {stringify} from "yaml";
-import {taskQueue} from "./taskQueue";
-import {logToSection, updateProgress} from "./logHandler";
-import {run} from "./backend";
-import {getOrDownloadUsearch32Binary} from "./usearch";
-import {helpPages} from "./helpPages";
+import {existsSync, readFileSync} from "fs";
 
 export class Imngs2CoreConfiguration {
     private analysisMode = Imngs2CoreAnalysisMode.TIC;
@@ -204,12 +197,14 @@ export class Imngs2CoreConfiguration {
             }
 
             return DEFAULTS as IImngs2CoreArgumentsTICMode
-        } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
+        } else if (this.analysisMode == Imngs2CoreAnalysisMode.ZOTU) {
             (DEFAULTS as IImngs2CoreArgumentsDeNovoMode).DeNovoClusterZOTUsArgs = {
                 minsize: 8
             }
 
             return DEFAULTS as IImngs2CoreArgumentsDeNovoMode
+        } else if (this.analysisMode == Imngs2CoreAnalysisMode.OTU) {
+        } else if (this.analysisMode == Imngs2CoreAnalysisMode.TAC) {
         } else {
             console.error(`Unknown analysis mode ${this.analysisMode}`);
             return null;

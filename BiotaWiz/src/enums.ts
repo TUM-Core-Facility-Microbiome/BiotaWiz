@@ -16,6 +16,8 @@ export enum LogSection {
 }
 
 export enum Imngs2CoreAnalysisMode {
+    ZOTU = 'ZOTU',
+    OTU = 'OTU',
+    TAC = 'TAC',
     TIC = 'TIC',
-    DE_NOVO = 'de-novo',
 }
