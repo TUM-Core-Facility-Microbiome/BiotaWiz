@@ -31,7 +31,7 @@
       <div class="sticky inset-x-0 bottom-0 border-gray-100 bg-white p-2">
         <div class="py-1">
           <a @click="openCommunityDiscussions"
-             class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100"
+             class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100 cursor-pointer"
           >
             <code class="absolute mt-6 text-xs">Discuss</code>
             <ChatBubbleLeftRightIcon></ChatBubbleLeftRightIcon>
@@ -43,7 +43,7 @@
         </div>
         <div class="py-1">
           <a @click="openIssues"
-             class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100"
+             class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100 cursor-pointer"
           >
             <code class="absolute mt-6 text-xs">Issues</code>
             <FireIcon></FireIcon>
@@ -54,7 +54,7 @@
           </a>
         </div>
         <div class="py-1">
-          <router-link class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100"
+          <router-link class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100 cursor-pointer"
                        active-class="bg-blue-50 text-blue-700"
                        to="/settings">
             <code class="absolute mt-6 text-xs">Settings</code>
