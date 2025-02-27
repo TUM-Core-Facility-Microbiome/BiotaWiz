@@ -149,7 +149,7 @@ export class Imngs2CoreConfiguration {
     }
 
     public getDefaultParameters(): IImngs2CoreArguments {
-        // Set up with defaults common to TIC and De-Novo Clustering mode
+        // Set up with defaults common to all four pipelines (TIC, TAC, ZOTU, OTU)
         const DEFAULTS = {
             MergePairsArgs: {
                 fastq_maxdiffs: 50,
@@ -204,11 +204,11 @@ export class Imngs2CoreConfiguration {
 
             return DEFAULTS as IImngs2CoreArgumentsTICMode
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.ZOTU) {
-            (DEFAULTS as IImngs2CoreArgumentsDeNovoMode).DeNovoClusterZOTUsArgs = {
+            (DEFAULTS as IImngs2CoreArgumentsZOTUMode).DeNovoClusterZOTUsArgs = {
                 minsize: 8
             }
 
-            return DEFAULTS as IImngs2CoreArgumentsDeNovoMode
+            return DEFAULTS as IImngs2CoreArgumentsZOTUMode
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.OTU) {
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.TAC) {
         } else {
