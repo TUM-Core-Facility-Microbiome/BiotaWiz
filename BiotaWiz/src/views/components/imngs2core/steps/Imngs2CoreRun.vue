@@ -275,7 +275,7 @@ let logHandlerFn: CallableFunction<LogSection, string> = processLogLine;
 const preprocessingLogProcessors = ref<Map<string, LogStageProcessor>>({});
 const mainLogProcessor = ref<LogStageProcessor>(new LogStageProcessor());
 let lastLoggerName: string | null = null;
-const PYTHON_LOGGER_REGEX = /(?<asctime>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}) - (?<name>.*):(?<filename>.*):(?<lineno>[0-9]*) - (?<levelname>[A-Z]{4,5}) - (?<message>.*)/;
+const PYTHON_LOGGER_REGEX = /(?<asctime>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) - (?<name>.*):(?<filename>.*):(?<lineno>[0-9]*) - (?<levelname>[A-Z]{4,5}) - (?<message>.*)/;
 
 async function openDocumentationPreprocessing() {
   const url = "https://github.com/TUM-Core-Facility-Microbiome/IMNGS2-Core-docs/discussions/23";
