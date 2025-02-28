@@ -132,7 +132,7 @@ interface IImngs2CoreArgumentsTICMode extends IImngs2CoreArguments {
     ComplexTICArgs: IComplexTICArgs;
 }
 
-interface IImngs2CoreArgumentsDeNovoMode extends IImngs2CoreArguments {
+interface IImngs2CoreArgumentsZOTUMode extends IImngs2CoreArguments {
     DeNovoClusterZOTUsArgs: IDeNovoClusterZOTUsArgs;
 }
 

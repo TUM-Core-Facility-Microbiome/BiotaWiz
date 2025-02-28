@@ -6,7 +6,6 @@ import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logToSection, updateProgress} from "./logHandler";
 import {run} from "./backend";
-import {getOrDownloadUsearch32Binary} from "./usearch";
 import {helpPages} from "./helpPages";
 
 export class Imngs2CoreConfiguration {
@@ -150,7 +149,7 @@ export class Imngs2CoreConfiguration {
     }
 
     public getDefaultParameters(): IImngs2CoreArguments {
-        // Set up with defaults common to TIC and De-Novo Clustering mode
+        // Set up with defaults common to all four pipelines (TIC, TAC, ZOTU, OTU)
         const DEFAULTS = {
             MergePairsArgs: {
                 fastq_maxdiffs: 50,
@@ -205,11 +204,12 @@ export class Imngs2CoreConfiguration {
 
             return DEFAULTS as IImngs2CoreArgumentsTICMode
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
-            (DEFAULTS as IImngs2CoreArgumentsDeNovoMode).DeNovoClusterZOTUsArgs = {
+            (DEFAULTS as IImngs2CoreArgumentsZOTUMode).DeNovoClusterZOTUsArgs = {
                 minsize: 8
             }
 
-            return DEFAULTS as IImngs2CoreArgumentsDeNovoMode
+            return DEFAULTS as IImngs2CoreArgumentsZOTUMode
+        } else if (this.analysisMode == Imngs2CoreAnalysisMode.TAC) {
         } else {
             console.error(`Unknown analysis mode ${this.analysisMode}`);
             return null;
