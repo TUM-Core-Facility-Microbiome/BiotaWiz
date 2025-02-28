@@ -6,9 +6,9 @@ export const IMAGE_ASSET_NAME = 'image.tar.gz';
 export const USEARCH32_DOWNLOAD_URL = 'https://drive5.com/downloads/usearch11.0.667_i86linux32.gz';
 
 // defaults. These are overridden by command-line arguments.
-export const REGISTRY_URL = 'www.imngs2.org:51500';  // production: 'ghcr.io', testing: 'localhost:5000'
+export const REGISTRY_URL = 'www.misigdb.org:51500';  // production: 'ghcr.io', testing: 'localhost:5000'
 export const REGISTRY_AUTH = {username: 'pulluser', password: '4R4M3FQzKhCbiY6Hxpu2'};
-export const API_URL = 'https://www.imngs2.org:51501';  // production: 'https://api.github.com', testing: 'http://localhost:5001'
+export const API_URL = 'https://www.misigdb.org:51501';  // production: 'https://api.github.com', testing: 'http://localhost:5001'
 export const API_BASIC_AUTH = {username: 'githubuser', password: 'aHj2xBKrv588YA'};
 
 export const IMNGS2CORE_REPOSITORY_OWNER = 'tum-core-facility-microbiome';
