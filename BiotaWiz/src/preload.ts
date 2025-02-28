@@ -114,6 +114,9 @@ const indexBridge = {
     publishImngs2CoreAnalysisMode: async (analysisMode: Imngs2CoreAnalysisMode) => {
         return ipcRenderer.invoke('imngs2core:setAnalysisMode', analysisMode);
     },
+    publishImngs2CorePreprocessToIndividualZOTUs: async (preprocessIndividualZOTUs: boolean) => {
+        return ipcRenderer.invoke('imngs2core:setPreprocessToIndividualZOTUs', preprocessIndividualZOTUs);
+    },
     getImngs2CoreAnalysisMode: async (): Promise<Imngs2CoreAnalysisMode> => {
         return ipcRenderer.invoke('imngs2core:getAnalysisMode');
     },

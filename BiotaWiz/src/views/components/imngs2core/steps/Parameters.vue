@@ -19,6 +19,29 @@
       <p class="leading-relaxed">
         <form>
           <div class="pt-6">
+            <div class="text-lg font-bold">Preprocessing</div>
+            <div class="mt-0">
+              <div class="flex items-start space-x-3">
+                <div class="relative mb-6">
+                  <input
+                      id="preprocess-to-individual-zotus"
+                      type="checkbox"
+                      v-model="preprocessToIndividualZOTUs"
+                      placeholder="default: 15"
+                      class="border rounded-md"
+                  >
+                </div>
+                <label for="preprocess-to-individual-zotus" class="pt-1">
+                  <p class="text-sm font-mono">Create ZOTU table for each sample</p>
+                  <p class="text-xs text-gray-500">
+                    Choosing this option will tirgger full preprocessing for each sample. It produces ZOTUs table for each sample and
+                    increases pipeline run time.
+                  </p>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="pt-6">
             <div class="text-lg font-bold">Threads</div>
             <div class="text-sm text-gray-700">
               Some pipeline steps might run in parallel to speed up the execution. You can restrict the number of threads
@@ -454,6 +477,17 @@ function setThreadDefaults() {
   });
 }
 setThreadDefaults();
+
+let preprocessToIndividualZOTUs = ref(false);
+
+// trigger when preprocessToIndividualZOTUs changes
+watchEffect(() => {
+  indexBridge.publishImngs2CorePreprocessToIndividualZOTUs(preprocessToIndividualZOTUs.value).then(() => {
+    console.log("Published preprocessToIndividualZOTUs");
+  }).catch(() => {
+    console.error("Could not publish preprocessToIndividualZOTUs");
+  });
+});
 
 let stripleft = ref(15);
 let stripright = ref(15);
