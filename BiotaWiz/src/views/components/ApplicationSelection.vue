@@ -87,18 +87,9 @@
         <li>
           <router-link
               to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
-              @click="setAnalysisMode(Imngs2CoreAnalysisMode.ZOTU)"
+              @click="setAnalysisMode(Imngs2CoreAnalysisMode.DE_NOVO)"
           >
-            <strong class="font-medium text-black">ZOTU</strong>
-            <!--            <p class="mt-1 text-xs font-medium text-gray-800"></p>-->
-          </router-link>
-        </li>
-        <li>
-          <router-link
-              to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
-              @click="setAnalysisMode(Imngs2CoreAnalysisMode.OTU)"
-          >
-            <strong class="font-medium text-black">OTU</strong>
+            <strong class="font-medium text-black">De Novo Clustering</strong>
             <!--            <p class="mt-1 text-xs font-medium text-gray-800"></p>-->
           </router-link>
         </li>

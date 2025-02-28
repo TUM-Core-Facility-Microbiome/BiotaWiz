@@ -203,13 +203,12 @@ export class Imngs2CoreConfiguration {
             }
 
             return DEFAULTS as IImngs2CoreArgumentsTICMode
-        } else if (this.analysisMode == Imngs2CoreAnalysisMode.ZOTU) {
+        } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
             (DEFAULTS as IImngs2CoreArgumentsZOTUMode).DeNovoClusterZOTUsArgs = {
                 minsize: 8
             }
 
             return DEFAULTS as IImngs2CoreArgumentsZOTUMode
-        } else if (this.analysisMode == Imngs2CoreAnalysisMode.OTU) {
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.TAC) {
         } else {
             console.error(`Unknown analysis mode ${this.analysisMode}`);
