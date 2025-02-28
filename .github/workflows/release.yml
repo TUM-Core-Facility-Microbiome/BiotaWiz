@@ -18,6 +18,13 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Remove package-lock and regenerate on specified platform (npm issue with optional dependencies)
+        if: matrix.os == 'windows-latest'
+        run: |
+          rm ./BiotaWiz/package-lock.json
+          cd BiotaWiz && npm i --package-lock-only
+          npm i
+
       - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
         with:
