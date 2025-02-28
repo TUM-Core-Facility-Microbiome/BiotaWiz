@@ -19,7 +19,7 @@ token:
 users:
   # Password is specified as a BCrypt hash. Use `htpasswd -nB USERNAME` to generate.
   "admin":
-    password: "$2y$05$CLwFdLpJdSCoInFC9vzG8OpBiqaeEwNHqGiQJT6vfILpM3FhPWgQG"
+    password: "$2y$05$fImInZ4gIgJj4drQRrRUGeO4yH2ofukPq4p4sROACZdQGUCunvg76"
   "pulluser":
     password: "$2y$05$LuNDPDG3jIwx9ZnnbLI9B.R0R3s4XWhP.PNb7vfWg5c5uIE9r5d5i"  # 4R4M3FQzKhCbiY6Hxpu2
 

@@ -7,7 +7,7 @@ services:
     image: cesanta/docker_auth
     container_name: BiotaWiz_docker_auth
     ports:
-      - 127.0.0.1:60000:60000
+      - 60000:60000
     volumes:
       - ./docker-auth:/config:ro
       - ./docker-auth/certs:/certs
@@ -15,7 +15,7 @@ services:
     image: registry # docker provides an official image of the distribution implementation for storing and distributing of container images and artifacts
     container_name: BiotaWiz_registry
     ports:
-      - 127.0.0.1:50500:50500
+      - 50500:50500
     volumes:
       - ./registry/registry_config:/etc/docker/registry/config.yml
       - ./.registry-data:/var/lib/registry
@@ -37,7 +37,7 @@ services:
     build: ./mock-github-release-api
     container_name: BiotaWiz_github_mock_api
     ports:
-      - 127.0.0.1:50501:50501
+      - 50501:50501
     environment:
       - EXPOSED_PORT=50501  # The port the mock server is running on; must match the port defined above
     volumes:

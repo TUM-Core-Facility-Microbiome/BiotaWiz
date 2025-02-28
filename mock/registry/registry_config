@@ -10,7 +10,7 @@ http:
     X-Content-Type-Options: [nosniff]
 auth:
   token:
-    realm: "https://www.imngs2.org:61000/auth"
+    realm: "http://localhost:60000/auth"
     service: "Docker registry"
     issuer: "Acme auth server"
     rootcertbundle: "/usr/local/share/ca-certificates/server.crt"
