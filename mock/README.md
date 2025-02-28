@@ -95,7 +95,7 @@ You can then run the GUI against the mock API by setting the following command l
 e.g. for the example setup when running the GUI via `npm start` from 
 directory containing `package.json`:
 ```bash
-npm start -- -- --api-url http://localhost:5001 --container-registry localhost:5000 --tic-pipeline-repository-owner tum-core-facility-microbiome --tic-pipeline-repository-name tic-pipeline
+npm start -- -- --api-url http://localhost:50501 --container-registry localhost:50500 --imngs2core-repository-owner tum-core-facility-microbiome --imngs2core-repository-name tic-pipeline
 ```
 
 The GUI will then use the mocked APIs images provided at the `images` directory.
