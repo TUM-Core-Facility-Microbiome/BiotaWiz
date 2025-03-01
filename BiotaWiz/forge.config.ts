@@ -19,21 +19,35 @@ const config: ForgeConfig = {
             try {
                 console.log('Running packageAfterCopy hook...');
                 
-                // Move axios to app
-                const axios = path.join(__dirname, 'node_modules', 'axios');
-                const axiosDestination = path.join(buildPath, 'node_modules', 'axios');
+                // List of modules to copy
+                const modulesToCopy = [
+                    'axios',
+                    'form-data',
+                    'asynckit',
+                    'mime-types',
+                    'mime-db',
+                    'combined-stream',
+                    'follow-redirects',
+                    'proxy-from-env'
+                ];
                 
-                console.log(`Copying axios from ${axios} to ${axiosDestination}`);
+                // ensure the node_modules directory exists
+                const nodeModulesDir = path.join(buildPath, 'node_modules');
+                fs.mkdirSync(nodeModulesDir, { recursive: true });
                 
-                // ensure the destination directory exists
-                fs.mkdirSync(path.dirname(axiosDestination), { recursive: true });
-                
-                // copy the axios module to the destination
-                if (fs.existsSync(axios)) {
-                    fs.cpSync(axios, axiosDestination, { recursive: true });
-                    console.log('Successfully copied axios module');
-                } else {
-                    console.error(`ERROR: axios module not found at ${axios}`);
+                // copy each module
+                for (const moduleName of modulesToCopy) {
+                    const modulePath = path.join(__dirname, 'node_modules', moduleName);
+                    const moduleDestination = path.join(nodeModulesDir, moduleName);
+                    
+                    console.log(`Copying ${moduleName} from ${modulePath} to ${moduleDestination}`);
+                    
+                    if (fs.existsSync(modulePath)) {
+                        fs.cpSync(modulePath, moduleDestination, { recursive: true });
+                        console.log(`Successfully copied ${moduleName} module`);
+                    } else {
+                        console.error(`WARNING: ${moduleName} module not found at ${modulePath}`);
+                    }
                 }
             } catch (error) {
                 console.error('Error in packageAfterCopy hook:', error);

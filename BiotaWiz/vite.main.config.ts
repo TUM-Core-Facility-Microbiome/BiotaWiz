@@ -14,13 +14,25 @@ export default defineConfig(forgeViteConfig.main({
     },
     build: {
         rollupOptions: {
-            external: ['axios', 'electron', 'path', 'fs'],
+            external: [
+                'axios', 
+                'electron', 
+                'path', 
+                'fs', 
+                'form-data',
+                'asynckit',
+                'mime-types',
+                'mime-db',
+                'combined-stream',
+                'follow-redirects',
+                'proxy-from-env'
+            ],
         },
         commonjsOptions: {
             include: [/node_modules/],
         },
     },
     optimizeDeps: {
-        include: ['axios'],
+        include: ['axios', 'form-data'],
     },
 }));
