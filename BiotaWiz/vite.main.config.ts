@@ -25,7 +25,8 @@ export default defineConfig(forgeViteConfig.main({
                 'mime-db',
                 'combined-stream',
                 'follow-redirects',
-                'proxy-from-env'
+                'proxy-from-env',
+                'delayed-stream'
             ],
         },
         commonjsOptions: {
