@@ -39,7 +39,7 @@ services:
     ports:
       - 127.0.0.1:50501:50501
     environment:
-      - EXPOSED_PORT=50501  # The port the mock server is running on; must match the port defined above
+      - EXPOSED_URL=https://localhost:50501  # The port the mock server is running on; must match the port defined above
     volumes:
       - ./images:/images
 
