@@ -28,7 +28,8 @@ const config: ForgeConfig = {
                     'mime-db',
                     'combined-stream',
                     'follow-redirects',
-                    'proxy-from-env'
+                    'proxy-from-env',
+                    'delayed-stream',
                 ];
                 
                 // ensure the node_modules directory exists
