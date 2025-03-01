@@ -11,7 +11,8 @@ const config: ForgeConfig = {
         icon: "./assets/icons/icon",
         extraResource: [
             'node_modules/axios'
-        ]
+        ],
+        asar: true
     },
     rebuildConfig: {},
     makers: [
