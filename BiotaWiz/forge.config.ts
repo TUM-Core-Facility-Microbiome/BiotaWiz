@@ -14,47 +14,7 @@ const config: ForgeConfig = {
         asar: true,
     },
     rebuildConfig: {},
-    hooks: {
-        packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
-            try {
-                console.log('Running packageAfterCopy hook...');
-                
-                // List of modules to copy
-                const modulesToCopy = [
-                    'axios',
-                    'form-data',
-                    'asynckit',
-                    'mime-types',
-                    'mime-db',
-                    'combined-stream',
-                    'follow-redirects',
-                    'proxy-from-env',
-                    'delayed-stream',
-                ];
-                
-                // ensure the node_modules directory exists
-                const nodeModulesDir = path.join(buildPath, 'node_modules');
-                fs.mkdirSync(nodeModulesDir, { recursive: true });
-                
-                // copy each module
-                for (const moduleName of modulesToCopy) {
-                    const modulePath = path.join(__dirname, 'node_modules', moduleName);
-                    const moduleDestination = path.join(nodeModulesDir, moduleName);
-                    
-                    console.log(`Copying ${moduleName} from ${modulePath} to ${moduleDestination}`);
-                    
-                    if (fs.existsSync(modulePath)) {
-                        fs.cpSync(modulePath, moduleDestination, { recursive: true });
-                        console.log(`Successfully copied ${moduleName} module`);
-                    } else {
-                        console.error(`WARNING: ${moduleName} module not found at ${modulePath}`);
-                    }
-                }
-            } catch (error) {
-                console.error('Error in packageAfterCopy hook:', error);
-            }
-        }
-    },
+    hooks: {},
     makers: [
         new MakerSquirrel({
             setupIcon: "./assets/icons/icon.ico",
