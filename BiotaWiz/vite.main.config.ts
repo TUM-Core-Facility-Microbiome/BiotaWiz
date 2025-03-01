@@ -11,4 +11,9 @@ export default defineConfig(forgeViteConfig.main({
             'axios': require.resolve('axios'),
         },
     },
+    build: {
+        rollupOptions: {
+            external: ['axios'],
+        },
+    },
 }));
