@@ -11,7 +11,6 @@ const config: ForgeConfig = {
     packagerConfig: {
         executableName: "biotawiz",
         icon: "./assets/icons/icon",
-        asar: true,
     },
     rebuildConfig: {},
     hooks: {},
