@@ -1,5 +1,6 @@
 import {defineConfig} from 'vite';
 import { forgeViteConfig } from 'electron-forge-plugin-vite/migration';
+import path from 'path';
 
 // https://vitejs.dev/config
 export default defineConfig(forgeViteConfig.main({
@@ -13,7 +14,13 @@ export default defineConfig(forgeViteConfig.main({
     },
     build: {
         rollupOptions: {
-            external: ['axios'],
+            external: ['axios', 'electron', 'path', 'fs'],
         },
+        commonjsOptions: {
+            include: [/node_modules/],
+        },
+    },
+    optimizeDeps: {
+        include: ['axios'],
     },
 }));
