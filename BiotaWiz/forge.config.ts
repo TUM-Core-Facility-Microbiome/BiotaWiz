@@ -4,18 +4,41 @@ import {MakerDeb} from '@electron-forge/maker-deb';
 import {VitePlugin} from '@electron-forge/plugin-vite';
 import {MakerRpm} from "@electron-forge/maker-rpm";
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
+import path from 'path';
+import fs from 'fs';
 
 const config: ForgeConfig = {
     packagerConfig: {
         executableName: "biotawiz",
         icon: "./assets/icons/icon",
         asar: true,
-        extraResource: [
-            'node_modules/axios'
-        ]
     },
-    rebuildConfig: {
-        onlyModules: ['axios']
+    rebuildConfig: {},
+    hooks: {
+        packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
+            try {
+                console.log('Running packageAfterCopy hook...');
+                
+                // Move axios to app
+                const axios = path.join(__dirname, 'node_modules', 'axios');
+                const axiosDestination = path.join(buildPath, 'node_modules', 'axios');
+                
+                console.log(`Copying axios from ${axios} to ${axiosDestination}`);
+                
+                // ensure the destination directory exists
+                fs.mkdirSync(path.dirname(axiosDestination), { recursive: true });
+                
+                // copy the axios module to the destination
+                if (fs.existsSync(axios)) {
+                    fs.cpSync(axios, axiosDestination, { recursive: true });
+                    console.log('Successfully copied axios module');
+                } else {
+                    console.error(`ERROR: axios module not found at ${axios}`);
+                }
+            } catch (error) {
+                console.error('Error in packageAfterCopy hook:', error);
+            }
+        }
     },
     makers: [
         new MakerSquirrel({
