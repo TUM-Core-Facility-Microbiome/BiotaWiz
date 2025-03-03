@@ -217,6 +217,7 @@ export class Imngs2CoreConfiguration {
 
             return DEFAULTS as IImngs2CoreArgumentsZOTUMode
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.TAC) {
+            return DEFAULTS
         } else {
             console.error(`Unknown analysis mode ${this.analysisMode}`);
             return null;
