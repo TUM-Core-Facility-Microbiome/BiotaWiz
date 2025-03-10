@@ -124,26 +124,21 @@
                     gets updated).
                   </div>
                 </label>
-                <input
-                    id="abund_limit"
-                    type="text"
-                    v-model="abund_limit"
-                    placeholder="default: 0.0025"
-                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                >
-                <div class="relative mb-6">
+                <div class="flex items-center gap-1">
+                  <div type="button" class="size-10 leading-10 mt-2 pl-3 text-gray-600">%</div>
+
                   <input
-                      type="range"
-                      v-model="abund_limit"
+                      id="abund_limit"
+                      type="number"
                       min="0"
-                      max="0.5"
+                      max="100"
                       step="0.01"
-                      class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                      tabindex="-1"
+                      v-model="abund_limit"
+                      placeholder="default: 0.25%"
+                      class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                   >
-                  <span class="text-sm text-gray-500 absolute start-0 -bottom-6">No filtering (0)</span>
-                  <span class="text-sm text-gray-500 absolute end-0 -bottom-6">Max (0.5)</span>
                 </div>
+
               </div>
             </div>
           </div>
@@ -490,7 +485,7 @@ watchEffect(() => {
 
 let stripleft = ref(17);
 let stripright = ref(21);
-let abund_limit = ref(0.0025);
+let abund_limit = ref(0.25);
 let sample_wise_correction = ref(false);
 
 let fastq_maxdiffs = ref(50);
@@ -520,7 +515,7 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
     };
 
     const createTableTICArgs: ICreateTableTICArgs = {
-      abund_limit: Number(abund_limit.value),
+      abund_limit: Number(abund_limit.value)*0.01, // in percentages
       sample_wise_correction: Boolean(sample_wise_correction.value),
     };
 
