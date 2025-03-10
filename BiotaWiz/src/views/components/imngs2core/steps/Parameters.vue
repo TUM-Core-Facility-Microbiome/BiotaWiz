@@ -27,7 +27,6 @@
                       id="preprocess-to-individual-zotus"
                       type="checkbox"
                       v-model="preprocessToIndividualZOTUs"
-                      placeholder="default: 15"
                       class="border rounded-md"
                   >
                 </div>
@@ -89,7 +88,7 @@
                     id="stripleft"
                     type="text"
                     v-model="stripleft"
-                    placeholder="default: 15"
+                    placeholder="default: 17"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
               </div>
@@ -104,7 +103,7 @@
                     id="stripright"
                     type="text"
                     v-model="stripright"
-                    placeholder="default: 15"
+                    placeholder="default: 21"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
               </div>
@@ -129,7 +128,7 @@
                     id="abund_limit"
                     type="text"
                     v-model="abund_limit"
-                    placeholder="default: 0.00"
+                    placeholder="default: 0.0025"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
                 <div class="relative mb-6">
@@ -354,7 +353,7 @@
                     id="family_sim"
                     type="text"
                     v-model="family_sim"
-                    placeholder="default: 0.90"
+                    placeholder="default: 0.95"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
                 <div class="relative mb-6">
@@ -385,7 +384,7 @@
                     id="genus_sim"
                     type="text"
                     v-model="genus_sim"
-                    placeholder="default: 0.95"
+                    placeholder="default: 0.97"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
                 <div class="relative mb-6">
@@ -416,7 +415,7 @@
                     id="species_sim"
                     type="text"
                     v-model="species_sim"
-                    placeholder="default: 0.97"
+                    placeholder="default: 0.987"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
                 <div class="relative mb-6">
