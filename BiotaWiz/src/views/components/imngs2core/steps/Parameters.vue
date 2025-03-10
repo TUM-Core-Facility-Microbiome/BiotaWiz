@@ -81,7 +81,7 @@
                 <label for="stripleft">
                   <div class="text-sm font-mono">stripleft</div>
                   <div class="text-xs text-gray-500">Number of nucleotides to be cut from left side of your merged
-                    sequence. Depends on length of your reverse primer.
+                    sequence. Depends on length of your forward primer.
                   </div>
                 </label>
                 <input
@@ -96,7 +96,7 @@
                 <label for="stripright">
                   <div class="text-sm font-mono">stripright</div>
                   <div class="text-xs text-gray-500">Number of nucleotides to be cut from left side of your merged
-                    sequence. Depends on length of your forward primer.
+                    sequence. Depends on length of your reverse primer.
                   </div>
                 </label>
                 <input
