@@ -489,9 +489,9 @@ watchEffect(() => {
   });
 });
 
-let stripleft = ref(15);
-let stripright = ref(15);
-let abund_limit = ref(0.00);
+let stripleft = ref(17);
+let stripright = ref(21);
+let abund_limit = ref(0.0025);
 let sample_wise_correction = ref(false);
 
 let fastq_maxdiffs = ref(50);
@@ -500,9 +500,9 @@ let fastq_minmergelen = ref(200);
 let fastq_maxmergelen = ref(600);
 let minsize = ref(2);
 let de_novo_minsize = ref(8);
-let family_sim = ref(0.90);
-let genus_sim = ref(0.95);
-let species_sim = ref(0.97);
+let family_sim = ref(0.95);
+let genus_sim = ref(0.97);
+let species_sim = ref(0.987);
 
 const emit = defineEmits(['update:isValid']);
 watchEffect(() => {
