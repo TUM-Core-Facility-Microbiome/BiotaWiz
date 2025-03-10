@@ -165,11 +165,11 @@ export class Imngs2CoreConfiguration {
                 fastq_maxmergelen: 600
             },
             TrimBothSidesArgs: {
-                stripleft: 15,
-                stripright: 15
+                stripleft: 17,
+                stripright: 21
             },
             TrimOneSideArgs: {
-                stripleft: 15
+                stripleft: 17
             },
             FilterBothSidesArgs: {
                 fastq_maxee_rate: 0.002
@@ -196,7 +196,7 @@ export class Imngs2CoreConfiguration {
                 stripright: 5
             },
             CreateTableTICArgs: {
-                abund_limit: 0,
+                abund_limit: 0.0025,
                 sample_wise_correction: false
             }
         }
@@ -204,9 +204,9 @@ export class Imngs2CoreConfiguration {
         // set mode specific arguments
         if (this.analysisMode == Imngs2CoreAnalysisMode.TIC) {
             (DEFAULTS as IImngs2CoreArgumentsTICMode).ComplexTICArgs ={
-                family_sim: 0.9,
-                genus_sim: 0.95,
-                species_sim: 0.97
+                family_sim: 0.95,
+                genus_sim: 0.97,
+                species_sim: 0.987
             }
 
             return DEFAULTS as IImngs2CoreArgumentsTICMode
