@@ -257,7 +257,7 @@
               <div>
                 <label for="fastq_minmergelen">
                   <div class="text-sm font-mono">fastq_minmergelen</div>
-                  <div class="text-xs text-gray-500">The minimum required length for the merged sequence.</div>
+                  <div class="text-xs text-gray-500">Minimum required length for the merged sequence.</div>
                 </label>
                 <input
                     id="fastq_minmergelen"
@@ -270,7 +270,7 @@
               <div>
                 <label for="fastq_maxmergelen">
                   <div class="text-sm font-mono">fastq_maxmergelen</div>
-                  <div class="text-xs text-gray-500">The maximum required length for the merged sequence.</div>
+                  <div class="text-xs text-gray-500">Maximum required length for the merged sequence.</div>
                 </label>
                 <input
                     id="fastq_maxmergelen"
