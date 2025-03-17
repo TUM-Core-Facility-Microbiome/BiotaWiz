@@ -294,7 +294,7 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
                 reject(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${getVersionString(releaseTag)}`);
             }
 
-            resolve(tarball.browser_download_url);
+            resolve(tarball.url);
         }).catch((error) => {
             updateProgress(
                 {
