@@ -1,6 +1,6 @@
 import path from "path";
 import * as fs from "fs";
-import {API_BASIC_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
+import {API_BEARER_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, storeBackend, setImageTag} from "./storage";
@@ -198,8 +198,10 @@ async function queryAvailableReleaseTags(environment: Environment) {
         axios.get<GitHubRelease[]>(
             `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases`,
             {
-                headers: {'X-GitHub-Api-Version': '2022-11-28'},
-                auth: API_BASIC_AUTH,
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28',
+                    'Authorization': `Bearer ${API_BEARER_AUTH}`,
+                },
             }
         ).then((response) => {
             const data = response.data;
@@ -262,8 +264,10 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
         axios.get<GitHubRelease>(
             RELEASE_URL,
             {
-                headers: {'X-GitHub-Api-Version': '2022-11-28'},
-                auth: API_BASIC_AUTH,
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28',
+                    'Authorization': `Bearer ${API_BEARER_AUTH}`,
+                },
             }
         ).then((response) => {
             const data = response.data;
@@ -323,7 +327,10 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
                 tarballUrl,
                 {
                     responseType: 'stream',
-                    auth: API_BASIC_AUTH,
+                    headers: {
+                        'X-GitHub-Api-Version': '2022-11-28',
+                        'Authorization': `Bearer ${API_BEARER_AUTH}`,
+                    },
                     onDownloadProgress: function(progressEvent) {
                         let percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
                         updateProgress({
