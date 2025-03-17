@@ -69,19 +69,19 @@
         <li>
           <router-link
               to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
-              @click="setAnalysisMode(Imngs2CoreAnalysisMode.TAC)"
+              @click="setAnalysisMode(Imngs2CoreAnalysisMode.TIC)"
           >
-            <strong class="font-medium text-black">Taxonomy Agnostic Clustering (TAC)</strong>
-            <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at 98.7% similarity to create OTUs</p>
+            <strong class="font-medium text-black">Taxonomy Informed Clustering (TIC)</strong>
+            <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at family, genera and species level if their taxonomy is not known at the corresponding level.</p>
           </router-link>
         </li>
         <li>
           <router-link
               to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
-              @click="setAnalysisMode(Imngs2CoreAnalysisMode.TIC)"
+              @click="setAnalysisMode(Imngs2CoreAnalysisMode.TAC)"
           >
-            <strong class="font-medium text-black">Taxonomy Informed Clustering (TIC)</strong>
-            <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at family, genera and species level if their taxonomy is not known at the corresponding level.</p>
+            <strong class="font-medium text-black">Taxonomy Agnostic Clustering (TAC)</strong>
+            <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at 98.7% similarity to create OTUs</p>
           </router-link>
         </li>
         <li>
