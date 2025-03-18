@@ -207,7 +207,13 @@ async function queryAvailableReleaseTags(environment: Environment) {
             const data = response.data;
             const availableTags = data.map((release) => {
                 try {
-                    return semVerFromGitHubTag(release.tag_name);
+                    // filter out pre-releases
+                    if (!cmArgs['allow-prerelease-tags']) {
+                        if (release.prerelease) {
+                            return null;
+                        }
+                    }
+                    return semVerFromGitHubTag(release.name);
                 } catch (error) {  // return null for tags that could not be parsed and filter them out thereafter
                     return null;
                 }
