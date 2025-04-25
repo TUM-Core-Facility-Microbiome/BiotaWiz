@@ -35,4 +35,4 @@ jobs:
     - name: Enable unprivileged access to CLONE_NEWUSER in kernel  # https://github.com/electron/electron/issues/17972
       run: sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
     - name: Test run the app (output version number)
-      run: npm start -- -- --version |& grep --color -E "BiotaWiz v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?"
+      run: (npm start -- -- --version |& grep --color -E "BiotaWiz v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?") || (npm start -- -- --version && exit 1)
