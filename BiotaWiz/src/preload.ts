@@ -109,7 +109,7 @@ const indexBridge = {
         return ipcRenderer.invoke('getAssociatedImages', environment);
     },
     deleteImage: async (name: string, tag: string) => {
-        return ipcRenderer.invoke('deleteImage', name, tag, true);
+        return ipcRenderer.invoke('deleteImage', name, tag);
     },
     publishImngs2CoreAnalysisMode: async (analysisMode: Imngs2CoreAnalysisMode) => {
         return ipcRenderer.invoke('imngs2core:setAnalysisMode', analysisMode);

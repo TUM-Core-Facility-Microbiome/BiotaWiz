@@ -404,7 +404,7 @@ export async function getImageTarball(environment: Environment, releaseTag: SemV
 }
 
 export async function deleteTar(image: IImage) {
-    const semVer = semVerFromGitHubTag(image.tag);
+    const semVer = semVerFromGitHubTag(`v${image.tag}`);
     const tarPath = await getExpectedDistributionTarPath(Environment.IMNGS2CORE, semVer);
     if (fs.existsSync(tarPath)) {
         fs.unlinkSync(tarPath);
