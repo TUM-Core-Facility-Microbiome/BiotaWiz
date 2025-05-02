@@ -3,7 +3,7 @@ import * as fs from "fs";
 import {API_BEARER_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
-import {deleteImageTag, getBackend, getImageTag, storeBackend, setImageTag} from "./storage";
+import {deleteImageTag, getBackend, getImageTag, setImageTag, storeBackend} from "./storage";
 import {
     getAllowedRange,
     getLatestVersion,
@@ -401,6 +401,14 @@ export async function getImageTarball(environment: Environment, releaseTag: SemV
     checkTarExists(expectedPath);
 
     return expectedPath;
+}
+
+export async function deleteTar(image: IImage) {
+    const semVer = semVerFromGitHubTag(`v${image.tag}`);
+    const tarPath = await getExpectedDistributionTarPath(Environment.IMNGS2CORE, semVer);
+    if (fs.existsSync(tarPath)) {
+        fs.unlinkSync(tarPath);
+    }
 }
 
 export async function getDistroWslVersion(distribution: string) {
@@ -847,17 +855,24 @@ async function getAssociatedImagesWsl(environment: Environment): Promise<IImage[
 
 /**
  * Delete a given image from the backend.
+ * Optionally also delete the cached tarball (WSL only).
  * @param name Name of the image excluding the version tag.
  * @param tag Version tag of the image.
+ * @param deleteCache Whether to delete the cached tarball; no effect for Docker Backend.
  */
-export async function deleteImage(name: string, tag: string) {
+export async function deleteImage(name: string, tag: string, deleteCache: boolean = true) {
     const image: IImage = {name, tag};
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
             return await deleteImageDocker(image);
         case WSL.type:
-            return await deleteImageWsl(image);
+            await deleteImageWsl(image);
+            if (deleteCache) {
+                logToDevTools(`Deleting cached tarball for WSL distribution ${image.name}:v${image.tag}`);
+                await deleteTar(image);
+            }
+            return;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
