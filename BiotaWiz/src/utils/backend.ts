@@ -347,6 +347,18 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
                     },
                 }
             ).then((response) => {
+                // ensure response http code
+                if (response.status !== 200) {
+                    updateProgress(
+                        {
+                            step: `Initializing ${environment} environment`,
+                            message: `Failed to download distribution files.`,
+                            state: "error",
+                        }
+                    );
+                    reject(`Failed to download distribution tarball. HTTP code ${response.status}`);
+                }
+
                 response.data.pipe(writer);
 
                 writer.on('finish', resolve);
