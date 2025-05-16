@@ -442,11 +442,23 @@ export class Imngs2CoreConfiguration {
     }
 
     private writeMappingFile() {
+        return this.writeMappingFileTsv();
+    }
+
+    private writeMappingFileTsv() {
         // save prefilled mapping file to baseDirectory
         const timeStamp = Date.now();
         this.mappingFile = path.join(this.baseDirectory, `mapping_${timeStamp}.csv`);  // use file extension .csv to open in Excel but keep TSV format
         const content = this.generateMappingFileContent();
-        writeFile(this.mappingFile, content, (err) => {
+
+        const delimiter = "\t";
+        const rowDelimiter = "\n";
+
+        const tsvContent = content.map((row) => {
+            return row.join(delimiter);
+        }).join(rowDelimiter);
+
+        writeFile(this.mappingFile, tsvContent, (err) => {
             console.error(err);
         });
 
@@ -474,15 +486,14 @@ export class Imngs2CoreConfiguration {
         }
     }
 
+    // Generate Mapping file content as an array (colums) of string arrays (rows
     private generateMappingFileContent() {
-        const delimiter = "\t";
-
         // join additional metadata for header
-        let additionalMetadata = new Set<string>();
+        const additionalMetadata = new Set<string>();
         this.samples.forEach((sample) => {
             if (sample.metadata) {
                 // get keys of additional metadata
-                for (let key in sample.metadata.additional) {
+                for (const key in sample.metadata.additional) {
                     additionalMetadata.add(key);
                 }
             }
@@ -491,15 +502,15 @@ export class Imngs2CoreConfiguration {
 
         // remove default metadata keys
         const additionalColumns = [...additionalMetadata];
-        const columns = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path', ...additionalMetadata];
-        let content = columns.join(delimiter) + "\n";
+        const header = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path', ...additionalMetadata];
+        const content = [header];
 
         this.samples.forEach((sample) => {
             const baseName = sample.name;
             // parent path relative to baseDirectory
 
             const parentPath = this.relativePathToBaseDirectory(path.dirname(sample.path));
-            let spike = {spikeIn: '0', weight: 'NaN'};  // set to dummy values; will be ignored by pipeline
+            const spike = {spikeIn: '0', weight: 'NaN'};  // set to dummy values; will be ignored by pipeline
             const additional = [];
             if (sample.metadata) {
                 console.debug(sample.metadata);
@@ -511,7 +522,7 @@ export class Imngs2CoreConfiguration {
                         spike.weight = sample.metadata.totalWeight.toString();
                     }
                 }
-                for (let column in additionalColumns) {
+                for (const column in additionalColumns) {
                     if (sample.metadata.additional && sample.metadata.additional.has(column)) {
                         additional.push(sample.metadata.additional.get(column));
                     } else {
@@ -521,13 +532,13 @@ export class Imngs2CoreConfiguration {
             }
             console.log(spike);
             console.log(additional);
-            content += [
+            content.push([
                 baseName,
                 spike.weight,
                 spike.spikeIn,
                 parentPath,
                 ...additional
-            ].join(delimiter) + "\n";
+            ]);
         });
         return content;
     }
