@@ -354,6 +354,13 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
                     reject(error);
                 });
             }).catch((error) => {
+                updateProgress(
+                    {
+                        step: `Initializing ${environment} environment`,
+                        message: `Failed to download distribution files.`,
+                        state: "error",
+                    }
+                );
                 reject(error);
             });
         }).catch((error) => {
@@ -423,7 +430,13 @@ export async function getDistroWslVersion(distribution: string) {
 
 
 export async function registerWslDistribution(environment: Environment, releaseTag: SemVer) {
-    const tarBall = await getImageTarball(environment, releaseTag);
+    let tarBall;
+    try {
+        tarBall = await getImageTarball(environment, releaseTag);
+    } catch {
+        return;
+    }
+
     const installLocation = await getDistributionInstallLocation(environment, releaseTag);
 
     // import distribution
