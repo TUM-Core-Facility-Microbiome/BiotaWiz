@@ -829,6 +829,25 @@ const thirdPartyLicenses = [
         "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n" +
         "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n" +
         "SOFTWARE."
+  },
+  {
+    name: 'node-xlsx',
+    license: 'Apache 2.0',
+    licenseText: "Copyright (c) 2012-2021 Olivier Louvignes\n" +
+        "\n" +
+        "Licensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the\n" +
+        "License. You may obtain a copy of the License at\n" +
+        "\n" +
+        "       http://www.apache.org/licenses/LICENSE-2.0\n" +
+        "\n" +
+        "Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an\n" +
+        "\"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific\n" +
+        "language governing permissions and limitations under the License.\n" +
+        "\n" +
+        "Except where noted, this license applies to any and all software programs and associated documentation files created by\n" +
+        "the Original Author and distributed with the Software:\n" +
+        "\n" +
+        "Inspired by SheetJS gist examples, Copyright (c) SheetJS.\n"
   }
 ].sort((a, b) => {
   if (a.name < b.name) {
