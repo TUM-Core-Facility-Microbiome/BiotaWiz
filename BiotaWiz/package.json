@@ -1,7 +1,7 @@
 {
   "name": "biotawiz",
   "productName": "BiotaWiz",
-  "version": "0.1.3-alpha.1",
+  "version": "0.1.3-alpha.2",
   "description": "Analyze 16S rRNA amplicon sequences for microbiome studies",
   "main": ".vite/build/main.js",
   "scripts": {
