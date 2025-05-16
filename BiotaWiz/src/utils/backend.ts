@@ -338,7 +338,7 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
                         'Accept': 'application/octet-stream',
                     },
                     onDownloadProgress: function(progressEvent) {
-                        let percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+                        const percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
                         updateProgress({
                             step: `Initializing ${environment} environment`,
                             message: `Downloading distribution files (${percentCompleted}%)`,
