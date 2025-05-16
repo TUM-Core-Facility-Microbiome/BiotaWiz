@@ -30,14 +30,15 @@
 </style>
 
 <script setup lang="ts">
-import {reactive, watch, watchEffect} from "vue";
+import {PropType, reactive, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 
 const router = useRouter();
 
 const props = defineProps({
   baseDir: {
-    type: String,
+    type: [String, null] as PropType<string | null>,
+    default: null,
     required: true,
   },
 });
