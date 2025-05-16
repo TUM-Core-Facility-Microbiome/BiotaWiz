@@ -170,7 +170,7 @@ export default {
     backButtonOptions() {
       if (this.currentTabIndex === this.finalStep) {
         return {
-          text: 'Stop processing and go back'
+          text: 'back (stop processing when running)'
         };
       } else {
         return {
