@@ -486,7 +486,7 @@ export class Imngs2CoreConfiguration {
         }
     }
 
-    // Generate Mapping file content as an array (colums) of string arrays (rows
+    // Generate Mapping file content as an array (columns) of string arrays (rows
     private generateMappingFileContent() {
         // join additional metadata for header
         const additionalMetadata = new Set<string>();
