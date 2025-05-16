@@ -141,6 +141,9 @@ const indexBridge = {
     openMappingFile: async () => {
         return ipcRenderer.invoke('imngs2core:openMappingFile');
     },
+    convertMapping: async () => {
+        return ipcRenderer.invoke('imngs2core:convertMapping');
+    },
     checkMappingFile: async () => {
         return ipcRenderer.invoke('imngs2core:checkMapping');
     },

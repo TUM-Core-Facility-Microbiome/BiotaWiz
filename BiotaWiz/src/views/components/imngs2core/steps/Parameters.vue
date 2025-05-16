@@ -565,13 +565,25 @@ async function apply() {
       console.log("Published IMNGS2-Core threads");
       const pipelineArgs = await generateImngs2CorePipelineArgumentsObj();
       console.log("Pipeline arguments: ", pipelineArgs);
-      indexBridge.publishImngs2CoreParameters(pipelineArgs).then(() => {
-        console.log("Published IMNGS2-Core pipeline arguments");
-        resolve();
+
+      // ensure mapping file is in the correct format
+      indexBridge.convertMapping().then(() => {
+        console.log("Mapping file converted");
+
+        // publish pipeline arguments
+        indexBridge.publishImngs2CoreParameters(pipelineArgs).then(() => {
+          console.log("Published IMNGS2-Core pipeline arguments");
+          resolve();
+        }).catch(() => {
+          console.error("Could not publish IMNGS2-Core pipeline arguments");
+          reject();
+        });
+
       }).catch(() => {
-        console.error("Could not publish IMNGS2-Core pipeline arguments");
+        console.error("Could not convert mapping file");
         reject();
       });
+
     }).catch(() => {
       console.error("Could not publish IMNGS2-Core threads");
       reject();

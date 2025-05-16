@@ -1,12 +1,16 @@
-import {Environment, SpikeMode, Imngs2CoreAnalysisMode, LogSection} from "../enums";
+import {Environment, SpikeMode, MappingFileFormat, Imngs2CoreAnalysisMode, LogSection} from "../enums";
 import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
-import {existsSync, readFileSync, writeFile} from "fs";
+import fs, {existsSync, readFileSync, writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logToSection, updateProgress} from "./logHandler";
 import {run} from "./backend";
 import {helpPages} from "./helpPages";
+import xlsx from 'node-xlsx';
+
+
+const MAPPING_FILE_MODE = MappingFileFormat.XLSX;
 
 export class Imngs2CoreConfiguration {
     private analysisMode = Imngs2CoreAnalysisMode.TIC;
@@ -442,18 +446,72 @@ export class Imngs2CoreConfiguration {
     }
 
     private writeMappingFile() {
-        // save prefilled mapping file to baseDirectory
-        const timeStamp = Date.now();
-        this.mappingFile = path.join(this.baseDirectory, `mapping_${timeStamp}.csv`);  // use file extension .csv to open in Excel but keep TSV format
-        const content = this.generateMappingFileContent();
-        writeFile(this.mappingFile, content, (err) => {
-            console.error(err);
-        });
+        if (MAPPING_FILE_MODE == MappingFileFormat.TSV) {
+            this.writeMappingFileTsv();
+        } else if (MAPPING_FILE_MODE == MappingFileFormat.XLSX) {
+            this.writeMappingFileXlsx();
+        } else {
+            console.error(`Unknown mapping file mode ${MAPPING_FILE_MODE}`);
+            throw new Error(`Unknown mapping file mode ${MAPPING_FILE_MODE}`);
+        }
 
         // open mapping file in default editor
         if (this.spikeMode == SpikeMode.SPIKED) {
             this.openMappingFile();
         }
+    }
+
+    private writeMappingFileTsv() {
+        // save prefilled mapping file to baseDirectory
+        const timeStamp = Date.now();
+        const filePath = path.join(this.baseDirectory, `mapping_${timeStamp}.csv`);  // use file extension .csv to open in Excel but keep TSV format
+        const content = this.generateMappingFileContent();
+
+        this.writeTsv(filePath, content);
+        this.mappingFile = filePath;
+    }
+
+    private writeTsv(path: string, content: string[][]) {
+        const delimiter = "\t";
+        const rowDelimiter = "\n";
+
+        const tsvContent = content.map((row) => {
+            return row.join(delimiter);
+        }).join(rowDelimiter);
+
+        writeFile(path, tsvContent, (err) => {
+            console.error(err);
+        });
+    }
+
+    private writeMappingFileXlsx() {
+        // save prefilled mapping file to baseDirectory
+        const timeStamp = Date.now();
+        this.mappingFile = path.join(this.baseDirectory, `mapping_${timeStamp}.xlsx`);
+        const content = this.generateMappingFileContent();
+
+        const buffer = xlsx.build([{name: "mapping", data: content, options: {}}]);
+        writeFile(this.mappingFile, buffer, (err) => {
+            console.error(err);
+        });
+    }
+
+    public convertMappingFileFormatXlsxToTsv() {
+        if (MAPPING_FILE_MODE == MappingFileFormat.TSV) {
+            console.error(`Mapping file is already in TSV format`);
+            return;
+        }
+
+        // convert xlsx file to tsv file
+        const xlsxFile = this.mappingFile;
+        // get sheets of xlsx file; first sheet is the one we want
+        const workSheets = xlsx.parse(xlsxFile);
+
+        const tsvFile = this.mappingFile.replace(/\.xlsx$/, ".csv");
+        this.writeTsv(tsvFile, workSheets[0].data);
+
+        console.log(`Converted mapping file from XLSX to TSV format. New file: ${tsvFile}`);
+        this.mappingFile = tsvFile;
     }
 
     public openMappingFile() {
@@ -474,15 +532,14 @@ export class Imngs2CoreConfiguration {
         }
     }
 
+    // Generate Mapping file content as an array (columns) of string arrays (rows
     private generateMappingFileContent() {
-        const delimiter = "\t";
-
         // join additional metadata for header
-        let additionalMetadata = new Set<string>();
+        const additionalMetadata = new Set<string>();
         this.samples.forEach((sample) => {
             if (sample.metadata) {
                 // get keys of additional metadata
-                for (let key in sample.metadata.additional) {
+                for (const key in sample.metadata.additional) {
                     additionalMetadata.add(key);
                 }
             }
@@ -491,15 +548,15 @@ export class Imngs2CoreConfiguration {
 
         // remove default metadata keys
         const additionalColumns = [...additionalMetadata];
-        const columns = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path', ...additionalMetadata];
-        let content = columns.join(delimiter) + "\n";
+        const header = ['#SampleID', 'total_weight_in_g', 'spike_amount', 'parent_path', ...additionalMetadata];
+        const content = [header];
 
         this.samples.forEach((sample) => {
             const baseName = sample.name;
             // parent path relative to baseDirectory
 
             const parentPath = this.relativePathToBaseDirectory(path.dirname(sample.path));
-            let spike = {spikeIn: '0', weight: 'NaN'};  // set to dummy values; will be ignored by pipeline
+            const spike = {spikeIn: '0', weight: 'NaN'};  // set to dummy values; will be ignored by pipeline
             const additional = [];
             if (sample.metadata) {
                 console.debug(sample.metadata);
@@ -511,7 +568,7 @@ export class Imngs2CoreConfiguration {
                         spike.weight = sample.metadata.totalWeight.toString();
                     }
                 }
-                for (let column in additionalColumns) {
+                for (const column in additionalColumns) {
                     if (sample.metadata.additional && sample.metadata.additional.has(column)) {
                         additional.push(sample.metadata.additional.get(column));
                     } else {
@@ -521,13 +578,13 @@ export class Imngs2CoreConfiguration {
             }
             console.log(spike);
             console.log(additional);
-            content += [
+            content.push([
                 baseName,
                 spike.weight,
                 spike.spikeIn,
                 parentPath,
                 ...additional
-            ].join(delimiter) + "\n";
+            ]);
         });
         return content;
     }
