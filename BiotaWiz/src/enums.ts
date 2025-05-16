@@ -4,6 +4,11 @@ export enum SpikeMode {
     NONE = 'none',
 }
 
+export enum MappingFileFormat {
+    TSV = 'tsv',
+    XLSX = 'xlsx',
+}
+
 export enum Environment {
     IMNGS2CORE = "IMNGS2-Core",
 }

@@ -210,6 +210,11 @@ ipcMain.handle("imngs2core:openMappingFile", async () => {
     await imngs2CoreConfiguration.openMappingFile();
 });
 
+ipcMain.handle("imngs2core:convertMapping", async () => {
+    console.log("Converting mapping file");
+    return imngs2CoreConfiguration.convertMappingFileFormatXlsxToTsv();
+});
+
 ipcMain.handle("imngs2core:checkMapping", async () => {
     console.log("Checking mapping file");
     return imngs2CoreConfiguration.checkMapping();

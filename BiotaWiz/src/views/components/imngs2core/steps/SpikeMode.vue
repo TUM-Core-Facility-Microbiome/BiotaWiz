@@ -25,7 +25,7 @@
             <div class="text-sm">Spike-in standard was added to <b>all</b> samples</div>
             <div class="text-xs text-gray-500">
               The output will be normalized by spike count. You must provide the amount of spike-ins and
-              initial weight for all samples in the next step.
+              initial weight for all samples. Using this option will open an Excel file. Please fill it in and save it.
             </div>
             <div class="mt-2">
               <span class="whitespace-nowrap rounded-full bg-purple-100 px-2.5 py-0.5 text-sm text-purple-700 mr-1">spike removal</span>

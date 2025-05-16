@@ -144,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineExpose, ref, onMounted, reactive} from "vue";
+import {defineExpose, ref, reactive, onActivated} from "vue";
 import {Environment, LogSection} from "../../../../enums";
 
 class IMNGS2CoreLogLine {
@@ -283,7 +283,8 @@ async function openDocumentationPreprocessing() {
 }
 
 
-onMounted(() => {
+onActivated(() => {
+  console.log("IMNGS2-Core run activated. Triggering run.");
   state.autoScroll = true;
   getImngs2CoreBaseDirectory();
   // prepare the environment
@@ -395,7 +396,9 @@ async function rollback() {
     // mute log handler
     logHandlerFn = muteLogHandler;
     // send termination request
-    await indexBridge.terminateImngs2CoreBackend();
+    indexBridge.terminateImngs2CoreBackend().finally(() => {
+      resolve();
+    });
     resolve();
   });
 }

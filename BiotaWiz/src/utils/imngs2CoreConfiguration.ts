@@ -1,12 +1,16 @@
-import {Environment, SpikeMode, Imngs2CoreAnalysisMode, LogSection} from "../enums";
+import {Environment, SpikeMode, MappingFileFormat, Imngs2CoreAnalysisMode, LogSection} from "../enums";
 import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
-import {existsSync, readFileSync, writeFile} from "fs";
+import fs, {existsSync, readFileSync, writeFile} from "fs";
 import {stringify} from "yaml";
 import {taskQueue} from "./taskQueue";
 import {logToSection, updateProgress} from "./logHandler";
 import {run} from "./backend";
 import {helpPages} from "./helpPages";
+import xlsx from 'node-xlsx';
+
+
+const MAPPING_FILE_MODE = MappingFileFormat.XLSX;
 
 export class Imngs2CoreConfiguration {
     private analysisMode = Imngs2CoreAnalysisMode.TIC;
@@ -442,15 +446,32 @@ export class Imngs2CoreConfiguration {
     }
 
     private writeMappingFile() {
-        return this.writeMappingFileTsv();
+        if (MAPPING_FILE_MODE == MappingFileFormat.TSV) {
+            this.writeMappingFileTsv();
+        } else if (MAPPING_FILE_MODE == MappingFileFormat.XLSX) {
+            this.writeMappingFileXlsx();
+        } else {
+            console.error(`Unknown mapping file mode ${MAPPING_FILE_MODE}`);
+            throw new Error(`Unknown mapping file mode ${MAPPING_FILE_MODE}`);
+        }
+
+        // open mapping file in default editor
+        if (this.spikeMode == SpikeMode.SPIKED) {
+            this.openMappingFile();
+        }
     }
 
     private writeMappingFileTsv() {
         // save prefilled mapping file to baseDirectory
         const timeStamp = Date.now();
-        this.mappingFile = path.join(this.baseDirectory, `mapping_${timeStamp}.csv`);  // use file extension .csv to open in Excel but keep TSV format
+        const filePath = path.join(this.baseDirectory, `mapping_${timeStamp}.csv`);  // use file extension .csv to open in Excel but keep TSV format
         const content = this.generateMappingFileContent();
 
+        this.writeTsv(filePath, content);
+        this.mappingFile = filePath;
+    }
+
+    private writeTsv(path: string, content: string[][]) {
         const delimiter = "\t";
         const rowDelimiter = "\n";
 
@@ -458,14 +479,39 @@ export class Imngs2CoreConfiguration {
             return row.join(delimiter);
         }).join(rowDelimiter);
 
-        writeFile(this.mappingFile, tsvContent, (err) => {
+        writeFile(path, tsvContent, (err) => {
             console.error(err);
         });
+    }
 
-        // open mapping file in default editor
-        if (this.spikeMode == SpikeMode.SPIKED) {
-            this.openMappingFile();
+    private writeMappingFileXlsx() {
+        // save prefilled mapping file to baseDirectory
+        const timeStamp = Date.now();
+        this.mappingFile = path.join(this.baseDirectory, `mapping_${timeStamp}.xlsx`);
+        const content = this.generateMappingFileContent();
+
+        const buffer = xlsx.build([{name: "mapping", data: content, options: {}}]);
+        writeFile(this.mappingFile, buffer, (err) => {
+            console.error(err);
+        });
+    }
+
+    public convertMappingFileFormatXlsxToTsv() {
+        if (MAPPING_FILE_MODE == MappingFileFormat.TSV) {
+            console.error(`Mapping file is already in TSV format`);
+            return;
         }
+
+        // convert xlsx file to tsv file
+        const xlsxFile = this.mappingFile;
+        // get sheets of xlsx file; first sheet is the one we want
+        const workSheets = xlsx.parse(xlsxFile);
+
+        const tsvFile = this.mappingFile.replace(/\.xlsx$/, ".csv");
+        this.writeTsv(tsvFile, workSheets[0].data);
+
+        console.log(`Converted mapping file from XLSX to TSV format. New file: ${tsvFile}`);
+        this.mappingFile = tsvFile;
     }
 
     public openMappingFile() {

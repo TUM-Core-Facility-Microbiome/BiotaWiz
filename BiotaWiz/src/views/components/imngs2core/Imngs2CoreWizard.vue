@@ -22,7 +22,7 @@
             title: 'Run',
           },
         ]"
-        :beforeChange="onTabBeforeChange"
+        :beforeMount="onTabBeforeChange"
         @change="onChangeCurrentTab"
         @complete:wizard="wizardCompleted"
     >
@@ -38,8 +38,10 @@
       <h5 v-if="currentTabIndex === 3">
         <Parameters ref="step-3" @update:isValid="isChildValid = $event" />
       </h5>
-      <h5 v-if="currentTabIndex === 4">
-        <Run ref="step-4" @update:isValid="isChildValid = $event" />
+      <h5 v-if="currentTabIndex === finalStep">
+        <KeepAlive>
+          <Run ref="step-4" @update:isValid="isChildValid = $event" />
+        </KeepAlive>
       </h5>
     </Wizard>
   </div>
@@ -78,6 +80,7 @@ import Wizard from 'form-wizard-vue3';
 import BaseSelection from "./steps/BaseSelection.vue";
 import StudySelection from "./steps/StudySelection.vue";
 import SpikeMode from "./steps/SpikeMode.vue";
+//import CheckMapping from "./steps/CheckMappingFile.vue";
 import Parameters from "./steps/Parameters.vue";
 import Run from "./steps/Imngs2CoreRun.vue";
 
@@ -93,41 +96,59 @@ export default {
   },
   data() {
     return {
+      finalStep: 4,
       currentTabIndex: 0,
+      newIndex: 0,
+      oldIndex: 0,
+      isClickingForward: false,
       isChildValid: false,
     };
   },
   methods: {
     async onChangeCurrentTab(index: number, oldIndex: number) {
+      this.newIndex = index;
+      this.oldIndex = oldIndex;
+      this.isClickingForward = index > oldIndex;
+      console.log('Current Tab Index:', this.newIndex);
+      console.log('Old Tab Index:', this.oldIndex);
+      console.log('Is Clicking Forward:', this.isClickingForward);
+    },
+    async onTabBeforeChange() {
       return new Promise<boolean>((resolve, reject) => {
-        if (index > oldIndex + 1) {
-          console.log('You can not skip tabs');
-          this.currentTabIndex = oldIndex;
-          reject(false);
-        }
-        if (oldIndex >= 0) {
-         if (index == oldIndex + 1) {  // next
-            this.$refs[`step-${oldIndex}`].apply().then(() => {
-              this.currentTabIndex = index;
+        if (this.isClickingForward) {
+          if (this.$refs[`step-${this.oldIndex}`] && this.$refs[`step-${this.oldIndex}`].apply) {
+            this.$refs[`step-${this.oldIndex}`].apply().then(() => {
+              console.log(`Step ${this.oldIndex} applied`);
+              this.currentTabIndex = this.newIndex;
               resolve(true);
             }).catch(() => {
-              this.currentTabIndex = oldIndex;
+              console.log(`Step ${this.oldIndex} apply failed`);
+              this.currentTabIndex = this.oldIndex;
               reject(false);
             });
-          } else {  // back
-           this.$refs[`step-${oldIndex}`].rollback().then(() => {
-             resolve(true);
-           }).catch(() => {
-             reject(false);
-           });
+          } else {
+            console.log(`Apply not defined for step ${this.oldIndex}`);
+            this.currentTabIndex = this.newIndex;
+            resolve(true);
           }
         } else {
-          this.currentTabIndex = index;
-          resolve(true);
+          if (this.$refs[`step-${this.oldIndex}`] && this.$refs[`step-${this.oldIndex}`].rollback) {
+            this.$refs[`step-${this.oldIndex}`].rollback().then(() => {
+              console.log(`Step ${this.oldIndex} rollback`);
+              this.currentTabIndex = this.newIndex;
+              resolve(true);
+            }).catch(() => {
+              console.log(`Step ${this.oldIndex} rollback failed`);
+              this.currentTabIndex = this.oldIndex;
+              reject(false);
+            });
+          } else {
+            console.log(`Rollback not defined for step ${this.oldIndex}`);
+            this.currentTabIndex = this.newIndex;
+            resolve(true);
+          }
         }
       });
-    },
-    onTabBeforeChange() {
     },
     wizardCompleted() {
       console.log('Wizard Completed');
@@ -135,7 +156,7 @@ export default {
   },
   computed: {
     nextButtonOptions() {
-      if (this.currentTabIndex === 4) {
+      if (this.currentTabIndex === this.finalStep) {
         return {
           hidden: true,
         };
@@ -147,7 +168,7 @@ export default {
       }
     },
     backButtonOptions() {
-      if (this.currentTabIndex === 4) {
+      if (this.currentTabIndex === this.finalStep) {
         return {
           text: 'Stop processing and go back'
         };
