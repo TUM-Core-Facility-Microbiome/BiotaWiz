@@ -14,4 +14,5 @@ export const helpPages = {
     IMNPREC: `${GITHUB_BASE_URL}/discussions/15`,  // Failure in preprocessing but analysis completed (partial preprocessing)
     IMNPREA: `${GITHUB_BASE_URL}/discussions/16`,  // All samples failed to get preprocessed
     IMNSKIP: `${GITHUB_BASE_URL}/discussions/17`,  // Analysis skipped
+    NOSTRT: `${GITHUB_BASE_URL}/discussions/31`,  // Could not start the pipeline
 }

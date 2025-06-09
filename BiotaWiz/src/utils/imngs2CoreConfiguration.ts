@@ -440,6 +440,10 @@ export class Imngs2CoreConfiguration {
                     step: "Running IMNGS2-Core",
                     message: "Could not start pipeline",
                     state: "error",
+                    error: {
+                        code: "NOSTRT",
+                        helpUrl: helpPages.NOSTRT,
+                    },
                 });
             });
         });
