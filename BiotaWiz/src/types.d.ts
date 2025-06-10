@@ -63,6 +63,7 @@ interface ITrimOneSideArgs {
 
 interface IFilterBothSidesArgs {
     fastq_maxee_rate: number;
+    fastq_truncqual: number;
 }
 
 interface IFilterOneSideArgs {
@@ -70,17 +71,14 @@ interface IFilterOneSideArgs {
     fastq_truncqual: number;
 }
 
-interface IDereplicationArgs {
-    sizein: boolean;
-    sizeout: boolean;
-}
-
-interface IClusterZOTUsArgs {
+interface IIndividualSampleClusterZOTUsArgs {
     minsize: number;
 }
 
-interface IDeNovoClusterZOTUsArgs {
+interface IDeNovoClusterOTUsArgs {
     minsize: number;
+    abund_limit: number;
+    sample_wise_correction: boolean;
 }
 
 interface IFilter16SArgs {
@@ -89,28 +87,32 @@ interface IFilter16SArgs {
 }
 
 interface IBuildZOTUTableArgs {
-    id: number;
+    match_id: number;
 }
-
 
 interface IAddTaxArgs {
     turn: string;
 }
 
-interface ITrimSidesArgs {
-    stripleft: number;
-    stripright: number;
+interface IClusterZOTUsArgs {
+    minsize: number;
+    abund_limit: number;
+    sample_wise_correction: boolean;
+    match_id: number;
 }
 
 interface IComplexTICArgs {
     family_sim: number;
     genus_sim: number;
     species_sim: number;
-}
-
-interface ICreateTableTICArgs {
     abund_limit: number;
     sample_wise_correction: boolean;
+}
+
+interface ITACClusterArgs {
+    abund_limit: number;
+    sample_wise_correction: boolean;
+    cluster_thr: number;
 }
 
 interface IImngs2CoreArguments {
@@ -119,21 +121,23 @@ interface IImngs2CoreArguments {
     TrimOneSideArgs: ITrimOneSideArgs;
     FilterBothSidesArgs: IFilterBothSidesArgs;
     FilterOneSideArgs: IFilterOneSideArgs;
-    DereplicationArgs: IDereplicationArgs;
-    ClusterZOTUsArgs: IClusterZOTUsArgs;
+    IndividualSampleClusterZOTUsArgs: IIndividualSampleClusterZOTUsArgs;
     Filter16SArgs: IFilter16SArgs;
     BuildZOTUTableArgs: IBuildZOTUTableArgs;
     AddTaxArgs: IAddTaxArgs;
-    TrimSidesArgs: ITrimSidesArgs;
-    CreateTableTICArgs: ICreateTableTICArgs;
+    ClusterZOTUsArgs: IClusterZOTUsArgs;
 }
 
 interface IImngs2CoreArgumentsTICMode extends IImngs2CoreArguments {
     ComplexTICArgs: IComplexTICArgs;
 }
 
-interface IImngs2CoreArgumentsZOTUMode extends IImngs2CoreArguments {
-    DeNovoClusterZOTUsArgs: IDeNovoClusterZOTUsArgs;
+interface IImngs2CoreArgumentsDeNovoMode extends IImngs2CoreArguments {
+    DeNovoClusterOTUsArgs: IDeNovoClusterOTUsArgs;
+}
+
+interface IImngs2CoreArgumentsTACMode extends IImngs2CoreArguments {
+    TACClusterArgs: ITACClusterArgs;
 }
 
 interface IImngs2CoreBaseDirectory {
