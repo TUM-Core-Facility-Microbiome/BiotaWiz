@@ -87,7 +87,7 @@
           <summary class="flex cursor-pointer items-center justify-between gap-1.5 rounded-lg bg-gray-900 group-open:bg-gray-600 p-2 pl-3 text-white">
             <h2 class="font-medium group-open:font-bold">
               <span class="inline-flex">
-                <svg v-if="logProcessor.lastMessage() === '# Clean Up: Started'"
+                <svg v-if="logProcessor.lastMessage() === '# Finished Preprocessing'"
                      aria-hidden="true"
                      class="w-4 h-4 me-2 text-green-500 dark:text-green-400 flex-shrink-0"
                      viewBox="0 0 20 20"
