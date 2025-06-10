@@ -514,7 +514,7 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
       stripleft: Number(stripleft.value),  // stripleft applies to both TrimBothSidesArgs and TrimOneSideArgs
     };
 
-    const createTableTICArgs: ICreateTableTICArgs = {
+    const createTableTICArgs: IClusterZOTUsArgs = {
       abund_limit: Number(abund_limit.value)*0.01, // in percentages
       sample_wise_correction: Boolean(sample_wise_correction.value),
     };
@@ -526,7 +526,7 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
       fastq_maxmergelen: Number(fastq_maxmergelen.value),
     };
 
-    const clusterZOTUsArgs: IClusterZOTUsArgs = {
+    const clusterZOTUsArgs: IIndividualSampleClusterZOTUsArgs = {
       minsize: Number(minsize.value),
     };
 

@@ -160,68 +160,77 @@ export class Imngs2CoreConfiguration {
     }
 
     public getDefaultParameters(): IImngs2CoreArguments {
-        // Set up with defaults common to all four pipelines (TIC, TAC, ZOTU, OTU)
-        const DEFAULTS = {
+        // Set up with defaults common to all three pipelines (TIC, TAC, De-Novo)
+        const DEFAULTS: IImngs2CoreArguments = {
             MergePairsArgs: {
                 fastq_maxdiffs: 50,
                 fastq_pctid: 50,
                 fastq_minmergelen: 200,
-                fastq_maxmergelen: 600
+                fastq_maxmergelen: 600,
             },
             TrimBothSidesArgs: {
                 stripleft: 17,
-                stripright: 21
+                stripright: 21,
             },
             TrimOneSideArgs: {
-                stripleft: 17
+                stripleft: 17,
             },
             FilterBothSidesArgs: {
-                fastq_maxee_rate: 0.002
+                fastq_maxee_rate: 0.002,
+                fastq_truncqual: 10,
             },
             FilterOneSideArgs: {
                 fastq_maxee_rate: 0.002,
-                fastq_truncqual: 10
+                fastq_truncqual: 10,
             },
-            ClusterZOTUsArgs: {
+            IndividualSampleClusterZOTUsArgs: {
                 minsize: 2
             },
             Filter16SArgs: {
                 e: 0.1,
-                num_alignments: 1
+                num_alignments: 1,
             },
             BuildZOTUTableArgs: {
-                id: 0.99
+                match_id: 0.99,
             },
             AddTaxArgs: {
                 turn: "all"
             },
-            TrimSidesArgs: {
-                stripleft: 5,
-                stripright: 5
+            ClusterZOTUsArgs: {
+                minsize: 2,
+                abund_limit: 0.000,
+                sample_wise_correction: false,
+                match_id: 0.99,
             },
-            CreateTableTICArgs: {
-                abund_limit: 0.0025,
-                sample_wise_correction: false
-            }
         }
 
         // set mode specific arguments
         if (this.analysisMode == Imngs2CoreAnalysisMode.TIC) {
-            (DEFAULTS as IImngs2CoreArgumentsTICMode).ComplexTICArgs ={
-                family_sim: 0.95,
-                genus_sim: 0.97,
-                species_sim: 0.987
+            (DEFAULTS as IImngs2CoreArgumentsTICMode).ComplexTICArgs = {
+                family_sim: 0.90,
+                genus_sim: 0.95,
+                species_sim: 0.987,
+                abund_limit: 0.0025,
+                sample_wise_correction: false,
             }
 
             return DEFAULTS as IImngs2CoreArgumentsTICMode
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
-            (DEFAULTS as IImngs2CoreArgumentsZOTUMode).DeNovoClusterZOTUsArgs = {
-                minsize: 8
+            (DEFAULTS as IImngs2CoreArgumentsDeNovoMode).DeNovoClusterOTUsArgs = {
+                minsize: 8,
+                abund_limit: 0.0025,
+                sample_wise_correction: false,
             }
 
-            return DEFAULTS as IImngs2CoreArgumentsZOTUMode
+            return DEFAULTS as IImngs2CoreArgumentsDeNovoMode
         } else if (this.analysisMode == Imngs2CoreAnalysisMode.TAC) {
-            return DEFAULTS
+            (DEFAULTS as IImngs2CoreArgumentsTACMode).TACClusterArgs = {
+                abund_limit: 0.0025,
+                sample_wise_correction: false,
+                cluster_thr: 0.987,
+            }
+
+            return DEFAULTS as IImngs2CoreArgumentsTACMode
         } else {
             console.error(`Unknown analysis mode ${this.analysisMode}`);
             return null;
