@@ -13,4 +13,4 @@ export const API_BEARER_AUTH = 'github_pat_11AICGPQQ0CbRc1nGMIBfy_ry2DdGJUmoh2On
 
 export const IMNGS2CORE_REPOSITORY_OWNER = 'mpourjam';
 export const IMNGS2CORE_REPOSITORY_NAME = 'tactic-pipeline';
-export const IMNGS2CORE_VRANGE = '~0.3.6';
+export const IMNGS2CORE_VRANGE = '~0.4.0';
