@@ -151,7 +151,7 @@ export default {
       });
     },
     wizardCompleted() {
-      console.log('Wizard Completed');
+      this.$router.push({path: '/application-selector'});
     },
   },
   computed: {
@@ -170,7 +170,7 @@ export default {
     backButtonOptions() {
       if (this.currentTabIndex === this.finalStep) {
         return {
-          text: 'Stop processing and go back'
+          text: 'back (stop processing)'
         };
       } else {
         return {
@@ -180,7 +180,8 @@ export default {
     },
     doneButtonOptions() {
         return {
-          disabled: true,
+          text: 'Start over',
+          disabled: !this.isChildValid,
         };
     },
   },

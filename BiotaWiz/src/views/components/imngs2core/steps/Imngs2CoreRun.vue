@@ -144,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineExpose, ref, reactive, onActivated} from "vue";
+import {defineExpose, ref, reactive, onActivated, watchEffect} from "vue";
 import {Environment, LogSection} from "../../../../enums";
 
 class IMNGS2CoreLogLine {
@@ -307,8 +307,13 @@ onActivated(() => {
 
 const state = reactive({
   baseDir: null as string | null,
-  analysisDir: null as string | null,
+  analysisDir: null as string | null,  // signal that pipeline is done and wrote to analysis dir
   autoScroll: true,
+});
+
+const emit = defineEmits(['update:isValid']);
+watchEffect(() => {
+  emit('update:isValid', state.analysisDir !== null && state.analysisDir !== '');
 });
 
 function getImngs2CoreBaseDirectory() {
@@ -404,6 +409,7 @@ async function rollback() {
 }
 
 defineExpose({
+  // no apply function, redirection is handled in wizardCompleted function on the wizard
   rollback,
 });
 </script>
