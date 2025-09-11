@@ -273,7 +273,8 @@ export class Imngs2CoreConfiguration {
             if (this.preprocessToIndividualZOTUs) {  // set flag to preprocess up to individual ZOTUs
                 argumentList.push("--individual-zotus");
             }
-            await run(Environment.IMNGS2CORE, "/base/entrypoint.sh",
+            await run(Environment.IMNGS2CORE,
+                "/base/run_tactic.py",  // skip the docker entrypoint and call the script directly
                 {
                     binds: [
                         {
