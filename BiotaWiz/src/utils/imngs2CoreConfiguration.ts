@@ -262,9 +262,8 @@ export class Imngs2CoreConfiguration {
                 state: "running",
             });
             logToSection(LogSection.PREPARE_BACKEND, "Creating mounts");
-            // build the base command
-            const baseCommand = [
-                "run_imngs2",
+            // build the argument list
+            const argumentList = [
                 "--analysis-mode", this.analysisMode.valueOf(),
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
@@ -272,16 +271,17 @@ export class Imngs2CoreConfiguration {
             ];
             // add flags
             if (this.preprocessToIndividualZOTUs) {  // set flag to preprocess up to individual ZOTUs
-                baseCommand.push("--individual-zotus");
+                argumentList.push("--individual-zotus");
             }
-            await run(Environment.IMNGS2CORE, baseCommand, {
-                binds: [
-                    {
-                        source: this.baseDirectory,
-                        target: "/base/inputs",
-                    },
-                ],
-            }).then((statusCode: number) => {
+            await run(Environment.IMNGS2CORE, "/base/entrypoint.sh",
+                {
+                    binds: [
+                        {
+                            source: this.baseDirectory,
+                            target: "/base/inputs",
+                        },
+                    ],
+            }, argumentList).then((statusCode: number) => {
                 logToSection(LogSection.PREPARE_BACKEND, `Pipeline finished with status code ${statusCode}`);
                 console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
