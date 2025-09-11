@@ -427,6 +427,16 @@ export class Imngs2CoreConfiguration {
                                 },
                             }
                         );
+                    } else if (statusCode == 171) {
+                        updateProgress({
+                            step: "Running IMNGS2-Core",
+                            message: `Failure in spike removal`,
+                            state: "error",
+                            error: {
+                                code: "F171",
+                                helpUrl: helpPages.F171,
+                            },
+                        });
                     } else {
                         updateProgress({
                             step: "Running IMNGS2-Core",
