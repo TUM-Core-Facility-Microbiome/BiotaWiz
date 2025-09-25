@@ -25,10 +25,7 @@
                 v-model="selectedTag"
             >
               <option :value="null">auto-update to latest version every run</option>
-              <option v-for="option in compatibleTagStrings" :value="option" :key="option">always use version {{
-                  option
-                }}
-              </option>
+              <option v-for="option in compatibleTagStrings" :value="option" :key="option">always use version {{option}}</option>
             </select>
             <p id="ImageTag" class="text-xs text-muted-foreground">
               Changes in the environment can affect the results of the pipeline. You can specify a version of the environment to use
