@@ -347,7 +347,7 @@ function processLogLine(section: LogSection, logMessage: string) {
       const loggerName = m.groups?.name;
 
       let logProcessor: LogStageProcessor;
-      if (loggerName.startsWith('run_imngs2.preprocessing.')) {  // preprocessing logger
+      if (loggerName.startsWith('run_tactic.preprocessing.')) {  // preprocessing logger
         // add preprocessing logger if not present
         if (!preprocessingLogProcessors.value.hasOwnProperty(m.groups?.name)) {
           preprocessingLogProcessors.value[loggerName] = new LogStageProcessor();
