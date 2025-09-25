@@ -38,19 +38,19 @@ const optionDefinitions = [
         name: 'pipeline-repository-owner',
         type: String,
         defaultValue: REPOSITORY_OWNER,
-        description: 'GitHub repository owner of IMNGS2-Core.'
+        description: 'GitHub repository owner of the pipeline repo.'
     },
     {
         name: 'pipeline-repository-name',
         type: String,
         defaultValue: REPOSITORY_NAME,
-        description: 'GitHub repository name of IMNGS2-Core.'
+        description: 'GitHub repository name of the pipeline repo.'
     },
     {
         name: 'pipeline-vrange',
         type: String,
         defaultValue: VRANGE,
-        description: 'Semantic version range for IMNGS2-Core.'
+        description: 'Compatible semantic version range of the pipeline.'
     },
 ]
 
