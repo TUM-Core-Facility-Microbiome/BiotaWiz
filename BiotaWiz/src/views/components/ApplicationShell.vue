@@ -1,6 +1,5 @@
 <template>
   <!-- Application Shell -->
-  <!--  <NavBar/>-->
   <router-view></router-view>
   <!-- Application Shell End -->
 </template>
