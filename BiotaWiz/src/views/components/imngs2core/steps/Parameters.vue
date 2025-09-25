@@ -721,7 +721,6 @@ import {ref, watchEffect} from 'vue';
 import {useRouter} from "vue-router";
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
-import {Imngs2CoreAnalysisMode} from "../../../../enums";
 
 const router = useRouter();
 
