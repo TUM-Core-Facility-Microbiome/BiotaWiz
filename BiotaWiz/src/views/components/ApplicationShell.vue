@@ -1,9 +1,7 @@
 <template>
   <!-- Application Shell -->
   <!--  <NavBar/>-->
-  <div class="container left-16 m-3 relative mb-16">
-    <router-view></router-view>
-  </div>
+  <router-view></router-view>
   <!-- Application Shell End -->
 </template>
 
