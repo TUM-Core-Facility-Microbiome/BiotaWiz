@@ -11,6 +11,6 @@ export const REGISTRY_AUTH = {username: 'TOKEN', password: 'ghp_LgcD01jyMZ0FTlbw
 export const API_URL = 'https://api.github.com';
 export const API_BEARER_AUTH = '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';
 
-export const IMNGS2CORE_REPOSITORY_OWNER = 'mpourjam';
-export const IMNGS2CORE_REPOSITORY_NAME = 'tactic-pipeline';
-export const IMNGS2CORE_VRANGE = '~0.7.0';
+export const REPOSITORY_OWNER = 'mpourjam';
+export const REPOSITORY_NAME = 'tactic-pipeline';
+export const VRANGE = '~0.7.0';
