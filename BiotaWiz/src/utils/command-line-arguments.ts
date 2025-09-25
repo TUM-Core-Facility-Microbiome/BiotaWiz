@@ -35,7 +35,7 @@ const optionDefinitions = [
         description: 'GitHub API base URL including protocol.'
     },
     {
-        name: `pipeline-repository-owner`,
+        name: 'pipeline-repository-owner',
         type: String,
         defaultValue: REPOSITORY_OWNER,
         description: 'GitHub repository owner of IMNGS2-Core.'
