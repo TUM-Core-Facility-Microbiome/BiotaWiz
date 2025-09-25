@@ -33,7 +33,7 @@
                 <label for="preprocess-to-individual-zotus" class="pt-1">
                   <p class="text-sm font-mono">Create ZOTU table for each sample</p>
                   <p class="text-xs text-gray-500">
-                    Choosing this option will tirgger full preprocessing for each sample. It produces ZOTUs table for each sample and
+                    Choosing this option will trigger full preprocessing for each sample. It produces ZOTUs table for each sample and
                     increases pipeline run time.
                   </p>
                 </label>
