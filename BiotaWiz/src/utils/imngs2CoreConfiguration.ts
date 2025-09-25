@@ -24,6 +24,7 @@ export class Imngs2CoreConfiguration {
     private threads: Number = 1;
 
     private preprocessToIndividualZOTUs: boolean = false;
+    private skipNonBacterialFilter: boolean = false;
 
     private analysisDirectory: string | null = null;
 
@@ -50,6 +51,11 @@ export class Imngs2CoreConfiguration {
     public setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs: boolean) {
         this.preprocessToIndividualZOTUs = preprocessToIndividualZOTUs;
         console.log(`Preprocess to individual ZOTUs set to ${preprocessToIndividualZOTUs}`);
+    }
+
+    public setSkipNonBacterialFilter(skipNonBacterialFilter: boolean) {
+        this.skipNonBacterialFilter = skipNonBacterialFilter;
+        console.log(`Skip non-bacterial filter set to ${skipNonBacterialFilter}`);
     }
 
     public setSamples(samples: IFileSystemSample[]) {
@@ -262,26 +268,31 @@ export class Imngs2CoreConfiguration {
                 state: "running",
             });
             logToSection(LogSection.PREPARE_BACKEND, "Creating mounts");
-            // build the base command
-            const baseCommand = [
-                "run_imngs2",
+            // build the argument list
+            const argumentList = [
                 "--analysis-mode", this.analysisMode.valueOf(),
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
                 "--threads", this.threads.toString(),
             ];
-            // add flags
+            // add conditional flags
             if (this.preprocessToIndividualZOTUs) {  // set flag to preprocess up to individual ZOTUs
-                baseCommand.push("--individual-zotus");
+                argumentList.push("--individual-zotus");
             }
-            await run(Environment.IMNGS2CORE, baseCommand, {
-                binds: [
-                    {
-                        source: this.baseDirectory,
-                        target: "/base/inputs",
-                    },
-                ],
-            }).then((statusCode: number) => {
+            if (this.skipNonBacterialFilter) {  // set flag to skip non-bacterial filter
+                argumentList.push("--skip-non-bacterial-filter");
+            }
+
+            await run(Environment.IMNGS2CORE,
+                "/base/run_tactic.py",  // skip the docker entrypoint and call the script directly
+                {
+                    binds: [
+                        {
+                            source: this.baseDirectory,
+                            target: "/base/inputs",
+                        },
+                    ],
+            }, argumentList).then((statusCode: number) => {
                 logToSection(LogSection.PREPARE_BACKEND, `Pipeline finished with status code ${statusCode}`);
                 console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
@@ -426,6 +437,16 @@ export class Imngs2CoreConfiguration {
                                 },
                             }
                         );
+                    } else if (statusCode == 171) {
+                        updateProgress({
+                            step: "Running IMNGS2-Core",
+                            message: `Failure in spike removal`,
+                            state: "error",
+                            error: {
+                                code: "F171",
+                                helpUrl: helpPages.F171,
+                            },
+                        });
                     } else {
                         updateProgress({
                             step: "Running IMNGS2-Core",

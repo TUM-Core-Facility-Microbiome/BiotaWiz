@@ -936,16 +936,22 @@ export async function cleanUpBackend(environment: Environment) {
 /**
  * Run a command using the backend.
  * @param environment The environment for which to run the command.
- * @param command The command to run as an array of strings.
+ * @param entrypoint The entrypoint to run (automatically done for Docker).
  * @param options Options may include bind mounts.
+ * @param argumentList The argument list to run as an array of strings.
  */
-export async function run(environment: Environment, command: string[], options: IRunOptions = {binds: []}) {
+export async function run(
+    environment: Environment,
+    entrypoint: string,
+    options: IRunOptions = {binds: []},
+    argumentList: string[]
+) {
     const backend = await getBackend();
     switch (backend.type) {
         case DOCKER.type:
-            return await runWithDocker(environment, command, options);
+            return await runWithDocker(environment, entrypoint, argumentList, options);
         case WSL.type:
-            return await runWithWsl(environment, command, options);
+            return await runWithWsl(environment, entrypoint, argumentList, options);
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
@@ -964,16 +970,19 @@ function getDockerBindFormat(binds: IBind[]) {
 /**
  * Run a command using Docker as the backend.
  * @param environment The environment for which to run the command.
- * @param command The command to run as an array of strings.
+ * @param entrypoint The entrypoint to run.
+ * @param argumentList The command to run as an array of strings.
  * @param options Options may include bind mounts.
  */
-async function runWithDocker(environment: Environment, command: string[], options: IRunOptions) {
-    console.log(`Running command with Docker: ${command}`);
+async function runWithDocker(
+    environment: Environment, entrypoint: string, argumentList: string[], options: IRunOptions) {
+    console.log(`Running command with Docker: ${argumentList}`);
     const image = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
-    console.log(`Running command ${command.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
+    console.log(`Running command ${argumentList.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
     const container = await docker.createContainer({
         Image: image,
-        Cmd: command,
+        Entrypoint: entrypoint,
+        Cmd: argumentList,
         HostConfig: {
             AutoRemove: true,
             Binds: getDockerBindFormat(options.binds),
@@ -998,12 +1007,14 @@ async function runWithDocker(environment: Environment, command: string[], option
 /**
  * Run a command using WSL as the backend.
  * @param environment The environment for which to run the command.
- * @param command The command to run as an array of strings.
+ * @param argumentList The command to run as an array of strings.
  * @param options Options may include bind mounts.
  */
-async function runWithWsl(environment: Environment, command: string[], options: IRunOptions) {
+async function runWithWsl(
+    environment: Environment, entrypoint: string, argumentList: string[], options: IRunOptions
+) {
     const backend = await getBackend();
-    console.log(`Running command with WSL: ${command}`);
+    console.log(`Running command with WSL: ${argumentList}`);
     const distribution = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
 
     // run command to make bind mounts
@@ -1076,7 +1087,7 @@ async function runWithWsl(environment: Environment, command: string[], options: 
 
     logToSection(LogSection.PREPARE_ENVIRONMENT, `Running command`);
     runningDistributions.add(distribution);
-    const args = ["--distribution", distribution, "--", ...command];
+    const args = ["--distribution", distribution, "--", entrypoint, ...argumentList];
     return await runSubprocess(backend.command, args, (msg: string) => {
         logToSection(LogSection.CONTAINER_STREAM, msg);
     }, runningWslMainProcesses).finally(() => {

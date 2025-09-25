@@ -33,8 +33,27 @@
                 <label for="preprocess-to-individual-zotus" class="pt-1">
                   <p class="text-sm font-mono">Create ZOTU table for each sample</p>
                   <p class="text-xs text-gray-500">
-                    Choosing this option will tirgger full preprocessing for each sample. It produces ZOTUs table for each sample and
+                    Choosing this option will trigger full preprocessing for each sample. It produces ZOTUs table for each sample and
                     increases pipeline run time.
+                  </p>
+                </label>
+              </div>
+              <div class="flex items-start space-x-3 mt-2">
+                <div class="relative mb-6">
+                  <input
+                      id="skip-non-bacterial-filter"
+                      type="checkbox"
+                      v-model="skipNonBacterialFilter"
+                      class="border rounded-md"
+                  >
+                </div>
+                <label for="skip-non-bacterial-filter" class="pt-1">
+                  <p class="text-sm font-mono">Do not filter out non-16S sequences</p>
+                  <p class="text-xs text-gray-500">
+                    If set, the filtering step to filter non-bacterial 16S
+                    sequences will be skipped. It speeds up the pipeline
+                    and makes the pipeline capable of handling non-16S
+                    sequences.
                   </p>
                 </label>
               </div>
@@ -104,25 +123,6 @@
                     type="text"
                     v-model="stripright"
                     placeholder="default: 21"
-                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                >
-              </div>
-            </div>
-          </div>
-          <div class="pt-6">
-            <div class="text-lg font-bold">IndividualSampleClusterZOTUsArgs</div>
-            <div class="text-sm text-gray-700"></div>
-            <div class="mt-3">
-              <div>
-                <label for="minsize">
-                  <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500"></div>
-                </label>
-                <input
-                    id="minsize"
-                    type="text"
-                    v-model="individualSampleClusterZOTUsArgs_minsize"
-                    placeholder="default: 2"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
               </div>
@@ -294,12 +294,12 @@
             <div class="text-sm text-gray-700"></div>
             <div class="mt-3">
               <div>
-                <label for="iscz_minsize">
+                <label for="minsize">
                   <div class="text-sm font-mono">minsize</div>
                   <div class="text-xs text-gray-500"></div>
                 </label>
                 <input
-                    id="iscz_minsize"
+                    id="minsize"
                     type="text"
                     v-model="individualSampleClusterZOTUsArgs_minsize"
                     placeholder="default: 2"
@@ -762,6 +762,17 @@ watchEffect(() => {
     console.log("Published preprocessToIndividualZOTUs");
   }).catch(() => {
     console.error("Could not publish preprocessToIndividualZOTUs");
+  });
+});
+
+let skipNonBacterialFilter = ref(false);
+
+// trigger when skipNonBacterialFilter changes
+watchEffect(() => {
+  indexBridge.publishImngs2CoreSkipNonBacterialFilter(skipNonBacterialFilter.value).then(() => {
+    console.log("Published skipNonBacterialFilter");
+  }).catch(() => {
+    console.error("Could not publish skipNonBacterialFilter");
   });
 });
 

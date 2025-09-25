@@ -15,4 +15,5 @@ export const helpPages = {
     IMNPREA: `${GITHUB_BASE_URL}/discussions/16`,  // All samples failed to get preprocessed
     IMNSKIP: `${GITHUB_BASE_URL}/discussions/17`,  // Analysis skipped
     NOSTRT: `${GITHUB_BASE_URL}/discussions/31`,  // Could not start the pipeline
+    F171: `${GITHUB_BASE_URL}/discussions/38`,  // Failure in spike removal
 }
