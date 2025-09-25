@@ -2,9 +2,9 @@ import commandLineArgs from "command-line-args";
 import {
     REGISTRY_URL,
     API_URL,
-    IMNGS2CORE_REPOSITORY_OWNER,
-    IMNGS2CORE_REPOSITORY_NAME,
-    IMNGS2CORE_VRANGE,
+    REPOSITORY_OWNER,
+    REPOSITORY_NAME,
+    VRANGE,
 } from "../config";
 
 const optionDefinitions = [
@@ -35,21 +35,21 @@ const optionDefinitions = [
         description: 'GitHub API base URL including protocol.'
     },
     {
-        name: 'imngs2core-repository-owner',
+        name: `pipeline-repository-owner`,
         type: String,
-        defaultValue: IMNGS2CORE_REPOSITORY_OWNER,
+        defaultValue: REPOSITORY_OWNER,
         description: 'GitHub repository owner of IMNGS2-Core.'
     },
     {
-        name: 'imngs2core-repository-name',
+        name: 'pipeline-repository-name',
         type: String,
-        defaultValue: IMNGS2CORE_REPOSITORY_NAME,
+        defaultValue: REPOSITORY_NAME,
         description: 'GitHub repository name of IMNGS2-Core.'
     },
     {
-        name: 'imngs2core-pipeline-vrange',
+        name: 'pipeline-vrange',
         type: String,
-        defaultValue: IMNGS2CORE_VRANGE,
+        defaultValue: VRANGE,
         description: 'Semantic version range for IMNGS2-Core.'
     },
 ]

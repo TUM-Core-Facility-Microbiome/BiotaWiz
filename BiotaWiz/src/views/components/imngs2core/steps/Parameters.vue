@@ -296,7 +296,7 @@
               <div>
                 <label for="minsize">
                   <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500"></div>
+                  <div class="text-xs text-gray-500">This value filters out amplicons with less than selected reads. Lower values higher sensitivity, but may result in more noise.</div>
                 </label>
                 <input
                     id="minsize"
@@ -315,7 +315,7 @@
               <div>
                 <label for="clusterZOTUsArgs_minsize">
                   <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500"></div>
+                  <div class="text-xs text-gray-500">This value filters out amplicons with less than selected reads. Lower values higher sensitivity, but may result in more noise.</div>
                 </label>
                 <input
                     id="clusterZOTUsArgs_minsize"
@@ -408,8 +408,7 @@
               <div>
                 <label for="de_novo_minsize">
                   <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500">Any sequence in pool of unique sequences across your samples with less than the set number of duplicates will be discarded for ZOTU creation.
-                  </div>
+                  <div class="text-xs text-gray-500">This value filters out amplicons with less than selected reads. Lower values higher sensitivity, but may result in more noise.</div>
                 </label>
                 <input
                     id="de_novo_minsize"

@@ -42,8 +42,8 @@ function getRepository(environment: Environment): Repository {
     switch (environment) {
         case Environment.IMNGS2CORE:
             return {
-                owner: cmArgs['imngs2core-repository-owner'],
-                repo: cmArgs['imngs2core-repository-name'],
+                owner: cmArgs['pipeline-repository-owner'],
+                repo: cmArgs['pipeline-repository-name'],
             }
     }
 }
