@@ -117,6 +117,9 @@ const indexBridge = {
     publishImngs2CorePreprocessToIndividualZOTUs: async (preprocessIndividualZOTUs: boolean) => {
         return ipcRenderer.invoke('imngs2core:setPreprocessToIndividualZOTUs', preprocessIndividualZOTUs);
     },
+    publishImngs2CoreSkipNonBacterialFilter: async (skipNonBacterialFilter: boolean) => {
+        return ipcRenderer.invoke('imngs2core:setSkipNonBacterialFilter', skipNonBacterialFilter);
+    },
     getImngs2CoreAnalysisMode: async (): Promise<Imngs2CoreAnalysisMode> => {
         return ipcRenderer.invoke('imngs2core:getAnalysisMode');
     },

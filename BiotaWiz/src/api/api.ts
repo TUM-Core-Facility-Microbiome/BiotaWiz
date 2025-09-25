@@ -151,6 +151,11 @@ ipcMain.handle("imngs2core:setPreprocessToIndividualZOTUs", async(event, preproc
     imngs2CoreConfiguration.setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs);
 });
 
+ipcMain.handle("imngs2core:setSkipNonBacterialFilter", async(event, skipNonBacterialFilter: boolean) => {
+   console.log(`Setting IMNGS2-Core skip non-bacterial filter to ${skipNonBacterialFilter}`);
+   imngs2CoreConfiguration.setSkipNonBacterialFilter(skipNonBacterialFilter);
+});
+
 ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: string) => {
     console.log(`Setting IMNGS2-Core base directory to ${baseDirectory}`);
     imngs2CoreConfiguration.setBaseDirectory(baseDirectory);

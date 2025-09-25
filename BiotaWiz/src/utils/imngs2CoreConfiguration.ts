@@ -24,6 +24,7 @@ export class Imngs2CoreConfiguration {
     private threads: Number = 1;
 
     private preprocessToIndividualZOTUs: boolean = false;
+    private skipNonBacterialFilter: boolean = false;
 
     private analysisDirectory: string | null = null;
 
@@ -50,6 +51,11 @@ export class Imngs2CoreConfiguration {
     public setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs: boolean) {
         this.preprocessToIndividualZOTUs = preprocessToIndividualZOTUs;
         console.log(`Preprocess to individual ZOTUs set to ${preprocessToIndividualZOTUs}`);
+    }
+
+    public setSkipNonBacterialFilter(skipNonBacterialFilter: boolean) {
+        this.skipNonBacterialFilter = skipNonBacterialFilter;
+        console.log(`Skip non-bacterial filter set to ${skipNonBacterialFilter}`);
     }
 
     public setSamples(samples: IFileSystemSample[]) {
@@ -269,10 +275,14 @@ export class Imngs2CoreConfiguration {
                 "--mapping-file", mappingFile,
                 "--threads", this.threads.toString(),
             ];
-            // add flags
+            // add conditional flags
             if (this.preprocessToIndividualZOTUs) {  // set flag to preprocess up to individual ZOTUs
                 argumentList.push("--individual-zotus");
             }
+            if (this.skipNonBacterialFilter) {  // set flag to skip non-bacterial filter
+                argumentList.push("--skip-non-bacterial-filter");
+            }
+
             await run(Environment.IMNGS2CORE,
                 "/base/run_tactic.py",  // skip the docker entrypoint and call the script directly
                 {

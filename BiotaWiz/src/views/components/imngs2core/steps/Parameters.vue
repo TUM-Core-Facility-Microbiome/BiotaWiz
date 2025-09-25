@@ -38,6 +38,25 @@
                   </p>
                 </label>
               </div>
+              <div class="flex items-start space-x-3 mt-2">
+                <div class="relative mb-6">
+                  <input
+                      id="skip-non-bacterial-filter"
+                      type="checkbox"
+                      v-model="skipNonBacterialFilter"
+                      class="border rounded-md"
+                  >
+                </div>
+                <label for="skip-non-bacterial-filter" class="pt-1">
+                  <p class="text-sm font-mono">Do not filter out non-16S sequences</p>
+                  <p class="text-xs text-gray-500">
+                    If set, the filtering step to filter non-bacterial 16S
+                    sequences will be skipped. It speeds up the pipeline
+                    and makes the pipeline capable of handling non-16S
+                    sequences.
+                  </p>
+                </label>
+              </div>
             </div>
           </div>
           <div class="pt-6">
@@ -762,6 +781,17 @@ watchEffect(() => {
     console.log("Published preprocessToIndividualZOTUs");
   }).catch(() => {
     console.error("Could not publish preprocessToIndividualZOTUs");
+  });
+});
+
+let skipNonBacterialFilter = ref(false);
+
+// trigger when skipNonBacterialFilter changes
+watchEffect(() => {
+  indexBridge.publishImngs2CoreSkipNonBacterialFilter(skipNonBacterialFilter.value).then(() => {
+    console.log("Published skipNonBacterialFilter");
+  }).catch(() => {
+    console.error("Could not publish skipNonBacterialFilter");
   });
 });
 
