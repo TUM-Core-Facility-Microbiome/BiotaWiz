@@ -232,7 +232,7 @@ ipcMain.handle("imngs2core:run", async () => {
 
 ipcMain.handle("imngs2core:terminateBackend", async () => {
     console.log("Stopping IMNGS2-Core pipeline");
-    return await terminateBackend(Environment.IMNGS2CORE);
+    return await terminateBackend(Environment.TACTIC);
 });
 
 ipcMain.handle("openExternalLink", async (event, url: string) => {

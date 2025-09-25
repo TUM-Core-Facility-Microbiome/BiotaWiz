@@ -78,7 +78,7 @@ const compatibleTagStrings = ref([]);
 const selectedTag = ref(null);
 const associatedImages = ref([]);
 
-const environment = Environment.IMNGS2CORE;
+const environment = Environment.TACTIC;
 
 function loadFixedReleaseTag() {
   indexBridge.getFixedImageTagString(environment).then((tag: string) => {

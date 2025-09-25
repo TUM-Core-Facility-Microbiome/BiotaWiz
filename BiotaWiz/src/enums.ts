@@ -10,7 +10,7 @@ export enum MappingFileFormat {
 }
 
 export enum Environment {
-    IMNGS2CORE = "IMNGS2-Core",
+    TACTIC = "TACTIC",
 }
 
 export enum LogSection {

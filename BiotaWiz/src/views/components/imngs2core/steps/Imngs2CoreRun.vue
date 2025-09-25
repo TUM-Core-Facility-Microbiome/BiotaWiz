@@ -288,7 +288,7 @@ onActivated(() => {
   state.autoScroll = true;
   getImngs2CoreBaseDirectory();
   // prepare the environment
-  indexBridge.initializeEnvironment(Environment.IMNGS2CORE).then(() => {
+  indexBridge.initializeEnvironment(Environment.TACTIC).then(() => {
     console.log("Backend initialized");
   }).catch(() => {
     console.log("Backend initialization failed");

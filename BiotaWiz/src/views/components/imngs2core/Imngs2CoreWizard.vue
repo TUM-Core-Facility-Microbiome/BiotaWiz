@@ -54,14 +54,14 @@ import {Environment} from "../../../enums";
 
 onMounted(() => {
   // prepare the environment
-  indexBridge.initializeEnvironment(Environment.IMNGS2CORE).then(() => {
+  indexBridge.initializeEnvironment(Environment.TACTIC).then(() => {
     console.log("Backend initialized 2");
   }).catch(() => {
     console.log("Backend initialization failed");
   });
 
   // inform about env change
-  indexBridge.changeEnvironment(Environment.IMNGS2CORE);
+  indexBridge.changeEnvironment(Environment.TACTIC);
 });
 
 onBeforeUnmount(async () => {

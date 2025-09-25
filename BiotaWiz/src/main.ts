@@ -21,7 +21,7 @@ if (require('electron-squirrel-startup')) {
         for (const backend in BACKENDS) {
             logToDevTools(`Cleaning up backend ${backend}`);
             setBackend(backend).then(async () => {
-                await cleanUpBackend(Environment.IMNGS2CORE);
+                await cleanUpBackend(Environment.TACTIC);
             });
         }
 
@@ -103,7 +103,7 @@ app.on('will-quit', async (event) => {
     taskQueue.clear(); // clear all tasks
 
     try {
-        await terminateBackend(Environment.IMNGS2CORE);
+        await terminateBackend(Environment.TACTIC);
     } catch (e) {
         console.error('Error during cleanup:', e);
     } finally {

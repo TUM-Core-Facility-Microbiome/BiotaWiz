@@ -40,7 +40,7 @@ const CONTAINER_REGISTRY = cmArgs['container-registry'];
  */
 function getRepository(environment: Environment): Repository {
     switch (environment) {
-        case Environment.IMNGS2CORE:
+        case Environment.TACTIC:
             return {
                 owner: cmArgs['pipeline-repository-owner'],
                 repo: cmArgs['pipeline-repository-name'],
@@ -110,7 +110,7 @@ export async function setBackend(backend: IBackend) {
     // clean up if the backend is changed
     const currentBackend = await getBackend();
     if (currentBackend.type !== backend.type) {
-        await terminateBackend(Environment.IMNGS2CORE);
+        await terminateBackend(Environment.TACTIC);
         await cleanUpBackend();
     }
     // store the backend
@@ -412,7 +412,7 @@ export async function getImageTarball(environment: Environment, releaseTag: SemV
 
 export async function deleteTar(image: IImage) {
     const semVer = semVerFromGitHubTag(`v${image.tag}`);
-    const tarPath = await getExpectedDistributionTarPath(Environment.IMNGS2CORE, semVer);
+    const tarPath = await getExpectedDistributionTarPath(Environment.TACTIC, semVer);
     if (fs.existsSync(tarPath)) {
         fs.unlinkSync(tarPath);
     }

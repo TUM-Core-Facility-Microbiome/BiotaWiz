@@ -28,7 +28,7 @@ export function semVerFromGitHubTag(tag: string): SemVer {
  */
 export function getAllowedRange(environment: Environment): string {
     switch (environment) {
-        case Environment.IMNGS2CORE:
+        case Environment.TACTIC:
             return cmArgs['pipeline-vrange'];
         default:
             throw new Error(`Unknown environment: ${environment}`);

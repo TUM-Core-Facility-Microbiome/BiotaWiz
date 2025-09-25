@@ -283,7 +283,7 @@ export class Imngs2CoreConfiguration {
                 argumentList.push("--skip-non-bacterial-filter");
             }
 
-            await run(Environment.IMNGS2CORE,
+            await run(Environment.TACTIC,
                 "/base/run_tactic.py",  // skip the docker entrypoint and call the script directly
                 {
                     binds: [
