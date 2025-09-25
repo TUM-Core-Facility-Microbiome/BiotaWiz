@@ -128,25 +128,6 @@
               </div>
             </div>
           </div>
-          <div class="pt-6">
-            <div class="text-lg font-bold">IndividualSampleClusterZOTUsArgs</div>
-            <div class="text-sm text-gray-700"></div>
-            <div class="mt-3">
-              <div>
-                <label for="minsize">
-                  <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500"></div>
-                </label>
-                <input
-                    id="minsize"
-                    type="text"
-                    v-model="individualSampleClusterZOTUsArgs_minsize"
-                    placeholder="default: 2"
-                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                >
-              </div>
-            </div>
-          </div>
         </form>
       </p>
     </details>
@@ -303,6 +284,25 @@
                     type="text"
                     v-model="filterOneSideArgs_fastq_truncqual"
                     placeholder="default: 10"
+                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                >
+              </div>
+            </div>
+          </div>
+          <div class="pt-6">
+            <div class="text-lg font-bold">IndividualSampleClusterZOTUsArgs</div>
+            <div class="text-sm text-gray-700"></div>
+            <div class="mt-3">
+              <div>
+                <label for="minsize">
+                  <div class="text-sm font-mono">minsize</div>
+                  <div class="text-xs text-gray-500"></div>
+                </label>
+                <input
+                    id="minsize"
+                    type="text"
+                    v-model="individualSampleClusterZOTUsArgs_minsize"
+                    placeholder="default: 2"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
               </div>
