@@ -2,7 +2,7 @@
   <div>
     <div class="text-lg font-bold">Parameters</div>
     <div class="text-sm text-gray-700">
-      Set the parameters for the Taxonomy Informed Clustering pipeline.
+      Set the parameters for the TACTIC pipeline.
     </div>
   </div>
   <div class="mt-3 divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white select-none">
@@ -899,7 +899,7 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
 
       resolve(args);
     }).catch(() => {
-      console.error("Could not get default IMNGS2-Core parameters");
+      console.error("Could not get default parameters");
       reject();
     });
   });
@@ -908,7 +908,7 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
 async function apply() {
   return new Promise<void>((resolve, reject) => {
     indexBridge.publishImngs2CoreThreads(pthreads.value).then(async () => {
-      console.log("Published IMNGS2-Core threads");
+      console.log("Published threads");
       const pipelineArgs = await generateImngs2CorePipelineArgumentsObj();
       console.log("Pipeline arguments: ", pipelineArgs);
 
@@ -918,10 +918,10 @@ async function apply() {
 
         // publish pipeline arguments
         indexBridge.publishImngs2CoreParameters(pipelineArgs).then(() => {
-          console.log("Published IMNGS2-Core pipeline arguments");
+          console.log("Published pipeline arguments");
           resolve();
         }).catch(() => {
-          console.error("Could not publish IMNGS2-Core pipeline arguments");
+          console.error("Could not publish pipeline arguments");
           reject();
         });
 
@@ -931,7 +931,7 @@ async function apply() {
       });
 
     }).catch(() => {
-      console.error("Could not publish IMNGS2-Core threads");
+      console.error("Could not publish threads");
       reject();
     });
   });

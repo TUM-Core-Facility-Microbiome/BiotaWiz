@@ -3,9 +3,9 @@
     <div class="flex-1 lg:max-w-2xl">
       <div class="space-y-6">
         <div>
-          <h3 class="text-lg font-medium">Select IMNGS2-Core version</h3>
+          <h3 class="text-lg font-medium">Select TACTIC pipeline version</h3>
           <p class="text-sm text-muted-foreground">
-            The environment holds the software that is used to run IMNGS2-Core.
+            The environment holds the software that is used to run the TACTIC pipeline.
             <br>
             You can auto-update to the latest available and compatible version each time you start the pipeline or
             specify a version to always use to ensure reproducibility across runs.

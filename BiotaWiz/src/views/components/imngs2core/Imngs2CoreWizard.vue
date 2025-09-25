@@ -1,5 +1,5 @@
 <template>
-  <!-- imngs2core Pipeline Wizard -->
+  <!-- TACTIC Pipeline Wizard -->
   <div>
     <Wizard
         :nextButton="nextButtonOptions"
@@ -45,7 +45,7 @@
       </h5>
     </Wizard>
   </div>
-  <!-- IMNGS2-Core Wizard End -->
+  <!-- TACTIC Pipeline Wizard End -->
 </template>
 
 <script setup lang="ts">
@@ -65,11 +65,11 @@ onMounted(() => {
 });
 
 onBeforeUnmount(async () => {
-  console.debug("unmounting imngs2core wizard");
+  console.debug("unmounting tactic-pipeline wizard");
   await indexBridge.terminateImngs2CoreBackend().then(() => {
-    console.log("IMNGS2-Core backend terminated");
+    console.log("TACTIC pipeline backend terminated");
   }).catch(() => {
-    console.log("IMNGS2-Core backend termination failed");
+    console.log("TACTIC pipeline backend termination failed");
   });
 });
 </script>

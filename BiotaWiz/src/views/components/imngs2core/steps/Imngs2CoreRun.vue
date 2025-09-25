@@ -2,7 +2,7 @@
   <div>
     <div class="text-lg font-bold">Running pipeline</div>
     <div class="text-sm text-gray-700">
-      You should see the logs of IMNGS2-Core here. Output will be written to your selected base directory:
+      You should see the logs of the TACTIC pipeline here. Output will be written to your selected base directory:
       <br>
       {{ state.baseDir }}
     </div>
@@ -295,9 +295,9 @@ onActivated(() => {
   });
   // trigger the pipeline
   indexBridge.runImngs2Core().then(() => {
-    console.log("IMNGS2-Core running");
+    console.log("TACTIC pipeline running");
   }).catch(() => {
-    console.log("IMNGS2-Core pipeline failed");
+    console.log("TACTIC pipeline failed");
   });
   // handle log messages
   indexBridge.handleLogToSection((section: LogSection, logMessage: string) => {
