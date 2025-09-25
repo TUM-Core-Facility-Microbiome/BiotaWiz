@@ -730,7 +730,7 @@ let pthreads = ref(1);
 let max_threads = ref(1);
 
 function getAnalysisMode() {
-  indexBridge.getImngs2CoreAnalysisMode().then((mode) => {
+  indexBridge.getImngs2CoreAnalysisMode().then((mode: string) => {
     console.log("Analysis mode: ", mode);
     analysisMode.value = mode.valueOf();
   });
@@ -738,13 +738,13 @@ function getAnalysisMode() {
 getAnalysisMode();
 
 function setThreadDefaults() {
-  indexBridge.getMachineThreads().then((threads) => {
+  indexBridge.getMachineThreads().then((threads: number) => {
     console.log("Machine threads: ", threads);
     max_threads.value = threads;
   }).catch(() => {
     console.error("Could not get machine threads");
   });
-  indexBridge.getRecommendedThreads().then((threads) => {
+  indexBridge.getRecommendedThreads().then((threads: number) => {
     console.log("Recommended threads: ", threads);
     pthreads.value = threads;
   }).catch(() => {
