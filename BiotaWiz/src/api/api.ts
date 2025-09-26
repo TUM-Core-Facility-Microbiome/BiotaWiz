@@ -13,11 +13,11 @@ import {
 } from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFileOpen, handleFolderOpen} from "./dialogs";
-import {getBackend, getImngs2CoreBaseDirectory, setImngs2CoreBaseDirectory} from "../utils/storage";
+import {getBackend, getTacticBaseDirectory, setTacticBaseDirectory} from "../utils/storage";
 import {detectStudyFolders} from "../utils/file-explorer";
-import {Environment, Imngs2CoreAnalysisMode, SpikeMode} from "../enums";
+import {Environment, TacticAnalysisMode, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
-import {imngs2CoreConfiguration} from "../utils/imngs2CoreConfiguration";
+import {tacticConfiguration} from "../utils/tacticConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 import {getVersionString} from "../utils/releasetag";
@@ -111,13 +111,13 @@ ipcMain.handle("runMockProcess", async () => {
     return runMockProcess();
 });
 
-ipcMain.handle("imngs2core:getBaseDirectory", async () => {
-    return await getImngs2CoreBaseDirectory();
+ipcMain.handle("tactic:getBaseDirectory", async () => {
+    return await getTacticBaseDirectory();
 });
 
 ipcMain.handle("loadStudiesFromBaseDirectory", async (): Promise<IFileSystemNode> => {
     return new Promise<IFileSystemNode>((resolve) => {
-        getImngs2CoreBaseDirectory().then((baseDirectory) => {
+        getTacticBaseDirectory().then((baseDirectory) => {
             resolve(detectStudyFolders(baseDirectory));
         });
     });
@@ -137,56 +137,56 @@ ipcMain.handle("initializeEnvironment", async (event, environment: Environment) 
     });
 });
 
-ipcMain.handle("imngs2core:setAnalysisMode", async (event, analysisMode: Imngs2CoreAnalysisMode) => {
-    console.log(`Setting IMNGS2-Core analysis mode to ${analysisMode}`);
-    imngs2CoreConfiguration.setAnalysisMode(analysisMode);
+ipcMain.handle("tactic:setAnalysisMode", async (event, analysisMode: TacticAnalysisMode) => {
+    console.log(`Setting TACTIC analysis mode to ${analysisMode}`);
+    tacticConfiguration.setAnalysisMode(analysisMode);
 });
 
-ipcMain.handle("imngs2core:getAnalysisMode", async () => {
-    return imngs2CoreConfiguration.getAnalysisMode();
+ipcMain.handle("tactic:getAnalysisMode", async () => {
+    return tacticConfiguration.getAnalysisMode();
 });
 
-ipcMain.handle("imngs2core:setPreprocessToIndividualZOTUs", async(event, preprocessToIndividualZOTUs: boolean) => {
-    console.log(`Setting IMNGS2-Core preprocess to individual ZOTUs to ${preprocessToIndividualZOTUs}`);
-    imngs2CoreConfiguration.setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs);
+ipcMain.handle("tactic:setPreprocessToIndividualZOTUs", async(event, preprocessToIndividualZOTUs: boolean) => {
+    console.log(`Setting TACTIC preprocess to individual ZOTUs to ${preprocessToIndividualZOTUs}`);
+    tacticConfiguration.setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs);
 });
 
-ipcMain.handle("imngs2core:setSkipNonBacterialFilter", async(event, skipNonBacterialFilter: boolean) => {
-   console.log(`Setting IMNGS2-Core skip non-bacterial filter to ${skipNonBacterialFilter}`);
-   imngs2CoreConfiguration.setSkipNonBacterialFilter(skipNonBacterialFilter);
+ipcMain.handle("tactic:setSkipNonBacterialFilter", async(event, skipNonBacterialFilter: boolean) => {
+   console.log(`Setting TACTIC skip non-bacterial filter to ${skipNonBacterialFilter}`);
+   tacticConfiguration.setSkipNonBacterialFilter(skipNonBacterialFilter);
 });
 
-ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: string) => {
-    console.log(`Setting IMNGS2-Core base directory to ${baseDirectory}`);
-    imngs2CoreConfiguration.setBaseDirectory(baseDirectory);
-    console.log(imngs2CoreConfiguration);
-    await setImngs2CoreBaseDirectory(baseDirectory);
+ipcMain.handle("tactic:setBaseDirectory", async (event, baseDirectory: string) => {
+    console.log(`Setting TACTIC base directory to ${baseDirectory}`);
+    tacticConfiguration.setBaseDirectory(baseDirectory);
+    console.log(tacticConfiguration);
+    await setTacticBaseDirectory(baseDirectory);
 });
 
-ipcMain.handle("imngs2core:setAnalysisDirectory", async (event, analysisDirectory: string) => {
-    console.log(`Setting IMNGS2-Core analysis directory to ${analysisDirectory}`);
-    imngs2CoreConfiguration.setAnalysisDirectory(analysisDirectory);
-    console.log(imngs2CoreConfiguration);
+ipcMain.handle("tactic:setAnalysisDirectory", async (event, analysisDirectory: string) => {
+    console.log(`Setting TACTIC analysis directory to ${analysisDirectory}`);
+    tacticConfiguration.setAnalysisDirectory(analysisDirectory);
+    console.log(tacticConfiguration);
 });
 
-ipcMain.handle("imngs2core:setSpikeInSequencesDirectory", async (event, spikeInSequencesDirectory: string) => {
+ipcMain.handle("tactic:setSpikeInSequencesDirectory", async (event, spikeInSequencesDirectory: string) => {
     console.log(`Setting spike-in directory to ${spikeInSequencesDirectory}`);
-    imngs2CoreConfiguration.setSpikeInSequencesDirectory(spikeInSequencesDirectory);
-    console.log(imngs2CoreConfiguration);
+    tacticConfiguration.setSpikeInSequencesDirectory(spikeInSequencesDirectory);
+    console.log(tacticConfiguration);
 });
 
-ipcMain.handle("imngs2core:openAnalysisDirectory", async () => {
+ipcMain.handle("tactic:openAnalysisDirectory", async () => {
     console.log("Opening analysis directory");
-    await imngs2CoreConfiguration.openAnalysisDirectory();
+    await tacticConfiguration.openAnalysisDirectory();
 });
 
-ipcMain.handle("imngs2core:setSamples", async (event, samples: IFileSystemSample[]) => {
-    console.log(`Setting IMNGS2-Core samples to ${JSON.stringify(samples)}`);
-    imngs2CoreConfiguration.setSamples(samples);
-    console.log(imngs2CoreConfiguration);
+ipcMain.handle("tactic:setSamples", async (event, samples: IFileSystemSample[]) => {
+    console.log(`Setting TACTIC samples to ${JSON.stringify(samples)}`);
+    tacticConfiguration.setSamples(samples);
+    console.log(tacticConfiguration);
 });
 
-ipcMain.handle("imngs2core:setSpikeMode", async (event, spikeModeName: string) => {
+ipcMain.handle("tactic:setSpikeMode", async (event, spikeModeName: string) => {
     // parse spike mode
     let mode;
     if (spikeModeName === SpikeMode.SPIKED) {
@@ -197,46 +197,46 @@ ipcMain.handle("imngs2core:setSpikeMode", async (event, spikeModeName: string) =
         mode = SpikeMode.NONE;
     }
     console.log(`Selected spike mode: ${mode}`);
-    imngs2CoreConfiguration.setSpikeMode(mode);
-    return imngs2CoreConfiguration.getSpikeMode();
+    tacticConfiguration.setSpikeMode(mode);
+    return tacticConfiguration.getSpikeMode();
 });
 
-ipcMain.handle("imngs2core:getDefaultParameters", async () => {
-    return imngs2CoreConfiguration.getDefaultParameters();
+ipcMain.handle("tactic:getDefaultParameters", async () => {
+    return tacticConfiguration.getDefaultParameters();
 });
 
-ipcMain.handle("imngs2core:setParameters", async (event, parameters: IImngs2CoreArguments) => {
-    imngs2CoreConfiguration.setParameters(parameters);
-    console.log(imngs2CoreConfiguration);
+ipcMain.handle("tactic:setParameters", async (event, parameters: ITacticArguments) => {
+    tacticConfiguration.setParameters(parameters);
+    console.log(tacticConfiguration);
 });
 
-ipcMain.handle("imngs2core:setThreads", async (event, threads: Number) => {
-    imngs2CoreConfiguration.setThreads(threads);
-    console.log(imngs2CoreConfiguration);
+ipcMain.handle("tactic:setThreads", async (event, threads: number) => {
+    tacticConfiguration.setThreads(threads);
+    console.log(tacticConfiguration);
 });
 
-ipcMain.handle("imngs2core:openMappingFile", async () => {
+ipcMain.handle("tactic:openMappingFile", async () => {
     console.log("Opening mapping file");
-    await imngs2CoreConfiguration.openMappingFile();
+    await tacticConfiguration.openMappingFile();
 });
 
-ipcMain.handle("imngs2core:convertMapping", async () => {
+ipcMain.handle("tactic:convertMapping", async () => {
     console.log("Converting mapping file");
-    return imngs2CoreConfiguration.convertMappingFileFormatXlsxToTsv();
+    return tacticConfiguration.convertMappingFileFormatXlsxToTsv();
 });
 
-ipcMain.handle("imngs2core:checkMapping", async () => {
+ipcMain.handle("tactic:checkMapping", async () => {
     console.log("Checking mapping file");
-    return imngs2CoreConfiguration.checkMapping();
+    return tacticConfiguration.checkMapping();
 });
 
-ipcMain.handle("imngs2core:run", async () => {
-    console.log("Running IMNGS2-Core pipeline");
-    imngs2CoreConfiguration.runPipeline();
+ipcMain.handle("tactic:run", async () => {
+    console.log("Running TACTIC pipeline");
+    tacticConfiguration.runPipeline();
 });
 
-ipcMain.handle("imngs2core:terminateBackend", async () => {
-    console.log("Stopping IMNGS2-Core pipeline");
+ipcMain.handle("tactic:terminateBackend", async () => {
+    console.log("Stopping TACTIC pipeline");
     return await terminateBackend(Environment.TACTIC);
 });
 

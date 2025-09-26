@@ -55,11 +55,11 @@ export async function getBackend() {
     });
 }
 
-export function setImngs2CoreBaseDirectory(baseDirectory: string) {
+export function setTacticBaseDirectory(baseDirectory: string) {
     return new Promise<void>((resolve, reject) => {
-        const baseDirectoryObj: IImngs2CoreBaseDirectory = {path: baseDirectory};
+        const baseDirectoryObj: ITacticBaseDirectory = {path: baseDirectory};
 
-        jsonStorage.set('imngs2coreBaseDirectory', baseDirectoryObj, (error) => {
+        jsonStorage.set('tacticBaseDirectory', baseDirectoryObj, (error) => {
             if (error) {
                 reject(error);
             } else {
@@ -69,9 +69,9 @@ export function setImngs2CoreBaseDirectory(baseDirectory: string) {
     });
 }
 
-export function getImngs2CoreBaseDirectory() {
+export function getTacticBaseDirectory() {
     return new Promise<string>((resolve, reject) => {
-        jsonStorage.get('imngs2coreBaseDirectory', (error, data: IImngs2CoreBaseDirectory) => {
+        jsonStorage.get('tacticBaseDirectory', (error, data: ITacticBaseDirectory) => {
             if (error) {
                 reject(error);
             } else {

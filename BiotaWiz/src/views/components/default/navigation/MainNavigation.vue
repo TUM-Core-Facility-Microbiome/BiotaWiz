@@ -15,8 +15,8 @@
 <!--              <li>-->
 <!--                <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"-->
 <!--                             active-class="bg-blue-50 text-blue-700"-->
-<!--                             to="/application-shell/imngs2core">-->
-<!--                  <code class="text-xs font-bold">IMNGS2-Core</code>-->
+<!--                             to="/application-shell/tactic">-->
+<!--                  <code class="text-xs font-bold">TACTIC</code>-->
 <!--                  <span-->
 <!--                      class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible min-w-60">-->
 <!--                      Core Pipeline of the Integrated Microbial Next Generation Sequencing Platform in version 2-->

@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import {contextBridge, ipcRenderer} from "electron";
-import {Environment, Imngs2CoreAnalysisMode, LogSection} from "./enums";
+import {Environment, TacticAnalysisMode, LogSection} from "./enums";
 import {logToDevTools} from "./utils/logHandler";
 
 const indexBridge = {
@@ -111,64 +111,64 @@ const indexBridge = {
     deleteImage: async (name: string, tag: string) => {
         return ipcRenderer.invoke('deleteImage', name, tag);
     },
-    publishImngs2CoreAnalysisMode: async (analysisMode: Imngs2CoreAnalysisMode) => {
-        return ipcRenderer.invoke('imngs2core:setAnalysisMode', analysisMode);
+    publishTacticAnalysisMode: async (analysisMode: TacticAnalysisMode) => {
+        return ipcRenderer.invoke('tactic:setAnalysisMode', analysisMode);
     },
-    publishImngs2CorePreprocessToIndividualZOTUs: async (preprocessIndividualZOTUs: boolean) => {
-        return ipcRenderer.invoke('imngs2core:setPreprocessToIndividualZOTUs', preprocessIndividualZOTUs);
+    publishTacticPreprocessToIndividualZOTUs: async (preprocessIndividualZOTUs: boolean) => {
+        return ipcRenderer.invoke('tactic:setPreprocessToIndividualZOTUs', preprocessIndividualZOTUs);
     },
-    publishImngs2CoreSkipNonBacterialFilter: async (skipNonBacterialFilter: boolean) => {
-        return ipcRenderer.invoke('imngs2core:setSkipNonBacterialFilter', skipNonBacterialFilter);
+    publishTacticSkipNonBacterialFilter: async (skipNonBacterialFilter: boolean) => {
+        return ipcRenderer.invoke('tactic:setSkipNonBacterialFilter', skipNonBacterialFilter);
     },
-    getImngs2CoreAnalysisMode: async (): Promise<Imngs2CoreAnalysisMode> => {
-        return ipcRenderer.invoke('imngs2core:getAnalysisMode');
+    getTacticAnalysisMode: async (): Promise<TacticAnalysisMode> => {
+        return ipcRenderer.invoke('tactic:getAnalysisMode');
     },
-    publishImngs2CoreBaseDirectory: async (baseDirectory: string) => {
-        return ipcRenderer.invoke('imngs2core:setBaseDirectory', baseDirectory);
+    publishTacticBaseDirectory: async (baseDirectory: string) => {
+        return ipcRenderer.invoke('tactic:setBaseDirectory', baseDirectory);
     },
-    publishImngs2CoreAnalysisDirectory: async (analysisDirectory: string) => {
-        return ipcRenderer.invoke('imngs2core:setAnalysisDirectory', analysisDirectory);
+    publishTacticAnalysisDirectory: async (analysisDirectory: string) => {
+        return ipcRenderer.invoke('tactic:setAnalysisDirectory', analysisDirectory);
     },
     publishSpikeInSequencesDirectory: async (spikeInSequencesDirectory: string) => {
-        return ipcRenderer.invoke('imngs2core:setSpikeInSequencesDirectory', spikeInSequencesDirectory);
+        return ipcRenderer.invoke('tactic:setSpikeInSequencesDirectory', spikeInSequencesDirectory);
     },
-    openImngs2CoreAnalysisDirectory: async () => {
-        return ipcRenderer.invoke('imngs2core:openAnalysisDirectory');
+    openTacticAnalysisDirectory: async () => {
+        return ipcRenderer.invoke('tactic:openAnalysisDirectory');
     },
-    getImngs2CoreBaseDirectory: async (): Promise<string> => {
-        return ipcRenderer.invoke('imngs2core:getBaseDirectory');
+    getTacticBaseDirectory: async (): Promise<string> => {
+        return ipcRenderer.invoke('tactic:getBaseDirectory');
     },
     publishSamples: async (samples: IFileSystemNode[]) => {
-        return ipcRenderer.invoke('imngs2core:setSamples', samples);
+        return ipcRenderer.invoke('tactic:setSamples', samples);
     },
     publishSpikeMode: async (spikeModeName: string) => {
-        return ipcRenderer.invoke('imngs2core:setSpikeMode', spikeModeName);
+        return ipcRenderer.invoke('tactic:setSpikeMode', spikeModeName);
     },
     openMappingFile: async () => {
-        return ipcRenderer.invoke('imngs2core:openMappingFile');
+        return ipcRenderer.invoke('tactic:openMappingFile');
     },
     convertMapping: async () => {
-        return ipcRenderer.invoke('imngs2core:convertMapping');
+        return ipcRenderer.invoke('tactic:convertMapping');
     },
     checkMappingFile: async () => {
-        return ipcRenderer.invoke('imngs2core:checkMapping');
+        return ipcRenderer.invoke('tactic:checkMapping');
     },
-    getImngs2coreDefaultParameters: async () =>{
-        return ipcRenderer.invoke('imngs2core:getDefaultParameters');
+    getTacticDefaultParameters: async () =>{
+        return ipcRenderer.invoke('tactic:getDefaultParameters');
     },
-    publishImngs2CoreParameters: async (parameters: IImngs2CoreArguments) => {
-        return ipcRenderer.invoke('imngs2core:setParameters', parameters);
+    publishTacticParameters: async (parameters: ITacticArguments) => {
+        return ipcRenderer.invoke('tactic:setParameters', parameters);
     },
-    publishImngs2CoreThreads: async (threads: Number) => {
-        return ipcRenderer.invoke('imngs2core:setThreads', threads);
+    publishTacticThreads: async (threads: number) => {
+        return ipcRenderer.invoke('tactic:setThreads', threads);
     },
-    runImngs2Core: async () => {
-        return ipcRenderer.invoke('imngs2core:run');
+    runTactic: async () => {
+        return ipcRenderer.invoke('tactic:run');
     },
-    terminateImngs2CoreBackend: async () => {
+    terminateTacticBackend: async () => {
         return new Promise<void>((resolve, reject) => {
-            ipcRenderer.invoke('imngs2core:terminateBackend').then(() => {
-                logToDevTools("imngs2core terminated (preload)")
+            ipcRenderer.invoke('tactic:terminateBackend').then(() => {
+                logToDevTools("tactic terminated (preload)")
                 resolve();
             }).catch(() => {
                 reject();

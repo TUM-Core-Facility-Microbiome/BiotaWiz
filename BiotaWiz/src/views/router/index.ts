@@ -18,41 +18,41 @@ const index = createRouter({
                     children: [
                         {
                             path: '/',
-                            redirect: '/application-shell/imngs2core',
+                            redirect: '/application-shell/tactic',
                         },
                         {
-                            path: '/application-shell/imngs2core',
-                            component: () => import('../components/imngs2core/Imngs2CoreVersionChooser.vue'),
+                            path: '/application-shell/tactic',
+                            component: () => import('../components/tactic/VersionChooser.vue'),
                         },
                         {
-                            path: '/application-shell/imngs2core/steps',
-                            name: 'imngs2core-wizard',
-                            component: () => import('../components/imngs2core/Imngs2CoreWizard.vue'),
-                            redirect: '/application-shell/imngs2core/steps/base-selection',
+                            path: '/application-shell/tactic/steps',
+                            name: 'tactic-wizard',
+                            component: () => import('../components/tactic/TacticWizard.vue'),
+                            redirect: '/application-shell/tactic/steps/base-selection',
                             children: [
                                 {
-                                    path: '/application-shell/imngs2core/steps/base-selection',
-                                    component: () => import('../components/imngs2core/steps/BaseSelection.vue'),
+                                    path: '/application-shell/tactic/steps/base-selection',
+                                    component: () => import('../components/tactic/steps/BaseSelection.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/steps/study-selection',
-                                    component: () => import('../components/imngs2core/steps/StudySelection.vue'),
+                                    path: '/application-shell/tactic/steps/study-selection',
+                                    component: () => import('../components/tactic/steps/StudySelection.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/steps/spike-mode',
-                                    component: () => import('../components/imngs2core/steps/SpikeMode.vue'),
+                                    path: '/application-shell/tactic/steps/spike-mode',
+                                    component: () => import('../components/tactic/steps/SpikeMode.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/steps/check-mapping',
-                                    component: () => import('../components/imngs2core/steps/CheckMappingFile.vue'),
+                                    path: '/application-shell/tactic/steps/check-mapping',
+                                    component: () => import('../components/tactic/steps/CheckMappingFile.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/steps/params',
-                                    component: () => import('../components/imngs2core/steps/Parameters.vue'),
+                                    path: '/application-shell/tactic/steps/params',
+                                    component: () => import('../components/tactic/steps/Parameters.vue'),
                                 },
                                 {
-                                    path: '/application-shell/imngs2core/steps/run',
-                                    component: () => import('../components/imngs2core/steps/Imngs2CoreRun.vue'),
+                                    path: '/application-shell/tactic/steps/run',
+                                    component: () => import('../components/tactic/steps/TacticRun.vue'),
                                 },
                             ]
                         },
@@ -76,8 +76,8 @@ const index = createRouter({
                     path: '/settings/environment',
                     children: [
                         {
-                            path: '/settings/environment/imngs2core',
-                            component: () => import('../components/settings/environments/Imngs2CoreEnvironmentSettings.vue'),
+                            path: '/settings/environment/tactic',
+                            component: () => import('../components/settings/environments/TacticEnvironmentSettings.vue'),
                         },
 /*                        {
                             path: '/settings/environment/shiny-rhea',

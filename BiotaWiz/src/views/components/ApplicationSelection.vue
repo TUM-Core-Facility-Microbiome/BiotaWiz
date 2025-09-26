@@ -68,8 +68,8 @@
       <ul v-if="state.backendAvailable" class="mt-4 space-y-2">
         <li>
           <router-link
-              to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
-              @click="setAnalysisMode(Imngs2CoreAnalysisMode.TIC)"
+              to="/application-shell/tactic" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
+              @click="setAnalysisMode(TacticAnalysisMode.TIC)"
           >
             <strong class="font-medium text-black">Taxonomy Informed Clustering (TIC)</strong>
             <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at family, genera and species level if their taxonomy is not known at the corresponding level.</p>
@@ -77,8 +77,8 @@
         </li>
         <li>
           <router-link
-              to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
-              @click="setAnalysisMode(Imngs2CoreAnalysisMode.TAC)"
+              to="/application-shell/tactic" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
+              @click="setAnalysisMode(TacticAnalysisMode.TAC)"
           >
             <strong class="font-medium text-black">Taxonomy Agnostic Clustering (TAC)</strong>
             <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at 98.7% similarity to create OTUs</p>
@@ -86,8 +86,8 @@
         </li>
         <li>
           <router-link
-              to="/application-shell/imngs2core" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
-              @click="setAnalysisMode(Imngs2CoreAnalysisMode.DE_NOVO)"
+              to="/application-shell/tactic" class="block h-full rounded-lg border-2 border-gray-700 p-4 hover:border-tic"
+              @click="setAnalysisMode(TacticAnalysisMode.DE_NOVO)"
           >
             <strong class="font-medium text-black">De Novo Clustering (UPARSE OTU clustering)</strong>
             <p class="mt-1 text-xs font-medium text-gray-800">Unique sequences of your sample will be clustered at 97% similarity threshold</p>
@@ -100,7 +100,7 @@
 </template>
 <script setup lang="ts">
 import {reactive} from "vue";
-import {Imngs2CoreAnalysisMode} from "../../enums";
+import {TacticAnalysisMode} from "../../enums";
 
 // inform about env change
 indexBridge.changeEnvironment(null);
@@ -171,7 +171,7 @@ function openUpdateInstructions() {
   indexBridge.openExternalLink(url);
 }
 
-async function setAnalysisMode(mode: Imngs2CoreAnalysisMode) {
-  await indexBridge.publishImngs2CoreAnalysisMode(mode);
+async function setAnalysisMode(mode: TacticAnalysisMode) {
+  await indexBridge.publishTacticAnalysisMode(mode);
 }
 </script>

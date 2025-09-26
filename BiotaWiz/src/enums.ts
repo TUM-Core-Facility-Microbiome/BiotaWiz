@@ -20,7 +20,7 @@ export enum LogSection {
     CONTAINER_STREAM = 3,
 }
 
-export enum Imngs2CoreAnalysisMode {
+export enum TacticAnalysisMode {
     DE_NOVO = 'de-novo',
     TAC = 'TAC',
     TIC = 'TIC',

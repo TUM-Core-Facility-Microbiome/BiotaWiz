@@ -66,7 +66,7 @@ onMounted(() => {
 
 onBeforeUnmount(async () => {
   console.debug("unmounting tactic-pipeline wizard");
-  await indexBridge.terminateImngs2CoreBackend().then(() => {
+  await indexBridge.terminateTacticBackend().then(() => {
     console.log("TACTIC pipeline backend terminated");
   }).catch(() => {
     console.log("TACTIC pipeline backend termination failed");
@@ -82,17 +82,17 @@ import StudySelection from "./steps/StudySelection.vue";
 import SpikeMode from "./steps/SpikeMode.vue";
 //import CheckMapping from "./steps/CheckMappingFile.vue";
 import Parameters from "./steps/Parameters.vue";
-import Run from "./steps/Imngs2CoreRun.vue";
+import TacticRun from "./steps/TacticRun.vue";
 
 export default {
-  name: 'Imngs2CorePipelineWizard',
+  name: 'TacticPipelineWizard',
   components: {
     Wizard,
     BaseSelection,
     StudySelection,
     SpikeMode,
     Parameters,
-    Run,
+    Run: TacticRun,
   },
   data() {
     return {

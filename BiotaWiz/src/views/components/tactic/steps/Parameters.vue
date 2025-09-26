@@ -729,7 +729,7 @@ let pthreads = ref(1);
 let max_threads = ref(1);
 
 function getAnalysisMode() {
-  indexBridge.getImngs2CoreAnalysisMode().then((mode: string) => {
+  indexBridge.getTacticAnalysisMode().then((mode: string) => {
     console.log("Analysis mode: ", mode);
     analysisMode.value = mode.valueOf();
   });
@@ -756,7 +756,7 @@ let preprocessToIndividualZOTUs = ref(false);
 
 // trigger when preprocessToIndividualZOTUs changes
 watchEffect(() => {
-  indexBridge.publishImngs2CorePreprocessToIndividualZOTUs(preprocessToIndividualZOTUs.value).then(() => {
+  indexBridge.publishTacticPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs.value).then(() => {
     console.log("Published preprocessToIndividualZOTUs");
   }).catch(() => {
     console.error("Could not publish preprocessToIndividualZOTUs");
@@ -767,7 +767,7 @@ let skipNonBacterialFilter = ref(false);
 
 // trigger when skipNonBacterialFilter changes
 watchEffect(() => {
-  indexBridge.publishImngs2CoreSkipNonBacterialFilter(skipNonBacterialFilter.value).then(() => {
+  indexBridge.publishTacticSkipNonBacterialFilter(skipNonBacterialFilter.value).then(() => {
     console.log("Published skipNonBacterialFilter");
   }).catch(() => {
     console.error("Could not publish skipNonBacterialFilter");
@@ -818,8 +818,8 @@ watchEffect(() => {
   emit('update:isValid', true);
 });
 
-async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArguments> {
-  return new Promise<IImngs2CoreArguments>((resolve, reject) => {
+async function generateTacticPipelineArgumentsObj(): Promise<ITacticArguments> {
+  return new Promise<ITacticArguments>((resolve, reject) => {
     const mergePairsArgs: IMergePairsArgs = {
       fastq_maxdiffs: Number(mergePairsArgs_fastq_maxdiffs.value),
       fastq_pctid: Number(mergePairsArgs_fastq_pctid.value),
@@ -858,7 +858,7 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
     };
 
     // get default arguments and patch with user input
-    indexBridge.getImngs2coreDefaultParameters().then((defaultArgs: IImngs2CoreArguments) => {
+    indexBridge.getTacticDefaultParameters().then((defaultArgs: ITacticArguments) => {
       const args = defaultArgs;
       args.MergePairsArgs = mergePairsArgs;
       args.TrimBothSidesArgs = trimBothSidesArgs;
@@ -873,7 +873,7 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
 
       if (analysisMode.value == "TIC") {
         // set arguments specific for TIC mode
-        (args as IImngs2CoreArgumentsTICMode).ComplexTICArgs = {
+        (args as ITacticArgumentsTICMode).ComplexTICArgs = {
           family_sim: Number(complexTICArgs_family_sim.value),
           genus_sim: Number(complexTICArgs_genus_sim.value),
           species_sim: Number(complexTICArgs_species_sim.value),
@@ -882,13 +882,13 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
         };
       } else if (analysisMode.value == "de-novo") {
         // set arguments specific for de-novo clustering mode
-        (args as IImngs2CoreArgumentsDeNovoMode).DeNovoClusterOTUsArgs = {
+        (args as ITacticArgumentsDeNovoMode).DeNovoClusterOTUsArgs = {
           minsize: Number(deNovoClusterZOTUsArgs_minsize.value),
           abund_limit: Number(deNovoClusterZOTUsArgs_abund_limit.value),
           sample_wise_correction: Boolean(deNovoClusterZOTUsArgs_sample_wise_correction.value),
         };
       } else if (analysisMode.value == "TAC") {
-        (args as IImngs2CoreArgumentsTACMode).TACClusterArgs = {
+        (args as ITacticArgumentsTACMode).TACClusterArgs = {
           abund_limit: Number(tacClusterArgs_abund_limit.value),
           sample_wise_correction: Boolean(tacClusterArgs_sample_wise_correction.value),
           cluster_thr: Number(tacClusterArgs_cluster_thr.value),
@@ -907,9 +907,9 @@ async function generateImngs2CorePipelineArgumentsObj(): Promise<IImngs2CoreArgu
 
 async function apply() {
   return new Promise<void>((resolve, reject) => {
-    indexBridge.publishImngs2CoreThreads(pthreads.value).then(async () => {
+    indexBridge.publishTacticThreads(pthreads.value).then(async () => {
       console.log("Published threads");
-      const pipelineArgs = await generateImngs2CorePipelineArgumentsObj();
+      const pipelineArgs = await generateTacticPipelineArgumentsObj();
       console.log("Pipeline arguments: ", pipelineArgs);
 
       // ensure mapping file is in the correct format
@@ -917,7 +917,7 @@ async function apply() {
         console.log("Mapping file converted");
 
         // publish pipeline arguments
-        indexBridge.publishImngs2CoreParameters(pipelineArgs).then(() => {
+        indexBridge.publishTacticParameters(pipelineArgs).then(() => {
           console.log("Published pipeline arguments");
           resolve();
         }).catch(() => {

@@ -39,7 +39,7 @@ watchEffect(() => {
 
 async function apply() {
   return new Promise<void>((resolve, reject) => {
-    indexBridge.publishImngs2CoreBaseDirectory(state.baseDir).then(() => {
+    indexBridge.publishTacticBaseDirectory(state.baseDir).then(() => {
         resolve();
     }).catch(() => {
         reject();

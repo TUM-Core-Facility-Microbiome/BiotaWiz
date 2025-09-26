@@ -1,4 +1,4 @@
-import {Environment, SpikeMode, MappingFileFormat, Imngs2CoreAnalysisMode, LogSection} from "../enums";
+import {Environment, SpikeMode, MappingFileFormat, TacticAnalysisMode, LogSection} from "../enums";
 import {app, BrowserWindow, Notification, shell} from "electron";
 import path from "path";
 import fs, {existsSync, readFileSync, writeFile} from "fs";
@@ -12,15 +12,15 @@ import xlsx from 'node-xlsx';
 
 const MAPPING_FILE_MODE = MappingFileFormat.XLSX;
 
-export class Imngs2CoreConfiguration {
-    private analysisMode = Imngs2CoreAnalysisMode.TIC;
+export class TacticConfiguration {
+    private analysisMode = TacticAnalysisMode.TIC;
     private baseDirectory = "";
     private mappingFile = "";
     private yamlFile = "";
 
     private spikeMode: SpikeMode = null;
     private samples: IFileSystemSample[] = [];
-    private parameters: IImngs2CoreArguments = null;
+    private parameters: ITacticArguments = null;
     private threads: number = 1;
 
     private preprocessToIndividualZOTUs: boolean = false;
@@ -29,7 +29,7 @@ export class Imngs2CoreConfiguration {
     private analysisDirectory: string | null = null;
     private spikeInSequencesDirectory: string | null = null;
 
-    public setAnalysisMode(analysisMode: Imngs2CoreAnalysisMode) {
+    public setAnalysisMode(analysisMode: TacticAnalysisMode) {
         this.analysisMode = analysisMode;
         console.log(`Analysis mode set to ${analysisMode}`);
     }
@@ -172,9 +172,9 @@ export class Imngs2CoreConfiguration {
         });
     }
 
-    public getDefaultParameters(): IImngs2CoreArguments {
+    public getDefaultParameters(): ITacticArguments {
         // Set up with defaults common to all three pipelines (TIC, TAC, De-Novo)
-        const DEFAULTS: IImngs2CoreArguments = {
+        const DEFAULTS: ITacticArguments = {
             MergePairsArgs: {
                 fastq_maxdiffs: 50,
                 fastq_pctid: 50,
@@ -218,8 +218,8 @@ export class Imngs2CoreConfiguration {
         }
 
         // set mode specific arguments
-        if (this.analysisMode == Imngs2CoreAnalysisMode.TIC) {
-            (DEFAULTS as IImngs2CoreArgumentsTICMode).ComplexTICArgs = {
+        if (this.analysisMode == TacticAnalysisMode.TIC) {
+            (DEFAULTS as ITacticArgumentsTICMode).ComplexTICArgs = {
                 family_sim: 0.90,
                 genus_sim: 0.95,
                 species_sim: 0.987,
@@ -227,30 +227,30 @@ export class Imngs2CoreConfiguration {
                 sample_wise_correction: false,
             }
 
-            return DEFAULTS as IImngs2CoreArgumentsTICMode
-        } else if (this.analysisMode == Imngs2CoreAnalysisMode.DE_NOVO) {
-            (DEFAULTS as IImngs2CoreArgumentsDeNovoMode).DeNovoClusterOTUsArgs = {
+            return DEFAULTS as ITacticArgumentsTICMode
+        } else if (this.analysisMode == TacticAnalysisMode.DE_NOVO) {
+            (DEFAULTS as ITacticArgumentsDeNovoMode).DeNovoClusterOTUsArgs = {
                 minsize: 8,
                 abund_limit: 0.0025,
                 sample_wise_correction: false,
             }
 
-            return DEFAULTS as IImngs2CoreArgumentsDeNovoMode
-        } else if (this.analysisMode == Imngs2CoreAnalysisMode.TAC) {
-            (DEFAULTS as IImngs2CoreArgumentsTACMode).TACClusterArgs = {
+            return DEFAULTS as ITacticArgumentsDeNovoMode
+        } else if (this.analysisMode == TacticAnalysisMode.TAC) {
+            (DEFAULTS as ITacticArgumentsTACMode).TACClusterArgs = {
                 abund_limit: 0.0025,
                 sample_wise_correction: false,
                 cluster_thr: 0.987,
             }
 
-            return DEFAULTS as IImngs2CoreArgumentsTACMode
+            return DEFAULTS as ITacticArgumentsTACMode
         } else {
             console.error(`Unknown analysis mode ${this.analysisMode}`);
             return null;
         }
     }
 
-    public setParameters(parameters: IImngs2CoreArguments) {
+    public setParameters(parameters: ITacticArguments) {
         this.parameters = parameters;
         this.writeParameterFile();
     }
@@ -270,7 +270,7 @@ export class Imngs2CoreConfiguration {
         // add to task queue
         taskQueue.defer(async () => {
             updateProgress({
-                step: "Running IMNGS2-Core",
+                step: "Running TACTIC",
                 message: "Running Analysis...",
                 state: "running",
             });
@@ -309,13 +309,13 @@ export class Imngs2CoreConfiguration {
                 console.debug(`Pipeline finished with status code ${statusCode}`);
                 if (statusCode == 0) {
                     updateProgress({
-                        step: "Running IMNGS2-Core",
-                        message: "IMNGS2-Core finished",
+                        step: "Running TACTIC",
+                        message: "TACTIC finished",
                         state: "done",
                     });
                     new Notification({
                         title: app.name,
-                        body: "IMNGS2-Core finished successfully",
+                        body: "TACTIC finished successfully",
                     }).on('click', () => {
                         const mainWindow = BrowserWindow.fromId(1);
                         if (mainWindow) {
@@ -325,14 +325,14 @@ export class Imngs2CoreConfiguration {
                 } else {
                     if (statusCode == 143 || statusCode == 137 || statusCode == 130) {  // SIGTERM, SIGKILL, SIGINT
                         updateProgress({
-                            step: "Running IMNGS2-Core",
+                            step: "Running TACTIC",
                             message: "Pipeline was terminated",
                             state: "warning",
                         });
                     } else if (statusCode == 160) {  // USEARCH memory error
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `USEARCH process ran out of memory`,
                                 state: "error",
                                 error: {
@@ -344,7 +344,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 161) {  // USEARCH binary is not an ELF
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Problem with given USEARCH binary. Binary is not an ELF.`,
                                 state: "error",
                                 error: {
@@ -356,7 +356,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 162) {  // USEARCH binary is not v11
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Problem with given USEARCH binary. Version is not v11.`,
                                 state: "error",
                                 error: {
@@ -368,7 +368,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 163) {  // Argument file could not be placed in fastq directory to be read for analysis
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Argument file could not be placed in fastq directory to be read for analysis`,
                                 state: "error",
                                 error: {
@@ -380,7 +380,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 164) {  // Any error in parsing argument file
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Error parsing argument file`,
                                 state: "error",
                                 error: {
@@ -392,7 +392,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 165) {  // Failure in preprocessing interrupting Analysis
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Failure in preprocessing interrupting Analysis`,
                                 state: "error",
                                 error: {
@@ -404,7 +404,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 166) {  // Failure in analysis
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Failure in analysis`,
                                 state: "error",
                                 error: {
@@ -416,7 +416,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 167) {  // Failure in preprocessing but analysis completed (partial preprocessing)
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Failure in preprocessing but analysis completed (partial preprocessing)`,
                                 state: "error",
                                 error: {
@@ -428,7 +428,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 168) {  // All samples failed to get preprocessed
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `All samples failed to get preprocessed`,
                                 state: "error",
                                 error: {
@@ -440,7 +440,7 @@ export class Imngs2CoreConfiguration {
                     } else if (statusCode == 169) {  // Anlysis skipped
                         updateProgress(
                             {
-                                step: `Running IMNGS2-Core`,
+                                step: `Running TACTIC`,
                                 message: `Analysis skipped`,
                                 state: "error",
                                 error: {
@@ -451,7 +451,7 @@ export class Imngs2CoreConfiguration {
                         );
                     } else if (statusCode == 171) {
                         updateProgress({
-                            step: "Running IMNGS2-Core",
+                            step: "Running TACTIC",
                             message: `Failure in spike removal`,
                             state: "error",
                             error: {
@@ -461,13 +461,13 @@ export class Imngs2CoreConfiguration {
                         });
                     } else {
                         updateProgress({
-                            step: "Running IMNGS2-Core",
+                            step: "Running TACTIC",
                             message: `Pipeline returned unexpected with failure code (exit code: ${statusCode})`,
                             state: "error",
                         });
                         new Notification({
                             title: app.name,
-                            body: "IMNGS2-Core failed",
+                            body: "TACTIC failed",
                         }).on('click', () => {
                             const mainWindow = BrowserWindow.fromId(1);
                             if (mainWindow) {
@@ -479,7 +479,7 @@ export class Imngs2CoreConfiguration {
             }).catch((error: string) => {
                 console.error(error);
                 updateProgress({
-                    step: "Running IMNGS2-Core",
+                    step: "Running TACTIC",
                     message: "Could not start pipeline",
                     state: "error",
                     error: {
@@ -636,7 +636,7 @@ export class Imngs2CoreConfiguration {
     }
 
     private writeParameterFile() {
-        this.yamlFile = path.join(this.baseDirectory, 'IMNGS2Pipeline_args.yml');
+        this.yamlFile = path.join(this.baseDirectory, 'TacticPipeline_args.yml');
         writeFile(this.yamlFile, stringify(this.parameters), (err) => {
             console.error(err);
         });
@@ -656,4 +656,4 @@ export class Imngs2CoreConfiguration {
     }
 }
 
-export const imngs2CoreConfiguration = new Imngs2CoreConfiguration();
+export const tacticConfiguration = new TacticConfiguration();

@@ -115,7 +115,7 @@ interface ITACClusterArgs {
     cluster_thr: number;
 }
 
-interface IImngs2CoreArguments {
+interface ITacticArguments {
     MergePairsArgs: IMergePairsArgs;
     TrimBothSidesArgs: ITrimBothSidesArgs;
     TrimOneSideArgs: ITrimOneSideArgs;
@@ -128,19 +128,19 @@ interface IImngs2CoreArguments {
     ClusterZOTUsArgs: IClusterZOTUsArgs;
 }
 
-interface IImngs2CoreArgumentsTICMode extends IImngs2CoreArguments {
+interface ITacticArgumentsTICMode extends ITacticArguments {
     ComplexTICArgs: IComplexTICArgs;
 }
 
-interface IImngs2CoreArgumentsDeNovoMode extends IImngs2CoreArguments {
+interface ITacticArgumentsDeNovoMode extends ITacticArguments {
     DeNovoClusterOTUsArgs: IDeNovoClusterOTUsArgs;
 }
 
-interface IImngs2CoreArgumentsTACMode extends IImngs2CoreArguments {
+interface ITacticArgumentsTACMode extends ITacticArguments {
     TACClusterArgs: ITACClusterArgs;
 }
 
-interface IImngs2CoreBaseDirectory {
+interface ITacticBaseDirectory {
     path: string;
 }
 

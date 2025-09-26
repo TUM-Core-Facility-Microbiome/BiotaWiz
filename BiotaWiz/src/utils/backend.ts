@@ -934,7 +934,7 @@ export async function cleanUpBackend(environment: Environment) {
 }
 
 /**
- * Run a command using the backend.
+ * TacticRun a command using the backend.
  * @param environment The environment for which to run the command.
  * @param entrypoint The entrypoint to run (automatically done for Docker).
  * @param options Options may include bind mounts.
@@ -968,7 +968,7 @@ function getDockerBindFormat(binds: IBind[]) {
 }
 
 /**
- * Run a command using Docker as the backend.
+ * TacticRun a command using Docker as the backend.
  * @param environment The environment for which to run the command.
  * @param entrypoint The entrypoint to run.
  * @param argumentList The command to run as an array of strings.
@@ -1005,7 +1005,7 @@ async function runWithDocker(
 
 
 /**
- * Run a command using WSL as the backend.
+ * TacticRun a command using WSL as the backend.
  * @param environment The environment for which to run the command.
  * @param argumentList The command to run as an array of strings.
  * @param options Options may include bind mounts.

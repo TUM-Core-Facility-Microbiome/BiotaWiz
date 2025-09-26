@@ -147,7 +147,7 @@
 import {defineExpose, ref, reactive, onActivated, watchEffect} from "vue";
 import {Environment, LogSection} from "../../../../enums";
 
-class IMNGS2CoreLogLine {
+class TacticLogLine {
   level: string | null;
   messages: string[];
   timestamp: string | null;
@@ -213,7 +213,7 @@ class IMNGS2CoreLogLine {
 }
 
 class LogStageProcessor {
-  public stages: IMNGS2CoreLogLine[][];  // log lines are grouped by section
+  public stages: TacticLogLine[][];  // log lines are grouped by section
   stagePointer: number;
 
   constructor() {
@@ -235,7 +235,7 @@ class LogStageProcessor {
     return false;
   }
 
-  public stageHasProblems(stage: IMNGS2CoreLogLine[]) {
+  public stageHasProblems(stage: TacticLogLine[]) {
     for (let logLine of stage) {
       if (logLine.hasProblems()) {
         return true;
@@ -249,7 +249,7 @@ class LogStageProcessor {
     this.stagePointer++;
   }
 
-  private addLogLine(log: IMNGS2CoreLogLine) {
+  private addLogLine(log: TacticLogLine) {
     // check if the log line is a new stage
     if (log.messages[0].startsWith('#')) {
       this.newStage();
@@ -260,9 +260,9 @@ class LogStageProcessor {
 
   private addMessage(message: string) {
     // get last logLine or create a new one
-    let logLine: IMNGS2CoreLogLine;
+    let logLine: TacticLogLine;
     if (this.stages[this.stagePointer].length === 0) {
-      logLine = new IMNGS2CoreLogLine();
+      logLine = new TacticLogLine();
       this.stages[this.stagePointer].push(logLine);
     } else {
       logLine = this.stages[this.stagePointer][this.stages[this.stagePointer].length - 1];
@@ -284,9 +284,9 @@ async function openDocumentationPreprocessing() {
 
 
 onActivated(() => {
-  console.log("IMNGS2-Core run activated. Triggering run.");
+  console.log("TACTIC run activated. Triggering run.");
   state.autoScroll = true;
-  getImngs2CoreBaseDirectory();
+  getTacticBaseDirectory();
   // prepare the environment
   indexBridge.initializeEnvironment(Environment.TACTIC).then(() => {
     console.log("Backend initialized");
@@ -294,7 +294,7 @@ onActivated(() => {
     console.log("Backend initialization failed");
   });
   // trigger the pipeline
-  indexBridge.runImngs2Core().then(() => {
+  indexBridge.runTactic().then(() => {
     console.log("TACTIC pipeline running");
   }).catch(() => {
     console.log("TACTIC pipeline failed");
@@ -316,8 +316,8 @@ watchEffect(() => {
   emit('update:isValid', state.analysisDir !== null && state.analysisDir !== '');
 });
 
-function getImngs2CoreBaseDirectory() {
-  indexBridge.getImngs2CoreBaseDirectory().then((baseDir: string) => {
+function getTacticBaseDirectory() {
+  indexBridge.getTacticBaseDirectory().then((baseDir: string) => {
     console.log("Base dir: ", baseDir);
     state.baseDir = baseDir;
   }).catch(() => {
@@ -326,7 +326,7 @@ function getImngs2CoreBaseDirectory() {
 }
 
 function openAnalysisDirectory() {
-  indexBridge.openImngs2CoreAnalysisDirectory();
+  indexBridge.openTacticAnalysisDirectory();
 }
 
 function openExternal(url: string) {
@@ -341,7 +341,7 @@ function processLogLine(section: LogSection, logMessage: string) {
       // watch for the announcement of the analysis directory at the end of the analysis
       if (m.groups?.message.startsWith("Analysis done. Results directory: ")) {
         state.analysisDir = m.groups?.message.replace("Analysis done. Results directory: ", "");
-        indexBridge.publishImngs2CoreAnalysisDirectory(state.analysisDir);
+        indexBridge.publishTacticAnalysisDirectory(state.analysisDir);
       }
 
       const loggerName = m.groups?.name;
@@ -359,7 +359,7 @@ function processLogLine(section: LogSection, logMessage: string) {
         logProcessor = mainLogProcessor.value;
       }
 
-      const log = new IMNGS2CoreLogLine();
+      const log = new TacticLogLine();
       log.name = m.groups?.name;
       log.filename = m.groups?.filename;
       log.lineno = parseInt(m.groups?.lineno);
@@ -380,7 +380,7 @@ function processLogLine(section: LogSection, logMessage: string) {
     }
   } else {
     // add to main log
-    const log = new IMNGS2CoreLogLine();
+    const log = new TacticLogLine();
     log.addLines(logMessage);
     mainLogProcessor.value.addLogLine(log);
   }
@@ -401,7 +401,7 @@ async function rollback() {
     // mute log handler
     logHandlerFn = muteLogHandler;
     // send termination request
-    indexBridge.terminateImngs2CoreBackend().finally(() => {
+    indexBridge.terminateTacticBackend().finally(() => {
       resolve();
     });
     resolve();

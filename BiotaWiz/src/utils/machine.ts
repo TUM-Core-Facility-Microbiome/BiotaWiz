@@ -16,7 +16,7 @@ export function getRecommendedThreads() {
     const maxMemory = getMachineMemory();
 
     // assume 4 GiB required per thread
-    // this is motivated from the expected memory usage especially in the preprocessing step of the IMNGS2-Core pipeline
+    // this is motivated from the expected memory usage especially in the preprocessing step of the TACTIC pipeline
     const threadsRecommendedByMem = Math.floor(maxMemory / 4);
 
     // do not use all threads if memory is not the limiting factor

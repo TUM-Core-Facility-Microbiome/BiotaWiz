@@ -3,8 +3,8 @@
     <div class="flex-1 lg:max-w-2xl">
       <div class="space-y-6">
         <div>
-          <h3 class="text-lg font-medium">Image for IMNGS2-Core</h3>
-          <p class="text-sm text-muted-foreground">The image holds the software that is used to run IMNGS2-Core</p>
+          <h3 class="text-lg font-medium">Image for TACTIC Pipeline</h3>
+          <p class="text-sm text-muted-foreground">The image holds the software that is used to run TACTIC Pipeline</p>
         </div>
         <div class="space-y-8">
           <div class="space-y-2">
@@ -61,7 +61,7 @@
               </table>
             </div>
             <p id="ImageTag" class="text-xs text-muted-foreground">
-              You can manage images for IMNGS2-Core here. Only images using the current backend are shown.
+              You can manage images for TACTIC Pipeline here. Only images using the current backend are shown.
             </p>
           </div>
         </div>

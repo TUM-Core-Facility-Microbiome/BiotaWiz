@@ -135,14 +135,8 @@ async function apply() {
   });
 }
 
-function getImngs2CoreBaseDirectory() {
-  let directory: null | string = null;
-
-  return directory;
-}
-
 const selectSpikeDir = () => {
-  indexBridge.getImngs2CoreBaseDirectory().then((baseDir: string) => {
+  indexBridge.getTacticBaseDirectory().then((baseDir: string) => {
     console.log("Base dir: ", baseDir);
     state.baseDir = baseDir;
 

@@ -102,6 +102,6 @@ watch(selectedTag, (newValue, oldValue) => {
 const router = useRouter();
 async function next() {
   // navigate to the next step
-  await router.push({name: 'imngs2core-wizard'});
+  await router.push({name: 'tactic-wizard'});
 }
 </script>
