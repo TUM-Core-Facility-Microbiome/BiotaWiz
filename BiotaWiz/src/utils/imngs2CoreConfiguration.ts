@@ -21,7 +21,7 @@ export class Imngs2CoreConfiguration {
     private spikeMode: SpikeMode = null;
     private samples: IFileSystemSample[] = [];
     private parameters: IImngs2CoreArguments = null;
-    private threads: Number = 1;
+    private threads: number = 1;
 
     private preprocessToIndividualZOTUs: boolean = false;
     private skipNonBacterialFilter: boolean = false;
@@ -248,7 +248,7 @@ export class Imngs2CoreConfiguration {
         this.writeParameterFile();
     }
 
-    public setThreads(threads: Number) {
+    public setThreads(threads: number) {
         this.threads = threads;
     }
 
