@@ -10,4 +10,4 @@ export const API_BEARER_AUTH = 'github_pat_11AICGPQQ0CbRc1nGMIBfy_ry2DdGJUmoh2On
 
 export const REPOSITORY_OWNER = 'mpourjam';
 export const REPOSITORY_NAME = 'tactic-pipeline';
-export const VRANGE = '~0.7.0';
+export const VRANGE = '~0.7.1';
