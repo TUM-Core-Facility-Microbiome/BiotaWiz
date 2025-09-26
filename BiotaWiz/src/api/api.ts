@@ -167,7 +167,6 @@ ipcMain.handle("imngs2core:setAnalysisDirectory", async (event, analysisDirector
     console.log(`Setting IMNGS2-Core analysis directory to ${analysisDirectory}`);
     imngs2CoreConfiguration.setAnalysisDirectory(analysisDirectory);
     console.log(imngs2CoreConfiguration);
-    await setImngs2CoreBaseDirectory(analysisDirectory);
 });
 
 ipcMain.handle("imngs2core:openAnalysisDirectory", async () => {
