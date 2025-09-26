@@ -48,7 +48,7 @@
                   >
                 </div>
                 <label for="skip-non-bacterial-filter" class="pt-1">
-                  <p class="text-sm font-mono">Do not filter out non-16S sequences</p>
+                  <p class="text-sm font-mono">Do not filter for bacterial and archeal sequences</p>
                   <p class="text-xs text-gray-500">
                     If set, the filtering step to filter non-bacterial 16S
                     sequences will be skipped. It speeds up the pipeline
