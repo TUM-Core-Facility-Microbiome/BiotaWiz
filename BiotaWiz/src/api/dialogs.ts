@@ -1,11 +1,15 @@
 import {BrowserWindow, dialog} from "electron";
 
-export async function handleFolderOpen(): Promise<string> {
+export async function handleFolderOpen(defaultPath?: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         const focusedWindow = BrowserWindow.getFocusedWindow();
-        dialog.showOpenDialog(focusedWindow, {
+        const openOptions = defaultPath ? {
+            properties: ['openDirectory'],
+            defaultPath: defaultPath
+        } : {
             properties: ['openDirectory']
-        }).then((result) => {
+        };
+        dialog.showOpenDialog(focusedWindow, openOptions).then((result) => {
             if (result.canceled) {
                 reject("User canceled");
             }

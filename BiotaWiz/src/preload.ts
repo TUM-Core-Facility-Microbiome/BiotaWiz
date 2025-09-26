@@ -57,9 +57,9 @@ const indexBridge = {
             });
         });
     },
-    handleFolderOpen: async () => {
+    handleFolderOpen: async (defaultPath?: string) => {
         return new Promise<string>((resolve, reject) => {
-            ipcRenderer.invoke('dialog:handleFolderOpen').then((result: string) => {
+            ipcRenderer.invoke('dialog:handleFolderOpen', defaultPath).then((result: string) => {
                 resolve(result);
             }).catch((error: Error) => {
                 reject(error);
@@ -128,6 +128,9 @@ const indexBridge = {
     },
     publishImngs2CoreAnalysisDirectory: async (analysisDirectory: string) => {
         return ipcRenderer.invoke('imngs2core:setAnalysisDirectory', analysisDirectory);
+    },
+    publishSpikeInSequencesDirectory: async (spikeInSequencesDirectory: string) => {
+        return ipcRenderer.invoke('imngs2core:setSpikeInSequencesDirectory', spikeInSequencesDirectory);
     },
     openImngs2CoreAnalysisDirectory: async () => {
         return ipcRenderer.invoke('imngs2core:openAnalysisDirectory');

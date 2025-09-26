@@ -27,6 +27,7 @@ export class Imngs2CoreConfiguration {
     private skipNonBacterialFilter: boolean = false;
 
     private analysisDirectory: string | null = null;
+    private spikeInSequencesDirectory: string | null = null;
 
     public setAnalysisMode(analysisMode: Imngs2CoreAnalysisMode) {
         this.analysisMode = analysisMode;
@@ -39,13 +40,19 @@ export class Imngs2CoreConfiguration {
 
     public setBaseDirectory(baseDirectory: string) {
         this.baseDirectory = baseDirectory;
-        console.log(`IMNGS2-Core base directory set to ${baseDirectory}`);
+        console.log(`Pipeline base directory set to ${baseDirectory}`);
     }
 
     public setAnalysisDirectory(analysisDirectory: string) {
         // analysis directory is relative to base directory
         this.analysisDirectory = path.join(this.baseDirectory, analysisDirectory);
-        console.log(`IMNGS2-Core analysis directory set to ${analysisDirectory}`);
+        console.log(`Pipeline analysis directory set to ${analysisDirectory}`);
+    }
+
+    public setSpikeInSequencesDirectory(spikeInSequencesDirectory: string) {
+        // spike-in sequences directory is relative to base directory
+        this.spikeInSequencesDirectory = spikeInSequencesDirectory;
+        console.log(`Pipeline spike-in sequences directory set to ${spikeInSequencesDirectory}`);
     }
 
     public setPreprocessToIndividualZOTUs(preprocessToIndividualZOTUs: boolean) {
@@ -281,6 +288,11 @@ export class Imngs2CoreConfiguration {
             }
             if (this.skipNonBacterialFilter) {  // set flag to skip non-bacterial filter
                 argumentList.push("--skip-non-bacterial-filter");
+            }
+            // add conditional arguments
+            if (this.spikeInSequencesDirectory) {
+                argumentList.push("--spikes-references-dir");
+                argumentList.push(this.spikeInSequencesDirectory);
             }
 
             await run(Environment.TACTIC,

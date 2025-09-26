@@ -40,8 +40,8 @@ ipcMain.handle('openExternal', async (event, url: string) => {
     return await shell.openExternal(url);
 });
 
-ipcMain.handle('dialog:handleFolderOpen', async () => {
-    return await handleFolderOpen();
+ipcMain.handle('dialog:handleFolderOpen', async (event, defaultPath?: string) => {
+    return await handleFolderOpen(defaultPath);
 });
 
 ipcMain.handle('dialog:handleFileOpen', async () => {
@@ -166,6 +166,12 @@ ipcMain.handle("imngs2core:setBaseDirectory", async (event, baseDirectory: strin
 ipcMain.handle("imngs2core:setAnalysisDirectory", async (event, analysisDirectory: string) => {
     console.log(`Setting IMNGS2-Core analysis directory to ${analysisDirectory}`);
     imngs2CoreConfiguration.setAnalysisDirectory(analysisDirectory);
+    console.log(imngs2CoreConfiguration);
+});
+
+ipcMain.handle("imngs2core:setSpikeInSequencesDirectory", async (event, spikeInSequencesDirectory: string) => {
+    console.log(`Setting spike-in directory to ${spikeInSequencesDirectory}`);
+    imngs2CoreConfiguration.setSpikeInSequencesDirectory(spikeInSequencesDirectory);
     console.log(imngs2CoreConfiguration);
 });
 
