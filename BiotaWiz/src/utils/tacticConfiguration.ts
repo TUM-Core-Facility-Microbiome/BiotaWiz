@@ -636,7 +636,7 @@ export class TacticConfiguration {
     }
 
     private writeParameterFile() {
-        this.yamlFile = path.join(this.baseDirectory, 'TacticPipeline_args.yml');
+        this.yamlFile = path.join(this.baseDirectory, 'TACTICPipeline_args.yml');
         writeFile(this.yamlFile, stringify(this.parameters), (err) => {
             console.error(err);
         });
