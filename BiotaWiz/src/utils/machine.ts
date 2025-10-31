@@ -15,9 +15,9 @@ export function getRecommendedThreads() {
     const maxThreads = getMachineThreads();
     const maxMemory = getMachineMemory();
 
-    // assume 4 GiB required per thread
+    // assume 3 GiB required per thread
     // this is motivated from the expected memory usage especially in the preprocessing step of the TACTIC pipeline
-    const threadsRecommendedByMem = Math.floor(maxMemory / 4);
+    const threadsRecommendedByMem = Math.floor(maxMemory / 3);
 
     // do not use all threads if memory is not the limiting factor
     const threadsRecommendedByCpu = maxThreads > 2 ? maxThreads - 1 : maxThreads;
