@@ -429,6 +429,34 @@ export async function getDistroWslVersion(distribution: string) {
 }
 
 
+function runWslImport(distributionName: string, installLocation: string, tarBallPath: string): Promise<void> {
+    // the dependency I used before for WSL imports used the shell to run the import
+    // this caused issues with paths containing tildes
+    return new Promise((resolve, reject) => {
+        const proc = child_process.spawn(
+            "wsl.exe",
+            ["--import", distributionName, installLocation, tarBallPath],
+            { shell: false, windowsHide: true }
+        );
+
+        proc.stdout?.on("data", (buf: Buffer) => {
+            const msg = buf.toString("utf8").replace(/\x00/g, "");
+            logToDevTools(msg);
+        });
+        proc.stderr?.on("data", (buf: Buffer) => {
+            const msg = buf.toString("utf8").replace(/\x00/g, "");
+            logToDevTools(msg);
+        });
+
+        proc.on("error", reject);
+        proc.on("close", (code) => {
+            if (code === 0) resolve();
+            else reject(new Error(`wsl --import exited with code ${code}`));
+        });
+    });
+}
+
+
 export async function registerWslDistribution(environment: Environment, releaseTag: SemVer) {
     let tarBall;
     try {
@@ -447,7 +475,7 @@ export async function registerWslDistribution(environment: Environment, releaseT
         message: `Registering ${environment} WSL distribution v${getVersionString(releaseTag)}`,
         state: "running",
     });
-    await wsl.importDistribution(distributionName, installLocation, tarBall);
+    await runWslImport(distributionName, installLocation, tarBall);
 }
 
 /**
