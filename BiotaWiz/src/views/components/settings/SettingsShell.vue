@@ -9,7 +9,7 @@
                 active-class="bg-gray-100"
                 to="/settings/general"
             >
-              General
+              About
             </router-link>
           </li>
           <li>
