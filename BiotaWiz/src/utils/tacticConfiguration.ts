@@ -280,6 +280,7 @@ export class TacticConfiguration {
                 "--analysis-mode", this.analysisMode.valueOf(),
                 "--yml-file", yamlFile,
                 "--mapping-file", mappingFile,
+                "--db-directory", "/base/databases",  // mounted database directory
                 "--threads", this.threads.toString(),
             ];
             // add conditional flags
@@ -299,9 +300,13 @@ export class TacticConfiguration {
                 "/base/run_tactic.py",  // skip the docker entrypoint and call the script directly
                 {
                     binds: [
-                        {
+                        {  // base directory
                             source: this.baseDirectory,
                             target: "/base/inputs",
+                        },
+                        {  // database directory
+                            source: path.join(app.getPath("appData"), app.getName(), "resources", "databases"),
+                            target: "/base/databases",
                         },
                     ],
             }, argumentList).then((statusCode: number) => {
