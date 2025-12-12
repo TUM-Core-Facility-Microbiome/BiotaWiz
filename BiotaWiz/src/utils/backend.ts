@@ -1009,7 +1009,7 @@ async function runWithDocker(
     console.log(`Running command ${argumentList.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
     const container = await docker.createContainer({
         Image: image,
-        Entrypoint: entrypoint,
+        Entrypoint: [entrypoint],
         Cmd: argumentList,
         HostConfig: {
             AutoRemove: true,
