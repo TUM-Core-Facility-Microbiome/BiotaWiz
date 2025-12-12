@@ -1006,7 +1006,7 @@ async function runWithDocker(
     environment: Environment, entrypoint: string, argumentList: string[], options: IRunOptions) {
     console.log(`Running command with Docker: ${argumentList}`);
     const image = await getImageName(environment, await getImageTagOrLatestCompatible(environment));
-    console.log(`Running command ${argumentList.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
+    console.log(`Running command ${entrypoint} ${argumentList.join(' ')} at image ${image} with binds ${JSON.stringify(options.binds)}`);
     const container = await docker.createContainer({
         Image: image,
         Entrypoint: [entrypoint],
