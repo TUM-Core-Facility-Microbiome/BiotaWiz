@@ -266,6 +266,12 @@ export class TacticConfiguration {
 
         logToSection(LogSection.PREPARE_BACKEND, "Pipeline will start after environment is initialized...");
 
+        const databaseDirectory = path.join(app.getPath("appData"), app.getName(), "resources", "databases")
+        // create database directory if it does not exist
+        if (!fs.existsSync(databaseDirectory)) {
+            fs.mkdirSync(databaseDirectory, {recursive: true});
+        }
+
         console.log(`Running pipeline`);
         // add to task queue
         taskQueue.defer(async () => {
@@ -305,7 +311,7 @@ export class TacticConfiguration {
                             target: "/base/inputs",
                         },
                         {  // database directory
-                            source: path.join(app.getPath("appData"), app.getName(), "resources", "databases"),
+                            source: databaseDirectory,
                             target: "/base/databases",
                         },
                     ],
