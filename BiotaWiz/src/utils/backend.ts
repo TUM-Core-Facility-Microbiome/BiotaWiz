@@ -1,6 +1,6 @@
 import path from "path";
 import * as fs from "fs";
-import {API_BEARER_AUTH, IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
+import {IMAGE_ASSET_NAME, REGISTRY_AUTH} from "../config";
 import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, setImageTag, storeBackend} from "./storage";
@@ -200,7 +200,6 @@ async function queryAvailableReleaseTags(environment: Environment) {
             {
                 headers: {
                     'X-GitHub-Api-Version': '2022-11-28',
-                    'Authorization': `Bearer ${API_BEARER_AUTH}`,
                 },
             }
         ).then((response) => {
@@ -272,7 +271,6 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
             {
                 headers: {
                     'X-GitHub-Api-Version': '2022-11-28',
-                    'Authorization': `Bearer ${API_BEARER_AUTH}`,
                 },
             }
         ).then((response) => {
@@ -334,7 +332,6 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
                 {
                     responseType: 'stream',
                     headers: {
-                        'Authorization': `Bearer ${API_BEARER_AUTH}`,
                         'Accept': 'application/octet-stream',
                     },
                     onDownloadProgress: function(progressEvent) {

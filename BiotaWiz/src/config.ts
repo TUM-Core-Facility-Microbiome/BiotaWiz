@@ -6,7 +6,6 @@ export const IMAGE_ASSET_NAME = 'image.tar.gz';
 export const REGISTRY_URL = 'ghcr.io';
 export const REGISTRY_AUTH = {username: 'TOKEN', password: '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'};
 export const API_URL = 'https://api.github.com';
-export const API_BEARER_AUTH = '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';
 
 export const REPOSITORY_OWNER = 'mpourjam';
 export const REPOSITORY_NAME = 'tactic-pipeline';
