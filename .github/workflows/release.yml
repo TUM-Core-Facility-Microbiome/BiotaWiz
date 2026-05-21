@@ -6,6 +6,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
@@ -20,9 +23,19 @@ jobs:
 
       - name: Setup node
         uses: actions/setup-node@v4
-        if: matrix.os == 'windows-latest'
         with:
           node-version: 22
+
+      - name: Verify release tag matches app version
+        shell: bash
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./BiotaWiz/package.json').version")"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+
+          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Release tag ${GITHUB_REF_NAME} does not match BiotaWiz/package.json version ${PACKAGE_VERSION}. Use tag v${PACKAGE_VERSION}, or update package.json before tagging."
+            exit 1
+          fi
 
       - name: Publish Electron app using the publishers defined in forge config
         uses: zsewa/action-electron-forge@v1
