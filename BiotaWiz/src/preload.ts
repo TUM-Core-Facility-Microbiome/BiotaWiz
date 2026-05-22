@@ -111,6 +111,9 @@ const indexBridge = {
     deleteImage: async (name: string, tag: string) => {
         return ipcRenderer.invoke('deleteImage', name, tag);
     },
+    deleteAllDistributionTarFiles: async (environment: Environment): Promise<number> => {
+        return ipcRenderer.invoke('deleteAllDistributionTarFiles', environment);
+    },
     publishTacticAnalysisMode: async (analysisMode: TacticAnalysisMode) => {
         return ipcRenderer.invoke('tactic:setAnalysisMode', analysisMode);
     },

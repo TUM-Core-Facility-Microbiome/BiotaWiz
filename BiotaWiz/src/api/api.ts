@@ -2,6 +2,7 @@ import {app, BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
     checkBackendConnection,
+    deleteAllDistributionTarFiles,
     deleteImage,
     getAssociatedImages,
     getCompatibleReleaseTagStrings,
@@ -92,6 +93,10 @@ ipcMain.handle("getAssociatedImages", async (event, environment: Environment): P
 
 ipcMain.handle("deleteImage", async (event, name: string, tag: string) => {
     return await deleteImage(name, tag);
+});
+
+ipcMain.handle("deleteAllDistributionTarFiles", async (event, environment: Environment): Promise<number> => {
+    return await deleteAllDistributionTarFiles(environment);
 });
 
 ipcMain.handle("changeEnvironment", async (event, environment: Environment | null) => {

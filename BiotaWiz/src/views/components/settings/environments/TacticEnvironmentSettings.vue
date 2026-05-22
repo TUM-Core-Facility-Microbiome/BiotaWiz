@@ -28,6 +28,26 @@
             </p>
           </div>
           <div class="space-y-2">
+            <div class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Download cache
+            </div>
+            <div>
+              <button
+                  @click="clearTarCache"
+                  :disabled="clearingCache"
+                  class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {{ clearingCache ? 'Clearing…' : 'Clear download cache' }}
+              </button>
+              <span v-if="cacheCleared !== null" class="ml-3 text-sm" :class="cacheCleared > 0 ? 'text-green-600' : 'text-gray-500'">
+                {{ cacheCleared > 0 ? `Deleted ${cacheCleared} file${cacheCleared !== 1 ? 's' : ''}` : 'No cached files found' }}
+              </span>
+            </div>
+            <p class="text-xs text-muted-foreground">
+              Delete downloaded distribution tarballs from the temporary directory. Files are re-downloaded on the next run.
+            </p>
+          </div>
+          <div class="space-y-2">
             <div class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                  for="ImageTag">Manage associated images
             </div>
@@ -77,6 +97,8 @@ import {Environment} from "../../../../enums";
 const compatibleTagStrings = ref([]);
 const selectedTag = ref(null);
 const associatedImages = ref([]);
+const clearingCache = ref(false);
+const cacheCleared = ref<number | null>(null);
 
 const environment = Environment.TACTIC;
 
@@ -131,6 +153,16 @@ loadAssociatedImages();
 function deleteImage(name: string, tag: string) {
   indexBridge.deleteImage(name, tag).then(() => {
     loadAssociatedImages();
+  });
+}
+
+function clearTarCache() {
+  clearingCache.value = true;
+  cacheCleared.value = null;
+  indexBridge.deleteAllDistributionTarFiles(environment).then((count: number) => {
+    cacheCleared.value = count;
+  }).finally(() => {
+    clearingCache.value = false;
   });
 }
 </script>

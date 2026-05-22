@@ -390,6 +390,26 @@ export async function getImageTarball(environment: Environment, releaseTag: SemV
     return expectedPath;
 }
 
+/**
+ * Delete all cached distribution tarballs for an environment from the temp directory.
+ * Removes both completed (.tar.gz) and in-progress (.tar.gz.tmp) files.
+ * @returns The number of files deleted.
+ */
+export async function deleteAllDistributionTarFiles(environment: Environment): Promise<number> {
+    const tempDir = app.getPath('temp');
+    const repo = getRepository(environment);
+    const prefix = `${repo.owner}.${repo.repo}_`;
+    let count = 0;
+    for (const file of fs.readdirSync(tempDir)) {
+        if (file.startsWith(prefix) && (file.endsWith('.tar.gz') || file.endsWith('.tar.gz.tmp'))) {
+            fs.unlinkSync(path.join(tempDir, file));
+            logToDevTools(`Deleted cached tarball: ${file}`);
+            count++;
+        }
+    }
+    return count;
+}
+
 export async function deleteTar(image: IImage) {
     const semVer = semVerFromGitHubTag(`v${image.tag}`);
     const tarPath = await getExpectedDistributionTarPath(Environment.TACTIC, semVer);
