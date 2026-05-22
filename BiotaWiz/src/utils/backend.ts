@@ -1,7 +1,6 @@
 import path from "path";
 import * as fs from "fs";
 import {IMAGE_ASSET_NAME} from "../config";
-import axios from "axios";
 import {byOS, platforms} from "./platform";
 import {deleteImageTag, getBackend, getImageTag, setImageTag, storeBackend} from "./storage";
 import {
@@ -192,48 +191,35 @@ export async function getCompatibleReleaseTagStrings(environment: Environment) {
 }
 
 async function queryAvailableReleaseTags(environment: Environment) {
-    return new Promise<SemVer[]>((resolve, reject) => {
-        const repo = getRepository(environment);
-        // query GitHub for available releases
-        axios.get<GitHubRelease[]>(
+    const repo = getRepository(environment);
+    try {
+        const response = await fetch(
             `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases`,
-            {
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28',
-                },
+            { headers: { 'X-GitHub-Api-Version': '2022-11-28' } }
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data: GitHubRelease[] = await response.json();
+        const availableTags = data.map((release) => {
+            try {
+                if (!cmArgs['allow-prerelease-tags']) {
+                    if (release.prerelease) return null;
+                }
+                return semVerFromGitHubTag(release.name);
+            } catch {
+                return null;
             }
-        ).then((response) => {
-            const data = response.data;
-            const availableTags = data.map((release) => {
-                try {
-                    // filter out pre-releases
-                    if (!cmArgs['allow-prerelease-tags']) {
-                        if (release.prerelease) {
-                            return null;
-                        }
-                    }
-                    return semVerFromGitHubTag(release.name);
-                } catch (error) {  // return null for tags that could not be parsed and filter them out thereafter
-                    return null;
-                }
-            }).filter((tag) => tag !== null) as SemVer[];
-            console.debug(`Repo offers ${availableTags.length} releases: ${availableTags.map((version: SemVer) => getVersionString(version)).join(', ')}`);
-            resolve(availableTags);
-        }).catch((error) => {
-            updateProgress(
-                {
-                    step: `Initializing ${environment} environment`,
-                    message: `Failed to query available releases.`,
-                    state: "error",
-                    error: {
-                        code: "RAPIOF",
-                        helpUrl: helpPages.RAPIOF,
-                    },
-                }
-            );
-            reject(error);
+        }).filter((tag) => tag !== null) as SemVer[];
+        console.debug(`Repo offers ${availableTags.length} releases: ${availableTags.map((version: SemVer) => getVersionString(version)).join(', ')}`);
+        return availableTags;
+    } catch (error) {
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Failed to query available releases.`,
+            state: "error",
+            error: { code: "RAPIOF", helpUrl: helpPages.RAPIOF },
         });
-    });
+        throw error;
+    }
 }
 
 async function getCompatibleImageReleaseTags(environment: Environment) {
@@ -261,108 +247,99 @@ async function getLatestCompatibleImageReleaseTag(environment: Environment) {
 }
 
 async function getImageReleaseAssetUrl(environment: Environment, releaseTag: SemVer) {
-    return new Promise<string>((resolve, reject) => {
-        const repo = getRepository(environment);
-        // load specified release and find the tarball
-        const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/tags/v${getVersionString(releaseTag)}`;
-        logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
-        axios.get<GitHubRelease>(
-            RELEASE_URL,
-            {
-                headers: {
-                    'X-GitHub-Api-Version': '2022-11-28',
-                },
-            }
-        ).then((response) => {
-            const data = response.data;
-            const assets = data.assets;
-
-            // find the tarball
-            logToDevTools(`Release has ${assets.length} assets attached. Searching for ${IMAGE_ASSET_NAME}`);
-            const tarball = assets.find((asset) => {
-                return asset.name === IMAGE_ASSET_NAME;
-            });
-
-            if (tarball === undefined) {
-                updateProgress(
-                    {
-                        step: `Initializing ${environment} environment`,
-                        message: `Release v${getVersionString(releaseTag)} is missing required asset.`,
-                        state: "error",
-                        error: {
-                            code: "RASMIS",
-                            helpUrl: helpPages.RASMIS,
-                        },
-                    }
-                );
-                reject(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${getVersionString(releaseTag)}`);
-            }
-
-            resolve(tarball.url);
-        }).catch((error) => {
-            updateProgress(
-                {
-                    step: `Initializing ${environment} environment`,
-                    message: `Failed to query release v${getVersionString(releaseTag)}.`,
-                    state: "error",
-                    error: {
-                        code: "RAPIOF",
-                        helpUrl: helpPages.RAPIOF,
-                    },
-                }
-            );
-            reject(error);
+    const repo = getRepository(environment);
+    const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/tags/v${getVersionString(releaseTag)}`;
+    logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
+    try {
+        const response = await fetch(RELEASE_URL, {
+            headers: { 'X-GitHub-Api-Version': '2022-11-28' },
         });
-    });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data: GitHubRelease = await response.json();
+        const assets = data.assets;
+
+        logToDevTools(`Release has ${assets.length} assets attached. Searching for ${IMAGE_ASSET_NAME}`);
+        const tarball = assets.find((asset) => asset.name === IMAGE_ASSET_NAME);
+
+        if (tarball === undefined) {
+            updateProgress({
+                step: `Initializing ${environment} environment`,
+                message: `Release v${getVersionString(releaseTag)} is missing required asset.`,
+                state: "error",
+                error: { code: "RASMIS", helpUrl: helpPages.RASMIS },
+            });
+            throw new Error(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${getVersionString(releaseTag)}`);
+        }
+
+        return tarball.url;
+    } catch (error) {
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Failed to query release v${getVersionString(releaseTag)}.`,
+            state: "error",
+            error: { code: "RAPIOF", helpUrl: helpPages.RAPIOF },
+        });
+        throw error;
+    }
 }
 
 /**
  * Download the distribution tarball and places it to the expected path.
  */
-async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, path: string) {
-    return new Promise<void>((resolve, reject) => {
-        // get tarball URL
-        getImageReleaseAssetUrl(environment, releaseTag).then(async (tarballUrl) => {
-            // download tarball
-            logToDevTools(`Downloading tarball from ${tarballUrl} to ${path}`);
-            const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
-            const writer = fs.createWriteStream(expectedPath);
-            axios.get(
-                tarballUrl,
-                {
-                    responseType: 'stream',
-                    headers: {
-                        'Accept': 'application/octet-stream',
-                    },
-                    onDownloadProgress: function(progressEvent) {
-                        const percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
-                        updateProgress({
-                            step: `Initializing ${environment} environment`,
-                            message: `Downloading distribution files (${percentCompleted}%)`,
-                            state: "running",
-                        });
-                    },
-                }
-            ).then((response) => {
-                response.data.pipe(writer);
+async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, _path: string) {
+    const tarballUrl = await getImageReleaseAssetUrl(environment, releaseTag);
+    const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
+    logToDevTools(`Downloading tarball from ${tarballUrl} to ${expectedPath}`);
 
-                writer.on('finish', resolve);
-                writer.on('error', (error) => {
-                    reject(error);
-                });
-            }).catch((error) => {
-                updateProgress(
-                    {
-                        step: `Initializing ${environment} environment`,
-                        message: `Failed to download distribution files.`,
-                        state: "error",
-                    }
-                );
-                reject(error);
-            });
-        }).catch((error) => {
-            reject(error);
+    let response: Response;
+    try {
+        response = await fetch(tarballUrl, {
+            headers: { 'Accept': 'application/octet-stream' },
         });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    } catch (error) {
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Failed to download distribution files.`,
+            state: "error",
+        });
+        throw error;
+    }
+
+    const total = parseInt(response.headers.get('content-length') ?? '0', 10);
+    let loaded = 0;
+    const writer = fs.createWriteStream(expectedPath);
+    const reader = response.body!.getReader();
+
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            loaded += value.length;
+            writer.write(Buffer.from(value));
+            if (total > 0) {
+                const percentCompleted = Math.floor((loaded * 100) / total);
+                updateProgress({
+                    step: `Initializing ${environment} environment`,
+                    message: `Downloading distribution files (${percentCompleted}%)`,
+                    state: "running",
+                });
+            }
+        }
+    } catch (error) {
+        writer.destroy();
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Failed to download distribution files.`,
+            state: "error",
+        });
+        throw error;
+    }
+
+    await new Promise<void>((resolve, reject) => {
+        writer.end();
+        writer.on('finish', resolve);
+        writer.on('error', reject);
     });
 }
 
