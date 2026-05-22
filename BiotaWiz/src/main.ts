@@ -1,4 +1,5 @@
 import {app, BrowserWindow} from 'electron';
+import squirrelStartup from 'electron-squirrel-startup';
 import MenuBuilder from './electron/menu';
 import path from 'path';
 // In this file you can include the rest of your app's specific main process
@@ -11,7 +12,7 @@ import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
 import {logToDevTools} from "./utils/logHandler";
 
-if (require('electron-squirrel-startup')) {
+if (squirrelStartup) {
     const squirrelEvent = process.argv[1];
     if (squirrelEvent === '--squirrel-uninstall') {  // on uninstall
         console.log("Running cleanup tasks for uninstallation");

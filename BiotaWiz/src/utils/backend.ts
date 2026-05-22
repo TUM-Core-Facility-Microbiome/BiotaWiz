@@ -22,8 +22,8 @@ import Dockerode from "dockerode";
 import {getLocalAppDataPath} from "./helpers";
 import * as child_process from "node:child_process";
 
-const wsl = require("@endevr-io/wsl-api");
-const { windowsToWsl } = require("@endevr-io/wsl-path");
+import wsl from "@endevr-io/wsl-api";
+import { windowsToWsl } from "@endevr-io/wsl-path";
 
 const runningContainers: Set<string> = new Set();
 const runningDistributions = new Set();

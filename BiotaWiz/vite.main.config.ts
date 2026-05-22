@@ -1,10 +1,11 @@
 import {defineConfig} from 'vite';
-import { forgeViteConfig } from 'electron-forge-plugin-vite/migration';
 
 // https://vitejs.dev/config
-export default defineConfig(forgeViteConfig.main({
+export default defineConfig({
     resolve: {
+        // Disable browser field so Node.js entry points are used instead
         browserField: false,
-        mainFields: ['module', 'jsnext:main', 'jsnext'],
+        // Include 'main' so CJS-only packages (e.g. electron-json-storage) are resolved correctly
+        mainFields: ['module', 'jsnext:main', 'jsnext', 'main'],
     },
-}));
+});
