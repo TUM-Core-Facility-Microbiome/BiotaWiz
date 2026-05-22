@@ -31,6 +31,10 @@ export async function checkForUpdates() {
     return new Promise<string>( (resolve, reject) => {
         logToDevTools('Checking for updates');
         fetch(`https://api.github.com/repos/${GITHUB_REPO}/tags`).then(response => {
+            if (!response.ok) {
+                reject(new Error(`GitHub API returned HTTP ${response.status}`));
+                return;
+            }
             response.json().then((tags: { name: string }[]) => {
                 console.log(tags);
                 const tagNames: string[] = tags.map((tag: { name: string }) => tag.name);
