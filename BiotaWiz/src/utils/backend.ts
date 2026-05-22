@@ -289,6 +289,7 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
 async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, _path: string) {
     const tarballUrl = await getImageReleaseAssetUrl(environment, releaseTag);
     const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
+    const tempPath = `${expectedPath}.tmp`;
     logToDevTools(`Downloading tarball from ${tarballUrl} to ${expectedPath}`);
 
     let response: Response;
@@ -308,7 +309,7 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
 
     const total = parseInt(response.headers.get('content-length') ?? '0', 10);
     let loaded = 0;
-    const writer = fs.createWriteStream(expectedPath);
+    const writer = fs.createWriteStream(tempPath);
     const reader = response.body!.getReader();
 
     try {
@@ -328,6 +329,9 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
         }
     } catch (error) {
         writer.destroy();
+        if (fs.existsSync(tempPath)) {
+            fs.unlinkSync(tempPath);
+        }
         updateProgress({
             step: `Initializing ${environment} environment`,
             message: `Failed to download distribution files.`,
@@ -341,6 +345,8 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
         writer.on('finish', resolve);
         writer.on('error', reject);
     });
+
+    fs.renameSync(tempPath, expectedPath);
 }
 
 async function getExpectedDistributionTarPath(environment: Environment, releaseTag: SemVer) {
