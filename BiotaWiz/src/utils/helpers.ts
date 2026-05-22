@@ -12,8 +12,8 @@ import {byOS, platforms} from "./platform";
  *
  * @returns {string} The path to the user's application data directory.
  */
-export function getLocalAppDataPath() {
-    return byOS({
+export function getLocalAppDataPath(): string {
+    return (byOS({
         [platforms.WINDOWS]: () => {
             // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
             const localAppData = process.env.LOCALAPPDATA;
@@ -23,5 +23,5 @@ export function getLocalAppDataPath() {
             return path.join(localAppData, app.name);
         },
         default: () => app.getPath('userData'),
-    })();
+    }) as () => string)();
 }

@@ -54,19 +54,19 @@ export function runSubprocess(command: string, args: string[], logHandler: (msg:
             if (pidRegister) {
                 pidRegister.delete(subprocess);
             }
-            resolve(code);
+            resolve(code ?? -1);
         });
     });
 }
 
 export function runMockProcess(): Promise<number> {
     console.log("Choosing mock process by platform");
-    return platform.byOS({
+    return (platform.byOS({
         [platform.platforms.LINUX]: () => dockerHelloWorld(),
         [platform.platforms.WINDOWS]: () => wslHelloWorld(),
         [platform.platforms.MAC]: () => dockerHelloWorld(),
         default: () => dockerHelloWorld(),
-    })();
+    }) as () => Promise<number>)();
 }
 
 export function getBackendVersion(): Promise<string> {
@@ -144,14 +144,14 @@ async function checksumWindows(path: string): Promise<string> {
 export async function getChecksum(path: string): Promise<string> {
     return new Promise((resolve, reject) => {
         console.log("Calculating checksum by platform");
-        const stdout: Promise<string> = platform.byOS({
+        const stdout: Promise<string> = (platform.byOS({
             [platform.platforms.LINUX]: () => checksumUnix(path),
             [platform.platforms.WINDOWS]: () => checksumWindows(path),
             [platform.platforms.MAC]: () => checksumUnix(path),
             default: () => {
                 throw new Error(`Platform ${platform.getPlatform()} not supported`);
             },
-        })();
+        }) as () => Promise<string>)();
 
         stdout.then(
             (value) => {

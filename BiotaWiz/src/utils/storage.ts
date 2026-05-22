@@ -71,11 +71,11 @@ export function setTacticBaseDirectory(baseDirectory: string) {
 
 export function getTacticBaseDirectory() {
     return new Promise<string>((resolve, reject) => {
-        jsonStorage.get('tacticBaseDirectory', (error, data: ITacticBaseDirectory) => {
+        jsonStorage.get('tacticBaseDirectory', (error, data) => {
             if (error) {
                 reject(error);
             } else {
-                resolve(data.path);
+                resolve((data as ITacticBaseDirectory).path);
             }
         });
     });

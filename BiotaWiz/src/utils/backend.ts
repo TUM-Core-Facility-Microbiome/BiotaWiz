@@ -73,7 +73,7 @@ export const BACKENDS = [
 ]
 
 export function getDefaultBackend(): IBackend {
-    return byOS({
+    return (byOS({
         [platforms.LINUX]: () => {
             return DOCKER
         },
@@ -86,7 +86,7 @@ export function getDefaultBackend(): IBackend {
         default: () => {
             return DOCKER
         },
-    })();
+    }) as () => IBackend)();
 }
 
 export async function setBackendByType(type: string) {
@@ -110,7 +110,7 @@ export async function setBackend(backend: IBackend) {
     const currentBackend = await getBackend();
     if (currentBackend.type !== backend.type) {
         await terminateBackend(Environment.TACTIC);
-        await cleanUpBackend();
+        await cleanUpBackend(Environment.TACTIC);
     }
     // store the backend
     return await storeBackend(backend);
@@ -849,15 +849,16 @@ async function getAssociatedImagesDocker(environment: Environment): Promise<IIma
         getImageBaseName(environment).then((baseName) => {
             // filter for images where the name starts with the base name
             docker.listImages().then(async (images: Dockerode.ImageInfo[]) => {
-                const associatedImages = images.filter((imageInfo: { RepoTags: string[] }) => {
-                    return imageInfo.RepoTags.some((imageName: string) => {
+                const associatedImages = images.filter((imageInfo: { RepoTags?: string[] }) => {
+                    return imageInfo.RepoTags ? imageInfo.RepoTags.some((imageName: string) => {
                         return imageName.startsWith(baseName);
-                    });
+                    }) : false;
                 });
                 // convert to IImage using the first tag
                 const ret = [];
                 for (const imageInfo of associatedImages) {
-                    const imageName = imageInfo.RepoTags[0];
+                    const imageName = imageInfo.RepoTags?.[0];
+                    if (!imageName) continue;
                     const image: IImage = await getNameAndTagFromImageName(imageName);
                     ret.push(image);
                     console.debug(`Found associated image: ${JSON.stringify(image)}`);
@@ -1012,7 +1013,7 @@ async function runWithDocker(
         Cmd: argumentList,
         HostConfig: {
             AutoRemove: true,
-            Binds: getDockerBindFormat(options.binds),
+            Binds: getDockerBindFormat(options.binds ?? []),
         },
         Tty: true,  // needed to get clean stdout and stderr
     });
@@ -1046,7 +1047,7 @@ async function runWithWsl(
 
     // run command to make bind mounts
     logToSection(LogSection.PREPARE_ENVIRONMENT, `Running setup (bind mounts)`);
-    for (const bind of options.binds) {
+    for (const bind of (options.binds ?? [])) {
         const source = windowsToWsl(bind.source);
         const target = bind.target;
 

@@ -29,9 +29,9 @@ const currentPlatform: string = osIdentifierMapping[os.platform()];
 export const byOS = findHandlerOrDefault.bind(null, currentPlatform);
 
 // usage
-export const getPlatform: () => string = byOS({
+export const getPlatform: () => string = (byOS({
     [platforms.LINUX]: () => platforms.LINUX,
     [platforms.WINDOWS]: () => platforms.WINDOWS,
     [platforms.MAC]: () => platforms.MAC,
     default: () => `unknown`,
-});
+}) as () => string);

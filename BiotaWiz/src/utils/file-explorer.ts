@@ -107,7 +107,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                     path: join(path, nodeName),
                     children: [],
                 }
-                currentRoot.children.push(currentNode);
+                currentRoot.children!.push(currentNode);
                 listDirectory(baseDirectory, currentNode, join(path, nodeName));
             } else {  // handle files
                 let match;
@@ -122,7 +122,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                     console.debug(`Matched file ${nodeName} with sampleId ${sampleId}, pFI ${pairFileIndicator}, forward ${forward}, extension ${extension}`);
 
                     // check for metadata
-                    let metadata = null;
+                    let metadata: ISampleMetadata | undefined;
                     if (metaMap.has(sampleId)) {
                         metadata = metaMap.get(sampleId);
                     }
@@ -136,11 +136,11 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
                         metadata: metadata,
                     }
                     if (forward) {
-                        currentRoot.children.push(currentNode);
+                        currentRoot.children!.push(currentNode);
                     } else {
                         // check for node with same sampleId and modify it
                         let forwardNode;
-                        if ((forwardNode = currentRoot.children.find((node) => {
+                        if ((forwardNode = currentRoot.children!.find((node) => {
                             if (node.type === "sample") {
                                 const snode = node as IFileSystemSample;
                                 return snode.name === sampleId && snode.folder === path;
@@ -161,17 +161,17 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
 }
 
 function pruneEmptyDirectories(node: IFileSystemNode) {
-    if (node.children.length === 0) {
+    if (node.children!.length === 0) {
         return;
     }
-    node.children.forEach((child) => {
+    node.children!.forEach((child) => {
         if (child.type === "directory") {
             pruneEmptyDirectories(child);
         }
     });
-    node.children = node.children.filter((child) => {
+    node.children = node.children!.filter((child) => {
         if (child.type === "directory") {
-            return (child as IFileSystemNode).children.length > 0;
+            return (child as IFileSystemNode).children!.length > 0;
         }
         return true;
     });

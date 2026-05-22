@@ -10,7 +10,7 @@ import {helpPages} from "./helpPages";
 import xlsx from 'node-xlsx';
 
 
-const MAPPING_FILE_MODE = MappingFileFormat.XLSX;
+const MAPPING_FILE_MODE: MappingFileFormat = MappingFileFormat.XLSX;
 
 export class TacticConfiguration {
     private analysisMode = TacticAnalysisMode.TIC;
@@ -18,9 +18,9 @@ export class TacticConfiguration {
     private mappingFile = "";
     private yamlFile = "";
 
-    private spikeMode: SpikeMode = null;
+    private spikeMode: SpikeMode | null = null;
     private samples: IFileSystemSample[] = [];
-    private parameters: ITacticArguments = null;
+    private parameters: ITacticArguments | null = null;
     private threads: number = 1;
 
     private preprocessToIndividualZOTUs: boolean = false;
@@ -172,7 +172,7 @@ export class TacticConfiguration {
         });
     }
 
-    public getDefaultParameters(): ITacticArguments {
+    public getDefaultParameters(): ITacticArguments | null {
         // Set up with defaults common to all three pipelines (TIC, TAC, De-Novo)
         const DEFAULTS: ITacticArguments = {
             MergePairsArgs: {
@@ -627,7 +627,7 @@ export class TacticConfiguration {
                 }
                 for (const column in additionalColumns) {
                     if (sample.metadata.additional && sample.metadata.additional.has(column)) {
-                        additional.push(sample.metadata.additional.get(column));
+                        additional.push(sample.metadata.additional.get(column) ?? '');
                     } else {
                         additional.push('');
                     }
