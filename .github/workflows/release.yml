@@ -137,7 +137,7 @@ jobs:
           MISSING=0
           # RELEASES and the nupkg are needed by the in-app updater on Windows
           for PATTERN in '^RELEASES$' '-full\.nupkg$' 'Setup\.exe$' '\.deb$'; do
-            if ! grep -qE "$PATTERN" <<< "$ASSETS"; then
+            if ! grep -qE -e "$PATTERN" <<< "$ASSETS"; then
               echo "::error::No release file matches ${PATTERN}"
               MISSING=1
             fi
