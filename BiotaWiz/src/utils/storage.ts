@@ -156,3 +156,22 @@ export function getCurrentImageTag(environment: Environment) {
         return semVerFromGitHubTag((imageTag as IImageTag).version);
     }
 }
+export function setAutoUpdateCheck(enabled: boolean) {
+    return new Promise<void>((resolve, reject) => {
+        jsonStorage.set('autoUpdateCheck', {enabled: enabled}, (error) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+/**
+ * Whether the application should check for updates automatically. Enabled by default.
+ */
+export function getAutoUpdateCheck(): boolean {
+    const setting = jsonStorage.getSync('autoUpdateCheck') as { enabled?: boolean };
+    return setting?.enabled !== false;
+}

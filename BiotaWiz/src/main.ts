@@ -11,6 +11,7 @@ import {BACKENDS, cleanUpBackend, setBackend, terminateBackend} from "./utils/ba
 import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
 import {logToDevTools} from "./utils/logHandler";
+import {isInstallingUpdate, startAutoCheck} from "./utils/updater";
 
 if (squirrelStartup) {
     const squirrelEvent = process.argv[1];
@@ -70,6 +71,8 @@ const createWindow = () => {
                 mode: 'detach',
             });
         }
+
+        startAutoCheck();
     });
 };
 
@@ -96,6 +99,11 @@ app.on('activate', () => {
 });
 
 app.on('will-quit', async (event) => {
+    // cleanup already ran before the update was handed over to Squirrel
+    if (isInstallingUpdate()) {
+        return;
+    }
+
     event.preventDefault();
     console.log("Application will quit");
     console.log("Running cleanup tasks");

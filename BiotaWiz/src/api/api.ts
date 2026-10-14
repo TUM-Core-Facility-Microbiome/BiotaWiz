@@ -14,7 +14,13 @@ import {
 } from "../utils/backend";
 import {getBackendVersion, runMockProcess} from "../utils/process";
 import {handleFileOpen, handleFolderOpen} from "./dialogs";
-import {getBackend, getTacticBaseDirectory, setTacticBaseDirectory} from "../utils/storage";
+import {
+    getAutoUpdateCheck,
+    getBackend,
+    getTacticBaseDirectory,
+    setAutoUpdateCheck,
+    setTacticBaseDirectory
+} from "../utils/storage";
 import {detectStudyFolders} from "../utils/file-explorer";
 import {Environment, TacticAnalysisMode, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
@@ -23,7 +29,16 @@ import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 import {getVersionString} from "../utils/releasetag";
 import {getMachineThreads, getRecommendedThreads} from "../utils/machine";
-import {checkForUpdates} from "../utils/update-check";
+import {
+    checkForUpdates,
+    dismissUpdate,
+    downloadUpdate,
+    getUpdateState,
+    openReleasePage,
+    quitAndInstall,
+    startAutoCheck,
+    stopAutoCheck
+} from "../utils/updater";
 
 ipcMain.handle('app:getName', () => {
     return app.getName();
@@ -33,8 +48,41 @@ ipcMain.handle('app:getVersion', () => {
     return app.getVersion();
 });
 
-ipcMain.handle('app:updateAvailable', async () => {
-    return await checkForUpdates();
+ipcMain.handle('update:getState', () => {
+    return getUpdateState();
+});
+
+ipcMain.handle('update:check', async () => {
+    return await checkForUpdates({manual: true});
+});
+
+ipcMain.handle('update:download', () => {
+    downloadUpdate();
+});
+
+ipcMain.handle('update:install', async () => {
+    await quitAndInstall();
+});
+
+ipcMain.handle('update:openReleasePage', async () => {
+    await openReleasePage();
+});
+
+ipcMain.handle('update:dismiss', () => {
+    dismissUpdate();
+});
+
+ipcMain.handle('update:getAutoCheck', () => {
+    return getAutoUpdateCheck();
+});
+
+ipcMain.handle('update:setAutoCheck', async (event, enabled: boolean) => {
+    await setAutoUpdateCheck(enabled);
+    if (enabled) {
+        startAutoCheck();
+    } else {
+        stopAutoCheck();
+    }
 });
 
 ipcMain.handle('openExternal', async (event, url: string) => {

@@ -64,6 +64,15 @@ To install use Eddy, a graphical package manager, or the terminal:
 sudo dpkg -i <path-to-deb-file>
 ```
 
+### Updates
+BiotaWiz checks for new versions at startup and every few hours.
+You can also check manually via `Help` > `Check for Updates…` or in `Settings` > `General`,
+where automatic checks can be turned off.
+
+- **Windows:** when a new version is available, click `Download and install`.
+  Once it has downloaded, restart BiotaWiz to apply it, or it will be applied the next time you start the application.
+- **Linux:** click `Open download page` and install the new `.deb` file as described above.
+
 ## Usage
 
 ## Misc

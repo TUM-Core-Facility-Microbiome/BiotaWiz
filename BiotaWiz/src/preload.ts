@@ -3,11 +3,33 @@
 import {contextBridge, ipcRenderer} from "electron";
 import {Environment, TacticAnalysisMode, LogSection} from "./enums";
 import {logToDevTools} from "./utils/logHandler";
+import type {UpdateState} from "./utils/updater";
 
 const indexBridge = {
     // renderer to main
-    updateAvailable: async (): Promise<string> => {
-        return ipcRenderer.invoke('app:updateAvailable');
+    getUpdateState: async (): Promise<UpdateState> => {
+        return ipcRenderer.invoke('update:getState');
+    },
+    checkForUpdates: async (): Promise<UpdateState> => {
+        return ipcRenderer.invoke('update:check');
+    },
+    downloadUpdate: async (): Promise<void> => {
+        return ipcRenderer.invoke('update:download');
+    },
+    installUpdate: async (): Promise<void> => {
+        return ipcRenderer.invoke('update:install');
+    },
+    openUpdateReleasePage: async (): Promise<void> => {
+        return ipcRenderer.invoke('update:openReleasePage');
+    },
+    dismissUpdate: async (): Promise<void> => {
+        return ipcRenderer.invoke('update:dismiss');
+    },
+    getAutoUpdateCheck: async (): Promise<boolean> => {
+        return ipcRenderer.invoke('update:getAutoCheck');
+    },
+    setAutoUpdateCheck: async (enabled: boolean): Promise<void> => {
+        return ipcRenderer.invoke('update:setAutoCheck', enabled);
     },
     getMachineThreads: async (): Promise<number> => {
         return ipcRenderer.invoke('getMachineThreads');
@@ -209,6 +231,16 @@ const indexBridge = {
         ipcRenderer.on('logsForEnvironment', (event, environment: Environment, logMessage: string) => {
             callback(environment, logMessage);
         });
+    },
+    handleUpdateState: (callback: (state: UpdateState) => void) => {
+        const listener = (event: Electron.IpcRendererEvent, state: UpdateState) => {
+            callback(state);
+        };
+        ipcRenderer.on('updateState', listener);
+        // return a function to remove the listener again
+        return () => {
+            ipcRenderer.removeListener('updateState', listener);
+        };
     },
     handleLogToSection: (callback: (section: LogSection, logMessage: string) => void) => {
         ipcRenderer.removeAllListeners('logForSection');

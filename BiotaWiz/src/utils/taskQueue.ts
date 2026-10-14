@@ -20,6 +20,10 @@ class TaskQueue {
         });
     }
 
+    isBusy(): boolean {
+        return this.isProcessing || this.queue.length > 0;
+    }
+
     clear(): void {
         this.queue = [];
     }

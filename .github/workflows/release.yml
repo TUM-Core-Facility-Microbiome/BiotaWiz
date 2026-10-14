@@ -1,4 +1,4 @@
-# Create a draft release when a new tag is pushed.
+# Publish a release when a new tag is pushed. Published releases are offered to users by the in-app updater.
 name: Release
 
 on:

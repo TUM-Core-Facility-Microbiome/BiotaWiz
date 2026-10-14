@@ -1,12 +1,6 @@
 <template>
   <div>
     <div>
-      <div v-if="state.updateAvailable" class="bg-yellow-200 px-2 py-1 mb-2">
-        <p class="text-sm font-medium text-yellow-800">
-          <strong>Update available:</strong> A new version of <strong>{{ state.name }}</strong> is available. Please update to version <strong>{{ state.updateAvailable }}</strong>.
-          <a @click="openUpdateInstructions" class="underline cursor-pointer">Click here to find out how.</a>
-        </p>
-      </div>
       <h1 class="text-2xl font-semibold mb-4">
         <div class="flex">
           <div>Select the analysis mode</div>
@@ -108,7 +102,6 @@ indexBridge.changeEnvironment(null);
 const state = reactive({
   name: null as string | null,
   version: null as string | null,
-  updateAvailable: null as string | null,
   backendAvailable: null as boolean | null,
   backendName: null,
 });
@@ -152,24 +145,10 @@ function getBackendInfo() {
   });
 }
 
-function checkForUpdate() {
-  indexBridge.updateAvailable().then((latestTag: string) => {
-    state.updateAvailable = latestTag;
-  }).catch(() => {
-    state.updateAvailable = null;
-  });
-}
-
 
 getName();
 getVersion();
 getBackendInfo();
-checkForUpdate();
-
-function openUpdateInstructions() {
-  const url = 'https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/22';
-  indexBridge.openExternalLink(url);
-}
 
 async function setAnalysisMode(mode: TacticAnalysisMode) {
   await indexBridge.publishTacticAnalysisMode(mode);

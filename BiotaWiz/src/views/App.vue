@@ -2,6 +2,7 @@
   <div class="flex">
     <MainNavigation></MainNavigation>
     <router-view></router-view>
+    <UpdateBanner></UpdateBanner>
   </div>
 </template>
 
@@ -9,6 +10,7 @@
 // listen to the main process 'changeRouteTo' event to allow navigation from Menu click events
 import router from "./router";
 import MainNavigation from "./components/default/navigation/MainNavigation.vue";
+import UpdateBanner from "./components/UpdateBanner.vue";
 
 // on router changes log
 router.afterEach((to, from) => {

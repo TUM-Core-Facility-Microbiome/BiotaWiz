@@ -2,6 +2,7 @@
 import {app, BrowserWindow, Menu, MenuItemConstructorOptions, shell} from 'electron';
 import {GITHUB_BASE_URL} from '../config';
 import {openCommunityDiscussions, openIssues} from "./browserLinks";
+import {checkForUpdates} from "../utils/updater";
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
     selector?: string;
@@ -265,6 +266,13 @@ export default class MenuBuilder {
                         click: () => {
                             this.mainWindow.webContents.send('changeRouteTo', '/third-party-licenses');
                         }
+                    },
+                    {type: 'separator'},
+                    {
+                        label: 'Check for &Updates…',
+                        click: () => {
+                            checkForUpdates({manual: true});
+                        },
                     },
                 ],
             },

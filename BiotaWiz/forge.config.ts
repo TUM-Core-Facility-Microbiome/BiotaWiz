@@ -3,6 +3,7 @@ import {MakerSquirrel} from '@electron-forge/maker-squirrel';
 import {MakerDeb} from '@electron-forge/maker-deb';
 import {VitePlugin} from '@electron-forge/plugin-vite';
 // import {MakerRpm} from "@electron-forge/maker-rpm";
+import {version} from './package.json';
 
 const config: ForgeConfig = {
     packagerConfig: {
@@ -56,7 +57,10 @@ const config: ForgeConfig = {
                     owner: 'TUM-Core-Facility-Microbiome',
                     name: 'BiotaWiz'
                 },
-                draft: true,
+                // releases must be published (not drafts) so that the in-app updater can find them
+                draft: false,
+                // versions like 1.2.3-beta.1 are marked as pre-release and therefore not offered as updates
+                prerelease: version.includes('-'),
                 // take the token from the environment
                 authToken: process.env.GITHUB_TOKEN
             }

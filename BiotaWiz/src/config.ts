@@ -1,5 +1,8 @@
 export const GITHUB_REPO = "TUM-Core-Facility-Microbiome/BiotaWiz-docs";
 export const GITHUB_BASE_URL = `https://github.com/${GITHUB_REPO}`;
+// repository the application itself is released from
+export const APP_GITHUB_REPO = "TUM-Core-Facility-Microbiome/BiotaWiz";
+export const APP_UPDATE_FEED_URL = `https://github.com/${APP_GITHUB_REPO}/releases/latest/download`;
 export const IMAGE_ASSET_NAME = 'image.tar.gz';
 
 // defaults. These are overridden by command-line arguments.
