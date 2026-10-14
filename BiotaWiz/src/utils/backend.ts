@@ -695,8 +695,9 @@ export async function initializeDockerBackend(environment: Environment, releaseT
             });
             // check if the image is registered
             const images = await docker.listImages();
-            const imageExists = images.some((imageInfo: { RepoTags: string[] }) => {
-                return imageInfo.RepoTags.includes(image);
+            const imageExists = images.some((imageInfo) => {
+                // untagged images have no RepoTags
+                return imageInfo.RepoTags?.includes(image) ?? false;
             });
 
             if (imageExists) {
@@ -1146,7 +1147,11 @@ async function runWithDocker(
     // start and get the stdout
     await container.start();
     runningContainers.add(container.id);
-    container.attach({stream: true, stdout: true, stderr: true}, function (err: (Error | null), stream: NodeJS.ReadableStream) {
+    container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
+        if (err || !stream) {
+            logToDevTools(`Could not attach to container output: ${err}`, 'warn');
+            return;
+        }
         stream.on('data', (data: Buffer) => {
             const msg = data.toString();
             logToSection(LogSection.CONTAINER_STREAM, msg);

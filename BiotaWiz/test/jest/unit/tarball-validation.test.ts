@@ -3,6 +3,13 @@ import * as path from "path";
 import * as os from "os";
 import { isTarballValid } from "../../../src/utils/backend";
 
+// backend.ts pulls in Electron and the settings storage, which cannot run outside of Electron
+jest.mock('electron', () => ({
+    app: {getPath: () => os.tmpdir()},
+    BrowserWindow: {fromId: () => null},
+}));
+jest.mock('../../../src/utils/storage', () => ({}));
+
 describe('isTarballValid function', () => {
     let tempDir: string;
 
