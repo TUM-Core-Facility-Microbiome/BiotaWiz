@@ -57,8 +57,10 @@ const config: ForgeConfig = {
                     owner: 'TUM-Core-Facility-Microbiome',
                     name: 'BiotaWiz'
                 },
-                // releases must be published (not drafts) so that the in-app updater can find them
-                draft: false,
+                // In CI, the release workflow creates the draft release before building and publishes it once all
+                // files are uploaded; Forge only uploads to it. These settings apply when Forge creates the release
+                // itself (e.g., a manual `npm run publish`): drafts are not seen by the in-app updater until published.
+                draft: true,
                 // versions like 1.2.3-beta.1 are marked as pre-release and therefore not offered as updates
                 prerelease: version.includes('-'),
                 // take the token from the environment

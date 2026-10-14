@@ -1,4 +1,12 @@
-# Publish a release when a new tag is pushed. Published releases are offered to users by the in-app updater.
+# Build and publish a release when a new version tag (e.g., v1.2.3) is pushed.
+#
+# 1. test:           run the unit tests and check that the tag matches the app version
+# 2. create-release: create a draft release for the tag
+# 3. build:          build the Windows and Linux distributables and upload them to the draft
+# 4. publish:        check that all files are there and publish the release
+#
+# The release only becomes visible to users (and to the in-app updater) in the last step,
+# so users never see a release with missing files.
 name: Release
 
 on:
@@ -9,13 +17,91 @@ on:
 permissions:
   contents: write
 
+# never run two releases of the same tag at once
+concurrency:
+  group: release-${{ github.ref }}
+
 jobs:
-  release:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: 'BiotaWiz'
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Verify release tag matches app version
+        shell: bash
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+
+          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Release tag ${GITHUB_REF_NAME} does not match BiotaWiz/package.json version ${PACKAGE_VERSION}. Use tag v${PACKAGE_VERSION}, or update package.json before tagging."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+  create-release:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create draft release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # re-running the workflow reuses the draft, but never touches an already published release
+          if IS_DRAFT="$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null)"; then
+            if [ "$IS_DRAFT" != "true" ]; then
+              echo "::error::Release ${GITHUB_REF_NAME} is already published. Release a new version instead."
+              exit 1
+            fi
+            echo "Reusing existing draft release ${GITHUB_REF_NAME}"
+            exit 0
+          fi
+
+          # versions like v1.2.3-beta.1 are pre-releases and are not offered by the in-app updater
+          PRERELEASE_FLAG=""
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --draft \
+            --verify-tag \
+            --generate-notes \
+            $PRERELEASE_FLAG
+
+  build:
+    needs: create-release
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [windows-latest]
+        include:
+          - os: windows-latest  # Squirrel installer and update files
+            maker: ''
+          - os: ubuntu-latest  # .deb package
+            maker: '@electron-forge/maker-deb'
 
     steps:
       - name: Check out Git repository
@@ -26,19 +112,39 @@ jobs:
         with:
           node-version: 22
 
-      - name: Verify release tag matches app version
-        shell: bash
-        run: |
-          PACKAGE_VERSION="$(node -p "require('./BiotaWiz/package.json').version")"
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-
-          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
-            echo "::error::Release tag ${GITHUB_REF_NAME} does not match BiotaWiz/package.json version ${PACKAGE_VERSION}. Use tag v${PACKAGE_VERSION}, or update package.json before tagging."
-            exit 1
-          fi
-
-      - name: Publish Electron app using the publishers defined in forge config
+      # uploads to the draft release created above (see publishers in forge.config.ts)
+      - name: Build and upload distributables
         uses: zsewa/action-electron-forge@v1
         with:
           node-installer: 'npm'
           folder: 'BiotaWiz'
+          target-maker: ${{ matrix.maker }}  # installs the packaging tools needed for this maker
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check that all release files were uploaded
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ASSETS="$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
+          echo "Release files:"
+          echo "$ASSETS"
+
+          MISSING=0
+          # RELEASES and the nupkg are needed by the in-app updater on Windows
+          for PATTERN in '^RELEASES$' '-full\.nupkg$' 'Setup\.exe$' '\.deb$'; do
+            if ! grep -qE "$PATTERN" <<< "$ASSETS"; then
+              echo "::error::No release file matches ${PATTERN}"
+              MISSING=1
+            fi
+          done
+          exit $MISSING
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false

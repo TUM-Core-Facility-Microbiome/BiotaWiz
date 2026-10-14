@@ -85,3 +85,22 @@ cd BiotaWiz/  # move to the node application folder
 npm run package  # create an up-to-date executable that is expected at ./out/BiotaWiz-linux-x64/biotawiz
 npm run wdio  # execute the tests
 ```
+
+### Release a new version
+Releases are built and published by the [Release workflow](.github/workflows/release.yml) when a version tag is pushed.
+Once published, the new version is offered to users by the in-app updater.
+
+```bash
+cd BiotaWiz/
+npm version 1.2.3 --no-git-tag-version  # set the new version in package.json and package-lock.json
+npm test
+git commit -am "release: v1.2.3"
+git push origin main
+git tag v1.2.3  # must match the version in package.json
+git push origin v1.2.3
+```
+
+The workflow runs the unit tests, creates a draft release, builds the Windows installer and the `.deb` package,
+uploads them, and publishes the release once all files are there.
+If a step fails, the release stays a draft: fix the problem and re-run the workflow, or delete the draft and the tag.
+Versions with a suffix (e.g., `1.2.3-beta.1`) are published as pre-releases and are not offered as updates.
