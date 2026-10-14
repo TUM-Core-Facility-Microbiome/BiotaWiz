@@ -585,12 +585,12 @@
             </div>
             <div class="mt-3">
               <div>
-                <label for="de_novo_abund_limit">
+                <label for="tic_abund_limit">
                   <div class="text-sm font-mono">abund_limit</div>
                   <div class="text-xs text-gray-500"></div>
                 </label>
                 <input
-                    id="de_novo_abund_limit"
+                    id="tic_abund_limit"
                     type="text"
                     v-model="complexTICArgs_abund_limit"
                     placeholder="default: 0.0025"
