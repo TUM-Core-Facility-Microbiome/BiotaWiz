@@ -576,6 +576,13 @@
                 </div>
               </div>
             </div>
+            <div role="note" class="rounded border-s-4 border-blue-500 bg-blue-50 p-4 mt-6">
+              <strong class="block font-medium text-blue-800">Not yet implemented</strong>
+              <p class="mt-2 text-sm text-blue-700">
+                <span class="font-mono">abund_limit</span> and <span class="font-mono">sample_wise_correction</span>
+                are not yet implemented for TIC.
+              </p>
+            </div>
             <div class="mt-3">
               <div>
                 <label for="de_novo_abund_limit">
@@ -637,6 +644,13 @@
           <div class="pt-6" v-if="analysisMode == 'TAC'">
             <div class="text-lg font-bold">TAC arguments</div>
             <div class="text-sm text-gray-700"></div>
+            <div role="note" class="rounded border-s-4 border-blue-500 bg-blue-50 p-4 mt-6">
+              <strong class="block font-medium text-blue-800">Not yet implemented</strong>
+              <p class="mt-2 text-sm text-blue-700">
+                <span class="font-mono">abund_limit</span> and <span class="font-mono">sample_wise_correction</span>
+                are not yet implemented for TAC.
+              </p>
+            </div>
             <div class="mt-3">
               <div>
                 <label for="tac_abund_limit">
