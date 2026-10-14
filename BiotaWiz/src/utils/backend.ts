@@ -226,21 +226,40 @@ export async function getCompatibleReleaseTagStrings(environment: Environment) {
     });
 }
 
-async function queryAvailableReleaseTags(environment: Environment) {
-    const repo = getRepository(environment);
-    try {
+const RELEASES_PER_PAGE = 100;  // maximum allowed by the GitHub API
+const MAX_RELEASE_PAGES = 10;
+
+/**
+ * Get all releases of the repository. The GitHub API returns them in pages, newest first.
+ */
+async function queryAllReleases(owner: string, repo: string): Promise<GitHubRelease[]> {
+    const releases: GitHubRelease[] = [];
+    for (let page = 1; page <= MAX_RELEASE_PAGES; page++) {
         const response = await fetch(
-            `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases`,
+            `${GITHUB_API_BASE_URL}/repos/${owner}/${repo}/releases?per_page=${RELEASES_PER_PAGE}&page=${page}`,
             { headers: { 'X-GitHub-Api-Version': '2022-11-28' } }
         );
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data: GitHubRelease[] = await response.json();
+        releases.push(...data);
+        if (data.length < RELEASES_PER_PAGE) {
+            break;  // last page
+        }
+    }
+    return releases;
+}
+
+async function queryAvailableReleaseTags(environment: Environment) {
+    const repo = getRepository(environment);
+    try {
+        const data = await queryAllReleases(repo.owner, repo.repo);
         const availableTags = data.map((release) => {
             try {
                 if (!cmArgs['allow-prerelease-tags']) {
                     if (release.prerelease) return null;
                 }
-                return semVerFromGitHubTag(release.name);
+                // use the tag, not the release title: the image and its download are looked up by tag
+                return semVerFromGitHubTag(release.tag_name);
             } catch {
                 return null;
             }

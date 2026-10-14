@@ -11,4 +11,5 @@ export const API_URL = 'https://api.github.com';
 
 export const REPOSITORY_OWNER = 'mpourjam';
 export const REPOSITORY_NAME = 'tactic-pipeline';
-export const VRANGE = '~0.7.3';
+// pipeline versions from v0.7.3 up to and including v1.9.9 are compatible
+export const VRANGE = '>=0.7.3 <=1.9.9';
