@@ -166,13 +166,49 @@ export async function resetToDefaultBackend() {
 }
 
 /**
- * Ensure that the distribution tarball exists.
- * @param path
- * @throws Error if the tarball does not exist.
+ * Check whether a distribution tarball file exists and is valid.
+ * Validates existence, non-zero size, expected size (if provided), and gzip magic bytes header (0x1f, 0x8b).
+ * @param filePath Path to the tarball.
+ * @param expectedSize Optional expected file size in bytes.
  */
-function checkTarExists(path: string) {
-    if (!fs.existsSync(path)) {
-        throw new Error(`Distribution tarball does not exist at ${path}`);
+export function isTarballValid(filePath: string, expectedSize?: number): boolean {
+    if (!fs.existsSync(filePath)) {
+        return false;
+    }
+    try {
+        const stats = fs.statSync(filePath);
+        if (stats.size === 0) {
+            return false;
+        }
+        if (expectedSize !== undefined && expectedSize > 0 && stats.size !== expectedSize) {
+            return false;
+        }
+        // Gzip files must start with magic bytes 0x1f, 0x8b
+        const fd = fs.openSync(filePath, 'r');
+        try {
+            const buffer = Buffer.alloc(2);
+            const bytesRead = fs.readSync(fd, buffer, 0, 2, 0);
+            if (bytesRead < 2) {
+                return false;
+            }
+            return buffer[0] === 0x1f && buffer[1] === 0x8b;
+        } finally {
+            fs.closeSync(fd);
+        }
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Ensure that the distribution tarball exists and is valid.
+ * @param path
+ * @param expectedSize
+ * @throws Error if the tarball does not exist or is invalid.
+ */
+function checkTarExists(path: string, expectedSize?: number) {
+    if (!isTarballValid(path, expectedSize)) {
+        throw new Error(`Distribution tarball does not exist or is invalid at ${path}`);
     }
 }
 
@@ -246,7 +282,7 @@ async function getLatestCompatibleImageReleaseTag(environment: Environment) {
     });
 }
 
-async function getImageReleaseAssetUrl(environment: Environment, releaseTag: SemVer) {
+async function getImageReleaseAsset(environment: Environment, releaseTag: SemVer): Promise<{ url: string; size?: number }> {
     const repo = getRepository(environment);
     const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/tags/v${getVersionString(releaseTag)}`;
     logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
@@ -271,7 +307,9 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
             throw new Error(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${getVersionString(releaseTag)}`);
         }
 
-        return tarball.url;
+        const url = tarball.url || tarball.browser_download_url;
+        const size = (typeof tarball.size === 'number' && tarball.size > 0) ? tarball.size : undefined;
+        return { url, size };
     } catch (error) {
         updateProgress({
             step: `Initializing ${environment} environment`,
@@ -283,14 +321,30 @@ async function getImageReleaseAssetUrl(environment: Environment, releaseTag: Sem
     }
 }
 
+async function getImageReleaseAssetUrl(environment: Environment, releaseTag: SemVer): Promise<string> {
+    const asset = await getImageReleaseAsset(environment, releaseTag);
+    return asset.url;
+}
+
 /**
  * Download the distribution tarball and places it to the expected path.
  */
-async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, _path: string) {
-    const tarballUrl = await getImageReleaseAssetUrl(environment, releaseTag);
+async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, _path: string, expectedSize?: number) {
+    const asset = await getImageReleaseAsset(environment, releaseTag);
+    const tarballUrl = asset.url;
+    const targetSize = expectedSize ?? asset.size;
     const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
     const tempPath = `${expectedPath}.tmp`;
     logToDevTools(`Downloading tarball from ${tarballUrl} to ${expectedPath}`);
+
+    // If a stale temporary file exists, delete it before starting
+    if (fs.existsSync(tempPath)) {
+        try {
+            fs.unlinkSync(tempPath);
+        } catch (e) {
+            logToDevTools(`Failed to remove stale temp file ${tempPath}: ${e}`);
+        }
+    }
 
     let response: Response;
     try {
@@ -307,7 +361,8 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
         throw error;
     }
 
-    const total = parseInt(response.headers.get('content-length') ?? '0', 10);
+    const headerLength = parseInt(response.headers.get('content-length') ?? '0', 10);
+    const total = headerLength > 0 ? headerLength : (targetSize ?? 0);
     let loaded = 0;
     const writer = fs.createWriteStream(tempPath);
     const reader = response.body!.getReader();
@@ -346,6 +401,45 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
         writer.on('error', reject);
     });
 
+    // Verify stream completed with non-zero bytes
+    if (loaded === 0) {
+        if (fs.existsSync(tempPath)) {
+            fs.unlinkSync(tempPath);
+        }
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Failed to download distribution files (empty file).`,
+            state: "error",
+        });
+        throw new Error(`Download of distribution tarball yielded 0 bytes.`);
+    }
+
+    // Verify total byte count if total was known
+    if (total > 0 && loaded !== total) {
+        if (fs.existsSync(tempPath)) {
+            fs.unlinkSync(tempPath);
+        }
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Failed to download distribution files (incomplete download).`,
+            state: "error",
+        });
+        throw new Error(`Download of distribution tarball incomplete: received ${loaded} of ${total} bytes.`);
+    }
+
+    // Validate the completed temp file format and size before committing
+    if (!isTarballValid(tempPath, total > 0 ? total : undefined)) {
+        if (fs.existsSync(tempPath)) {
+            fs.unlinkSync(tempPath);
+        }
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Downloaded distribution file is invalid or corrupt.`,
+            state: "error",
+        });
+        throw new Error(`Downloaded distribution file is not a valid gzip tarball.`);
+    }
+
     fs.renameSync(tempPath, expectedPath);
 }
 
@@ -374,6 +468,7 @@ async function getDistributionInstallLocation(environment: Environment, releaseT
  */
 export async function getImageTarball(environment: Environment, releaseTag: SemVer) {
     const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
+    const asset = await getImageReleaseAsset(environment, releaseTag);
 
     updateProgress({
         step: `Initializing ${environment} environment`,
@@ -381,11 +476,23 @@ export async function getImageTarball(environment: Environment, releaseTag: SemV
         state: "running",
     });
 
-    if (!fs.existsSync(expectedPath)) {
-        await downloadDistributionTar(environment, releaseTag, expectedPath);
+    if (fs.existsSync(expectedPath)) {
+        if (isTarballValid(expectedPath, asset.size)) {
+            logToDevTools(`Valid distribution tarball already exists at ${expectedPath}`);
+        } else {
+            logToDevTools(`Existing tarball at ${expectedPath} is invalid or incomplete. Removing and re-downloading.`);
+            try {
+                fs.unlinkSync(expectedPath);
+            } catch (err) {
+                logToDevTools(`Failed to delete invalid tarball at ${expectedPath}: ${err}`);
+            }
+            await downloadDistributionTar(environment, releaseTag, expectedPath, asset.size);
+        }
+    } else {
+        await downloadDistributionTar(environment, releaseTag, expectedPath, asset.size);
     }
 
-    checkTarExists(expectedPath);
+    checkTarExists(expectedPath, asset.size);
 
     return expectedPath;
 }
@@ -475,7 +582,26 @@ export async function registerWslDistribution(environment: Environment, releaseT
         message: `Registering ${environment} WSL distribution v${getVersionString(releaseTag)}`,
         state: "running",
     });
-    await runWslImport(distributionName, installLocation, tarBall);
+    try {
+        await runWslImport(distributionName, installLocation, tarBall);
+    } catch (error) {
+        logToDevTools(`WSL import failed for ${distributionName}: ${error}. Cleaning up tarball and install directory.`);
+        if (tarBall && fs.existsSync(tarBall)) {
+            try {
+                fs.unlinkSync(tarBall);
+            } catch (e) {
+                logToDevTools(`Failed to delete invalid tarball ${tarBall}: ${e}`);
+            }
+        }
+        if (fs.existsSync(installLocation)) {
+            try {
+                fs.rmSync(installLocation, { recursive: true, force: true });
+            } catch (e) {
+                logToDevTools(`Failed to clean up install location ${installLocation}: ${e}`);
+            }
+        }
+        throw error;
+    }
 }
 
 /**
