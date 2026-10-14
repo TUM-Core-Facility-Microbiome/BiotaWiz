@@ -62,13 +62,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # full history and tags, to find the previous version for the release notes
+
       - name: Create draft release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          release_is_draft() {
+            gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null
+          }
+
           # re-running the workflow reuses the draft, but never touches an already published release
-          if IS_DRAFT="$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null)"; then
+          if IS_DRAFT="$(release_is_draft)"; then
             if [ "$IS_DRAFT" != "true" ]; then
               echo "::error::Release ${GITHUB_REF_NAME} is already published. Release a new version instead."
               exit 1
@@ -77,19 +86,34 @@ jobs:
             exit 0
           fi
 
+          ARGS=(--repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --draft --verify-tag)
           # versions like v1.2.3-beta.1 are pre-releases and are not offered by the in-app updater
-          PRERELEASE_FLAG=""
+          DESCRIBE_ARGS=(--tags --abbrev=0 --match 'v*')
           if [[ "$GITHUB_REF_NAME" == *-* ]]; then
-            PRERELEASE_FLAG="--prerelease"
+            ARGS+=(--prerelease)
+          else
+            # notes of a final release cover all changes since the previous final release
+            DESCRIBE_ARGS+=(--exclude '*-*')
           fi
 
-          gh release create "$GITHUB_REF_NAME" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "$GITHUB_REF_NAME" \
-            --draft \
-            --verify-tag \
-            --generate-notes \
-            $PRERELEASE_FLAG
+          # Start the release notes at the previous version in this history. Otherwise GitHub compares to the
+          # latest release, which may be on the old, unrelated history (tags before v0.1.6).
+          NOTES_ARGS=(--generate-notes)
+          if PREVIOUS_TAG="$(git describe "${DESCRIBE_ARGS[@]}" "${GITHUB_REF_NAME}^" 2>/dev/null)"; then
+            echo "Generating release notes since ${PREVIOUS_TAG}"
+            NOTES_ARGS+=(--notes-start-tag "$PREVIOUS_TAG")
+          fi
+
+          if ! gh release create "$GITHUB_REF_NAME" "${ARGS[@]}" "${NOTES_ARGS[@]}"; then
+            # the request may have failed after the release was created
+            if release_is_draft > /dev/null; then
+              echo "The release was created despite the error"
+            else
+              # the release notes are not essential, and GitHub can fail to generate them (e.g., HTTP 500)
+              echo "::warning::Could not create the release with generated notes. Creating it without notes."
+              gh release create "$GITHUB_REF_NAME" "${ARGS[@]}" --notes ""
+            fi
+          fi
 
   build:
     needs: create-release
