@@ -11,6 +11,7 @@ import {
     semVerFromGitHubTag
 } from "./releasetag";
 import {logToDevTools, logToSection, updateProgress} from "./logHandler";
+import {LineBuffer} from "./lineBuffer";
 import {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
 import {runSubprocess} from "./process";
@@ -1171,10 +1172,10 @@ async function runWithDocker(
             logToDevTools(`Could not attach to container output: ${err}`, 'warn');
             return;
         }
-        stream.on('data', (data: Buffer) => {
-            const msg = data.toString();
-            logToSection(LogSection.CONTAINER_STREAM, msg);
-        });
+        // pass on complete lines only: the stream merges lines written shortly after each other into one chunk
+        const lines = new LineBuffer((line) => logToSection(LogSection.CONTAINER_STREAM, line));
+        stream.on('data', (data: Buffer) => lines.push(data));
+        stream.on('end', () => lines.flush());
     });
     const statusCode: { StatusCode: number } = await container.wait();
     runningContainers.delete(container.id);
@@ -1266,9 +1267,14 @@ async function runWithWsl(
     logToSection(LogSection.PREPARE_ENVIRONMENT, `Running command`);
     runningDistributions.add(distribution);
     const args = ["--distribution", distribution, "--", entrypoint, ...argumentList];
-    return await runSubprocess(backend.command, args, (msg: string) => {
-        logToSection(LogSection.CONTAINER_STREAM, msg);
+    // pass on complete lines only, separately for stdout and stderr, as chunks do not align with lines
+    const stdoutLines = new LineBuffer((line) => logToSection(LogSection.CONTAINER_STREAM, line));
+    const stderrLines = new LineBuffer((line) => logToSection(LogSection.CONTAINER_STREAM, line));
+    return await runSubprocess(backend.command, args, (msg: string, isStderr: boolean) => {
+        (isStderr ? stderrLines : stdoutLines).push(msg);
     }, runningWslMainProcesses).finally(() => {
+        stdoutLines.flush();
+        stderrLines.flush();
         runningDistributions.delete(distribution);
     });
 }

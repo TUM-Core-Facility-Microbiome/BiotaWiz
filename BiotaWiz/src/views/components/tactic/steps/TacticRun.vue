@@ -146,6 +146,7 @@
 <script setup lang="ts">
 import {defineExpose, ref, reactive, onActivated, watchEffect} from "vue";
 import {Environment, LogSection} from "../../../../enums";
+import {getAnnouncedAnalysisDirectory, PYTHON_LOGGER_REGEX} from "../tacticLog";
 
 class TacticLogLine {
   level: string | null;
@@ -275,7 +276,6 @@ let logHandlerFn: CallableFunction<LogSection, string> = processLogLine;
 const preprocessingLogProcessors = ref<Map<string, LogStageProcessor>>({});
 const mainLogProcessor = ref<LogStageProcessor>(new LogStageProcessor());
 let lastLoggerName: string | null = null;
-const PYTHON_LOGGER_REGEX = /(?<asctime>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) - (?<name>.*):(?<filename>.*):(?<lineno>[0-9]*) - (?<levelname>[A-Z]{4,5}) - (?<message>.*)/;
 
 async function openDocumentationPreprocessing() {
   const url = "https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/23";
@@ -339,8 +339,9 @@ function processLogLine(section: LogSection, logMessage: string) {
     let m;
     if ((m = PYTHON_LOGGER_REGEX.exec(logMessage)) !== null) {  // regex matches; log line is first line in python logger
       // watch for the announcement of the analysis directory at the end of the analysis
-      if (m.groups?.message.startsWith("Analysis done. Results directory: ")) {
-        state.analysisDir = m.groups?.message.replace("Analysis done. Results directory: ", "");
+      const analysisDir = getAnnouncedAnalysisDirectory(m.groups?.message ?? '');
+      if (analysisDir !== null) {
+        state.analysisDir = analysisDir;
         indexBridge.publishTacticAnalysisDirectory(state.analysisDir);
       }
 
