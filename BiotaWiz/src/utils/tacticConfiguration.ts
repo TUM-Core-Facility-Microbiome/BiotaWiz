@@ -223,7 +223,8 @@ export class TacticConfiguration {
                 family_sim: 0.90,
                 genus_sim: 0.95,
                 species_sim: 0.987,
-                abund_limit: 0.0025,
+                // not yet implemented for TIC; not shown in the parameters view
+                abund_limit: 0,
                 sample_wise_correction: false,
             }
 
@@ -238,7 +239,8 @@ export class TacticConfiguration {
             return DEFAULTS as ITacticArgumentsDeNovoMode
         } else if (this.analysisMode == TacticAnalysisMode.TAC) {
             (DEFAULTS as ITacticArgumentsTACMode).TACClusterArgs = {
-                abund_limit: 0.0025,
+                // not yet implemented for TAC; not shown in the parameters view
+                abund_limit: 0,
                 sample_wise_correction: false,
                 cluster_thr: 0.987,
             }

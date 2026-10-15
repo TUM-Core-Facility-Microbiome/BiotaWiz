@@ -715,11 +715,7 @@ let deNovoClusterZOTUsArgs_sample_wise_correction = ref(false);
 let complexTICArgs_family_sim = ref(0.90);
 let complexTICArgs_genus_sim = ref(0.95);
 let complexTICArgs_species_sim = ref(0.987);
-let complexTICArgs_abund_limit = ref(0.0025);
-let complexTICArgs_sample_wise_correction = ref(false);
 // TACClusterArgs
-let tacClusterArgs_abund_limit = ref(0.0025);
-let tacClusterArgs_sample_wise_correction = ref(false);
 let tacClusterArgs_cluster_thr = ref(0.987);
 
 const emit = defineEmits(['update:isValid']);
@@ -786,8 +782,9 @@ async function generateTacticPipelineArgumentsObj(): Promise<ITacticArguments> {
           family_sim: Number(complexTICArgs_family_sim.value),
           genus_sim: Number(complexTICArgs_genus_sim.value),
           species_sim: Number(complexTICArgs_species_sim.value),
-          abund_limit: Number(complexTICArgs_abund_limit.value),
-          sample_wise_correction: Boolean(complexTICArgs_sample_wise_correction.value),
+          // not yet implemented for TIC, so not shown to the user
+          abund_limit: 0,
+          sample_wise_correction: false,
         };
       } else if (analysisMode.value == "de-novo") {
         // set arguments specific for de-novo clustering mode
@@ -798,8 +795,9 @@ async function generateTacticPipelineArgumentsObj(): Promise<ITacticArguments> {
         };
       } else if (analysisMode.value == "TAC") {
         (args as ITacticArgumentsTACMode).TACClusterArgs = {
-          abund_limit: Number(tacClusterArgs_abund_limit.value),
-          sample_wise_correction: Boolean(tacClusterArgs_sample_wise_correction.value),
+          // not yet implemented for TAC, so not shown to the user
+          abund_limit: 0,
+          sample_wise_correction: false,
           cluster_thr: Number(tacClusterArgs_cluster_thr.value),
         }
       } else {
