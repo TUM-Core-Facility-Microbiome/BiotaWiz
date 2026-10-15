@@ -1,0 +1,1419 @@
+{
+  "generator": "test/fixtures/fastq-discovery/generate.py",
+  "pipeline_commit": "provisional: cb06cdf + unpushed diff (processing_helper blob 12ad9e8, expected 68798d1)",
+  "python": "3.12.12",
+  "pairs": [
+    [
+      "ROOT_R1.fastq",
+      "ROOT_R2.fastq"
+    ],
+    [
+      "links/L1_R1.fastq",
+      "links/L1_R2.fastq"
+    ],
+    [
+      "nested/deep/N1_R1.fastq",
+      "nested/deep/N1_R2.fastq"
+    ],
+    [
+      "study_content/BADREVERSE_R1.fastq",
+      ""
+    ],
+    [
+      "study_content/CRLF_R1.fastq",
+      "study_content/CRLF_R2.fastq"
+    ],
+    [
+      "study_content/TRUNCGZ_R1.fastq.gz",
+      ""
+    ],
+    [
+      "study_content/UPPER_R1.FASTQ",
+      "study_content/UPPER_R2.FASTQ"
+    ],
+    [
+      "study_content/UTF8LATE_R1.fastq",
+      ""
+    ],
+    [
+      "study_fallback/Cohort_1_pool_R1_001.fastq",
+      "study_fallback/Cohort_1_pool_R2_001.fastq"
+    ],
+    [
+      "study_fallback/S_F_001.fastq.gz",
+      "study_fallback/S_R_001.fastq.gz"
+    ],
+    [
+      "study_fallback/T01-Ad4-V2-R1.fastq",
+      "study_fallback/T01-Ad4-V2-R2.fastq"
+    ],
+    [
+      "study_fallback/mock-4-S1_R1_trimmed.fastq",
+      "study_fallback/mock-4-S1_R2_trimmed.fastq"
+    ],
+    [
+      "study_fallback/sample_R1_001.fastq.gz",
+      "study_fallback/sample_r2_001.fastq.gz"
+    ],
+    [
+      "study_illumina/537-522-3751-FU-10_S389_L001_R1_001.fastq.gz",
+      "study_illumina/537-522-3751-FU-10_S389_L001_R2_001.fastq.gz"
+    ],
+    [
+      "study_illumina/537-522-3751-FU-1_S388_L001_R1_001.fastq.gz",
+      "study_illumina/537-522-3751-FU-1_S388_L001_R2_001.fastq.gz"
+    ],
+    [
+      "study_illumina/A1_S1_L001_R1_001.fastq.gz",
+      "study_illumina/A1_S1_L001_R2_001.fastq.gz"
+    ],
+    [
+      "study_illumina/A1_S1_L002_R1_001.fastq.gz",
+      "study_illumina/A1_S1_L002_R2_001.fastq.gz"
+    ],
+    [
+      "study_illumina/B2_S2_L001_R1_001.fastq",
+      "study_illumina/B2_S2_L001_R2_001.fastq"
+    ],
+    [
+      "study_illumina/B2_S2_L001_R1_002.fastq",
+      "study_illumina/B2_S2_L001_R2_002.fastq"
+    ],
+    [
+      "study_illumina/C3-R1.fastq",
+      "study_illumina/C3-R2.fastq"
+    ],
+    [
+      "study_illumina/D4.r1.fq",
+      "study_illumina/D4.r2.fq"
+    ],
+    [
+      "study_processed/P3_R1.fastq",
+      "study_processed/P3_R2.fastq"
+    ],
+    [
+      "study_sra/SRR1_1.fastq",
+      "study_sra/SRR1_2.fastq"
+    ],
+    [
+      "study_sra/SRR2_1.fq.gz",
+      "study_sra/SRR2_2.fq.gz"
+    ],
+    [
+      "study_sra/SRR3_1.fastq",
+      ""
+    ],
+    [
+      "study_sra/SRR5.fastq",
+      ""
+    ],
+    [
+      "study_sra/SRR6.1.fastq",
+      ""
+    ],
+    [
+      "study_sra/SRR6.2.fastq",
+      ""
+    ],
+    [
+      "study_sra/SRR7_1_001.fastq",
+      ""
+    ],
+    [
+      "study_sra/SRR7_2_001.fastq",
+      ""
+    ],
+    [
+      "study_words/.H1_R1.fastq",
+      "study_words/.H1_R2.fastq"
+    ],
+    [
+      "study_words/M1_R1_lane_1.fastq",
+      "study_words/M1_R1_lane_2.fastq"
+    ],
+    [
+      "study_words/W1_read1_x.fastq",
+      "study_words/W1_read2_x.fastq"
+    ],
+    [
+      "study_words/W2-Read1.fastq",
+      "study_words/W2-Read2.fastq"
+    ],
+    [
+      "study_words/W3_FORWARD.fastq",
+      "study_words/W3_REVERSE.fastq"
+    ],
+    [
+      "study_words/W4_forward_a.fq",
+      ""
+    ],
+    [
+      "study_words/W5_F_L1.fastq",
+      ""
+    ],
+    [
+      "study_words/W5_R_L1.fastq",
+      ""
+    ],
+    [
+      "study_words/W6_f.fastq",
+      "study_words/W6_r.fastq"
+    ],
+    [
+      "study_words/W7@F.fastq",
+      "study_words/W7@R.fastq"
+    ]
+  ],
+  "base_names": {
+    "ROOT_R1.fastq": "ROOT",
+    "links/L1_R1.fastq": "L1",
+    "nested/deep/N1_R1.fastq": "N1",
+    "study_content/BADREVERSE_R1.fastq": "BADREVERSE",
+    "study_content/CRLF_R1.fastq": "CRLF",
+    "study_content/TRUNCGZ_R1.fastq.gz": "TRUNCGZ",
+    "study_content/UPPER_R1.FASTQ": "UPPER",
+    "study_content/UTF8LATE_R1.fastq": "UTF8LATE",
+    "study_fallback/Cohort_1_pool_R1_001.fastq": "Cohort_1_pool",
+    "study_fallback/S_F_001.fastq.gz": "S",
+    "study_fallback/T01-Ad4-V2-R1.fastq": "T01-Ad4-V2",
+    "study_fallback/mock-4-S1_R1_trimmed.fastq": "mock-4-S1",
+    "study_fallback/sample_R1_001.fastq.gz": "sample",
+    "study_illumina/537-522-3751-FU-10_S389_L001_R1_001.fastq.gz": "537-522-3751-FU-10_S389_L001",
+    "study_illumina/537-522-3751-FU-1_S388_L001_R1_001.fastq.gz": "537-522-3751-FU-1_S388_L001",
+    "study_illumina/A1_S1_L001_R1_001.fastq.gz": "A1_S1_L001",
+    "study_illumina/A1_S1_L002_R1_001.fastq.gz": "A1_S1_L002",
+    "study_illumina/B2_S2_L001_R1_001.fastq": "B2_S2_L001",
+    "study_illumina/B2_S2_L001_R1_002.fastq": "B2_S2_L001",
+    "study_illumina/C3-R1.fastq": "C3",
+    "study_illumina/D4.r1.fq": "D4",
+    "study_processed/P3_R1.fastq": "P3",
+    "study_sra/SRR1_1.fastq": "SRR1",
+    "study_sra/SRR2_1.fq.gz": "SRR2",
+    "study_sra/SRR3_1.fastq": "SRR3",
+    "study_sra/SRR5.fastq": "SRR5",
+    "study_sra/SRR6.1.fastq": "SRR6.1",
+    "study_sra/SRR6.2.fastq": "SRR6.2",
+    "study_sra/SRR7_1_001.fastq": "SRR7_1_001",
+    "study_sra/SRR7_2_001.fastq": "SRR7_2_001",
+    "study_words/.H1_R1.fastq": ".H1",
+    "study_words/M1_R1_lane_1.fastq": "M1_R1_lane",
+    "study_words/W1_read1_x.fastq": "W1",
+    "study_words/W2-Read1.fastq": "W2",
+    "study_words/W3_FORWARD.fastq": "W3",
+    "study_words/W4_forward_a.fq": "W4",
+    "study_words/W5_F_L1.fastq": "W5_F_L1",
+    "study_words/W5_R_L1.fastq": "W5_R_L1",
+    "study_words/W6_f.fastq": "W6",
+    "study_words/W7@F.fastq": "W7"
+  },
+  "mapping": [
+    {
+      "sample_id": "ROOT",
+      "parent_path": "",
+      "pair": [
+        "ROOT_R1.fastq",
+        "ROOT_R2.fastq"
+      ],
+      "resolved": [
+        "ROOT_R1.fastq",
+        "ROOT_R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "L1",
+      "parent_path": "links",
+      "pair": [
+        "links/L1_R1.fastq",
+        "links/L1_R2.fastq"
+      ],
+      "resolved": [
+        "links/L1_R1.fastq",
+        "links/L1_R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "N1",
+      "parent_path": "nested/deep",
+      "pair": [
+        "nested/deep/N1_R1.fastq",
+        "nested/deep/N1_R2.fastq"
+      ],
+      "resolved": [
+        "nested/deep/N1_R1.fastq",
+        "nested/deep/N1_R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "BADREVERSE",
+      "parent_path": "study_content",
+      "pair": [
+        "study_content/BADREVERSE_R1.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_content/BADREVERSE_R1.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "CRLF",
+      "parent_path": "study_content",
+      "pair": [
+        "study_content/CRLF_R1.fastq",
+        "study_content/CRLF_R2.fastq"
+      ],
+      "resolved": [
+        "study_content/CRLF_R1.fastq",
+        "study_content/CRLF_R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "TRUNCGZ",
+      "parent_path": "study_content",
+      "pair": [
+        "study_content/TRUNCGZ_R1.fastq.gz",
+        ""
+      ],
+      "resolved": [
+        "study_content/TRUNCGZ_R1.fastq.gz",
+        ""
+      ]
+    },
+    {
+      "sample_id": "UPPER",
+      "parent_path": "study_content",
+      "pair": [
+        "study_content/UPPER_R1.FASTQ",
+        "study_content/UPPER_R2.FASTQ"
+      ],
+      "resolved": [
+        "study_content/UPPER_R1.FASTQ",
+        "study_content/UPPER_R2.FASTQ"
+      ]
+    },
+    {
+      "sample_id": "UTF8LATE",
+      "parent_path": "study_content",
+      "pair": [
+        "study_content/UTF8LATE_R1.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_content/UTF8LATE_R1.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "Cohort_1_pool",
+      "parent_path": "study_fallback",
+      "pair": [
+        "study_fallback/Cohort_1_pool_R1_001.fastq",
+        "study_fallback/Cohort_1_pool_R2_001.fastq"
+      ],
+      "resolved": [
+        "study_fallback/Cohort_1_pool_R1_001.fastq",
+        "study_fallback/Cohort_1_pool_R2_001.fastq"
+      ]
+    },
+    {
+      "sample_id": "S",
+      "parent_path": "study_fallback",
+      "pair": [
+        "study_fallback/S_F_001.fastq.gz",
+        "study_fallback/S_R_001.fastq.gz"
+      ],
+      "resolved": [
+        "study_fallback/S_F_001.fastq.gz",
+        "study_fallback/S_R_001.fastq.gz"
+      ]
+    },
+    {
+      "sample_id": "T01-Ad4-V2",
+      "parent_path": "study_fallback",
+      "pair": [
+        "study_fallback/T01-Ad4-V2-R1.fastq",
+        "study_fallback/T01-Ad4-V2-R2.fastq"
+      ],
+      "resolved": [
+        "study_fallback/T01-Ad4-V2-R1.fastq",
+        "study_fallback/T01-Ad4-V2-R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "mock-4-S1",
+      "parent_path": "study_fallback",
+      "pair": [
+        "study_fallback/mock-4-S1_R1_trimmed.fastq",
+        "study_fallback/mock-4-S1_R2_trimmed.fastq"
+      ],
+      "resolved": [
+        "study_fallback/mock-4-S1_R1_trimmed.fastq",
+        "study_fallback/mock-4-S1_R2_trimmed.fastq"
+      ]
+    },
+    {
+      "sample_id": "sample",
+      "parent_path": "study_fallback",
+      "pair": [
+        "study_fallback/sample_R1_001.fastq.gz",
+        "study_fallback/sample_r2_001.fastq.gz"
+      ],
+      "resolved": [
+        "study_fallback/sample_R1_001.fastq.gz",
+        "study_fallback/sample_r2_001.fastq.gz"
+      ]
+    },
+    {
+      "sample_id": "537-522-3751-FU-10_S389_L001",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/537-522-3751-FU-10_S389_L001_R1_001.fastq.gz",
+        "study_illumina/537-522-3751-FU-10_S389_L001_R2_001.fastq.gz"
+      ],
+      "resolved": [
+        "study_illumina/537-522-3751-FU-10_S389_L001_R1_001.fastq.gz",
+        "study_illumina/537-522-3751-FU-10_S389_L001_R2_001.fastq.gz"
+      ]
+    },
+    {
+      "sample_id": "537-522-3751-FU-1_S388_L001",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/537-522-3751-FU-1_S388_L001_R1_001.fastq.gz",
+        "study_illumina/537-522-3751-FU-1_S388_L001_R2_001.fastq.gz"
+      ],
+      "resolved": [
+        "study_illumina/537-522-3751-FU-1_S388_L001_R1_001.fastq.gz",
+        "study_illumina/537-522-3751-FU-1_S388_L001_R2_001.fastq.gz"
+      ]
+    },
+    {
+      "sample_id": "A1_S1_L001",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/A1_S1_L001_R1_001.fastq.gz",
+        "study_illumina/A1_S1_L001_R2_001.fastq.gz"
+      ],
+      "resolved": [
+        "study_illumina/A1_S1_L001_R1_001.fastq.gz",
+        "study_illumina/A1_S1_L001_R2_001.fastq.gz"
+      ]
+    },
+    {
+      "sample_id": "A1_S1_L002",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/A1_S1_L002_R1_001.fastq.gz",
+        "study_illumina/A1_S1_L002_R2_001.fastq.gz"
+      ],
+      "resolved": [
+        "study_illumina/A1_S1_L002_R1_001.fastq.gz",
+        "study_illumina/A1_S1_L002_R2_001.fastq.gz"
+      ]
+    },
+    {
+      "sample_id": "B2_S2_L001",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/B2_S2_L001_R1_001.fastq",
+        "study_illumina/B2_S2_L001_R2_001.fastq"
+      ],
+      "resolved": [
+        "study_illumina/B2_S2_L001_R1_001.fastq",
+        "study_illumina/B2_S2_L001_R2_001.fastq"
+      ]
+    },
+    {
+      "sample_id": "B2_S2_L001",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/B2_S2_L001_R1_002.fastq",
+        "study_illumina/B2_S2_L001_R2_002.fastq"
+      ],
+      "resolved": [
+        "study_illumina/B2_S2_L001_R1_002.fastq",
+        "study_illumina/B2_S2_L001_R2_002.fastq"
+      ]
+    },
+    {
+      "sample_id": "C3",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/C3-R1.fastq",
+        "study_illumina/C3-R2.fastq"
+      ],
+      "resolved": [
+        "study_illumina/C3-R1.fastq",
+        "study_illumina/C3-R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "D4",
+      "parent_path": "study_illumina",
+      "pair": [
+        "study_illumina/D4.r1.fq",
+        "study_illumina/D4.r2.fq"
+      ],
+      "resolved": [
+        "study_illumina/D4.r1.fq",
+        "study_illumina/D4.r2.fq"
+      ]
+    },
+    {
+      "sample_id": "P3",
+      "parent_path": "study_processed",
+      "pair": [
+        "study_processed/P3_R1.fastq",
+        "study_processed/P3_R2.fastq"
+      ],
+      "resolved": [
+        "study_processed/P3_R1.fastq",
+        "study_processed/P3_R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "SRR1",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR1_1.fastq",
+        "study_sra/SRR1_2.fastq"
+      ],
+      "resolved": [
+        "study_sra/SRR1_1.fastq",
+        "study_sra/SRR1_2.fastq"
+      ]
+    },
+    {
+      "sample_id": "SRR2",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR2_1.fq.gz",
+        "study_sra/SRR2_2.fq.gz"
+      ],
+      "resolved": [
+        "study_sra/SRR2_1.fq.gz",
+        "study_sra/SRR2_2.fq.gz"
+      ]
+    },
+    {
+      "sample_id": "SRR3",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR3_1.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_sra/SRR3_1.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "SRR5",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR5.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_sra/SRR5.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "SRR6.1",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR6.1.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_sra/SRR6.1.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "SRR6.2",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR6.2.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_sra/SRR6.2.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "SRR7_1_001",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR7_1_001.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_sra/SRR7_1_001.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "SRR7_2_001",
+      "parent_path": "study_sra",
+      "pair": [
+        "study_sra/SRR7_2_001.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_sra/SRR7_2_001.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": ".H1",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/.H1_R1.fastq",
+        "study_words/.H1_R2.fastq"
+      ],
+      "resolved": [
+        "study_words/.H1_R1.fastq",
+        "study_words/.H1_R2.fastq"
+      ]
+    },
+    {
+      "sample_id": "M1_R1_lane",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/M1_R1_lane_1.fastq",
+        "study_words/M1_R1_lane_2.fastq"
+      ],
+      "resolved": [
+        "study_words/M1_R1_lane_1.fastq",
+        "study_words/M1_R1_lane_2.fastq"
+      ]
+    },
+    {
+      "sample_id": "W1",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W1_read1_x.fastq",
+        "study_words/W1_read2_x.fastq"
+      ],
+      "resolved": [
+        "study_words/W1_read1_x.fastq",
+        "study_words/W1_read2_x.fastq"
+      ]
+    },
+    {
+      "sample_id": "W2",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W2-Read1.fastq",
+        "study_words/W2-Read2.fastq"
+      ],
+      "resolved": [
+        "study_words/W2-Read1.fastq",
+        "study_words/W2-Read2.fastq"
+      ]
+    },
+    {
+      "sample_id": "W3",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W3_FORWARD.fastq",
+        "study_words/W3_REVERSE.fastq"
+      ],
+      "resolved": [
+        "study_words/W3_FORWARD.fastq",
+        "study_words/W3_REVERSE.fastq"
+      ]
+    },
+    {
+      "sample_id": "W4",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W4_forward_a.fq",
+        ""
+      ],
+      "resolved": [
+        "study_words/W4_forward_a.fq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "W5_F_L1",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W5_F_L1.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_words/W5_F_L1.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "W5_R_L1",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W5_R_L1.fastq",
+        ""
+      ],
+      "resolved": [
+        "study_words/W5_R_L1.fastq",
+        ""
+      ]
+    },
+    {
+      "sample_id": "W6",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W6_f.fastq",
+        "study_words/W6_r.fastq"
+      ],
+      "resolved": [
+        "study_words/W6_f.fastq",
+        "study_words/W6_r.fastq"
+      ]
+    },
+    {
+      "sample_id": "W7",
+      "parent_path": "study_words",
+      "pair": [
+        "study_words/W7@F.fastq",
+        "study_words/W7@R.fastq"
+      ],
+      "resolved": [
+        "study_words/W7@F.fastq",
+        "study_words/W7@R.fastq"
+      ]
+    }
+  ],
+  "is_seq_file": {
+    "Analysis_20260101120000/AN_R1.fastq": true,
+    "Analysis_20260101120000/AN_R2.fastq": true,
+    "ROOT_R1.fastq": true,
+    "ROOT_R2.fastq": true,
+    "links/BROKEN_R1.fastq": false,
+    "links/L1_R1.fastq": true,
+    "links/L1_R2.fastq": true,
+    "nested/deep/N1_R1.fastq": true,
+    "nested/deep/N1_R2.fastq": true,
+    "study_content/BADCONTENT_R1.fastq": false,
+    "study_content/BADCONTENT_R2.fastq": true,
+    "study_content/BADREVERSE_R1.fastq": true,
+    "study_content/BADREVERSE_R2.fastq": false,
+    "study_content/CRLF_R1.fastq": true,
+    "study_content/CRLF_R2.fastq": true,
+    "study_content/EMPTY_R1.fastq": false,
+    "study_content/FASTAGZ_R1.fastq.gz": false,
+    "study_content/NONASCII_R1.fastq": false,
+    "study_content/PLAINGZ_R1.fastq.gz": false,
+    "study_content/TRUNCGZ_R1.fastq.gz": true,
+    "study_content/TRUNCHEADER_R1.fastq.gz": false,
+    "study_content/UPPERGZ_R1.FASTQ.GZ": false,
+    "study_content/UPPER_R1.FASTQ": true,
+    "study_content/UPPER_R2.FASTQ": true,
+    "study_content/UTF8EARLY_R1.fastq": false,
+    "study_content/UTF8LATE_R1.fastq": true,
+    "study_content/ZST_R1.fastq.zst": false,
+    "study_fallback/Cohort_1_pool_R1_001.fastq": true,
+    "study_fallback/Cohort_1_pool_R2_001.fastq": true,
+    "study_fallback/S_F_001.fastq.gz": true,
+    "study_fallback/S_R_001.fastq.gz": true,
+    "study_fallback/T01-Ad4-V2-R1.fastq": true,
+    "study_fallback/T01-Ad4-V2-R2.fastq": true,
+    "study_fallback/mock-4-S1_R1_trimmed.fastq": true,
+    "study_fallback/mock-4-S1_R2_trimmed.fastq": true,
+    "study_fallback/orphan_R2.fastq": true,
+    "study_fallback/sample_R1_001.fastq.gz": true,
+    "study_fallback/sample_diff_r2_001.fastq.gz": true,
+    "study_fallback/sample_r2_001.fastq.gz": true,
+    "study_fallback/sample_r2_002.fastq.gz": true,
+    "study_illumina/537-522-3751-FU-10_S389_L001_R1_001.fastq.gz": true,
+    "study_illumina/537-522-3751-FU-10_S389_L001_R2_001.fastq.gz": true,
+    "study_illumina/537-522-3751-FU-1_S388_L001_R1_001.fastq.gz": true,
+    "study_illumina/537-522-3751-FU-1_S388_L001_R2_001.fastq.gz": true,
+    "study_illumina/A1_S1_L001_R1_001.fastq.gz": true,
+    "study_illumina/A1_S1_L001_R2_001.fastq.gz": true,
+    "study_illumina/A1_S1_L002_R1_001.fastq.gz": true,
+    "study_illumina/A1_S1_L002_R2_001.fastq.gz": true,
+    "study_illumina/B2_S2_L001_R1_001.fastq": true,
+    "study_illumina/B2_S2_L001_R1_002.fastq": true,
+    "study_illumina/B2_S2_L001_R2_001.fastq": true,
+    "study_illumina/B2_S2_L001_R2_002.fastq": true,
+    "study_illumina/C3-R1.fastq": true,
+    "study_illumina/C3-R2.fastq": true,
+    "study_illumina/D4.r1.fq": true,
+    "study_illumina/D4.r2.fq": true,
+    "study_processed/P1__processed/P1_R1.fastq": true,
+    "study_processed/P1__processed/P1_R2.fastq": true,
+    "study_processed/P3_R1.fastq": true,
+    "study_processed/P3_R2.fastq": true,
+    "study_processed/x__processed_y/P2_R1.fastq": true,
+    "study_processed/x__processed_y/P2_R2.fastq": true,
+    "study_sra/SRR1_1.fastq": true,
+    "study_sra/SRR1_2.fastq": true,
+    "study_sra/SRR2_1.fq.gz": true,
+    "study_sra/SRR2_2.fq.gz": true,
+    "study_sra/SRR3_1.fastq": true,
+    "study_sra/SRR4_2.fastq": true,
+    "study_sra/SRR5.fastq": true,
+    "study_sra/SRR6.1.fastq": true,
+    "study_sra/SRR6.2.fastq": true,
+    "study_sra/SRR7_1_001.fastq": true,
+    "study_sra/SRR7_2_001.fastq": true,
+    "study_words/.H1_R1.fastq": true,
+    "study_words/.H1_R2.fastq": true,
+    "study_words/M1_R1_lane_1.fastq": true,
+    "study_words/M1_R1_lane_2.fastq": true,
+    "study_words/W1_read1_x.fastq": true,
+    "study_words/W1_read2_x.fastq": true,
+    "study_words/W2-Read1.fastq": true,
+    "study_words/W2-Read2.fastq": true,
+    "study_words/W3_FORWARD.fastq": true,
+    "study_words/W3_REVERSE.fastq": true,
+    "study_words/W4_forward_a.fq": true,
+    "study_words/W4_reverse_b.fq": true,
+    "study_words/W5_F_L1.fastq": true,
+    "study_words/W5_R_L1.fastq": true,
+    "study_words/W6_f.fastq": true,
+    "study_words/W6_r.fastq": true,
+    "study_words/W7@F.fastq": true,
+    "study_words/W7@R.fastq": true,
+    "study_words/notes.txt": false
+  },
+  "names": {
+    "Sample_S1_L001_R1_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "Sample_S1_L001",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_S1_L001_R1_001.fastq.gz"
+    },
+    "sample_s1_l001_r1_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "sample_s1_l001",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "sample_s1_l001_r1_001.fastq.gz"
+    },
+    "Sample-R1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample-R1.fastq"
+    },
+    "Sample.R1.fq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample.R1.fq"
+    },
+    "Sample_R1.FASTQ.GZ": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_R1.FASTQ.GZ"
+    },
+    "Sample_1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_1.fastq"
+    },
+    "Sample-1.fq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "Sample-1",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample-1.fq.gz"
+    },
+    "Sample.1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample.1",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample.1.fastq"
+    },
+    "Sample_1_001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample_1_001",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_1_001.fastq"
+    },
+    "Sample_read1_001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_read1_001.fastq"
+    },
+    "Sample_READ1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_READ1.fastq"
+    },
+    "Sample_Forward.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_Forward.fastq"
+    },
+    "Sample_forward_x.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_forward_x.fastq"
+    },
+    "Sample_F_x.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample_F_x",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_F_x.fastq"
+    },
+    "Sample_f.fq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_f.fq"
+    },
+    "Sample@F.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample@F.fastq"
+    },
+    "Sample@f.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample@f.fastq"
+    },
+    "Sample_R2_001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "Sample_R2_001.fastq"
+    },
+    "Sample_2.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "Sample_2.fastq"
+    },
+    "Sample_reverse.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "Sample_reverse.fastq"
+    },
+    "Sample_reverſe.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "Sample_reverſe.fastq"
+    },
+    "Sample_R_x.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample_R_x",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_R_x.fastq"
+    },
+    "Sample@R.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "Sample@R.fastq"
+    },
+    "M1_R1_lane_1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "M1_R1_lane",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "M1_R1_lane_1.fastq"
+    },
+    "R1_R2_R1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "R1_R2",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "R1_R2_R1.fastq"
+    },
+    "Sample_R1_F_.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_R1_F_.fastq"
+    },
+    "Sample.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample.fastq"
+    },
+    "Sample.FQ": {
+      "is_fastq_extension": true,
+      "base_name": "Sample",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample.FQ"
+    },
+    "Sample.fastq.zst": {
+      "is_fastq_extension": false,
+      "base_name": "Sample.fastq.zst",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample.fastq.zst"
+    },
+    "Sample.txt": {
+      "is_fastq_extension": false,
+      "base_name": "Sample.txt",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample.txt"
+    },
+    "Sample_S12": {
+      "is_fastq_extension": false,
+      "base_name": "Sample_S12",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample"
+    },
+    "Sample_S12_L003": {
+      "is_fastq_extension": false,
+      "base_name": "Sample_S12_L003",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample"
+    },
+    "Sample_S12_L003_extra": {
+      "is_fastq_extension": false,
+      "base_name": "Sample_S12_L003_extra",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample_S12_L003_extra"
+    },
+    "Sample_S٣": {
+      "is_fastq_extension": false,
+      "base_name": "Sample_S٣",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample"
+    },
+    "Sample_S12\n": {
+      "is_fastq_extension": false,
+      "base_name": "Sample_S12\n",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sample\n"
+    },
+    "537-522-3751-FU-1_S388_L001_R1_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "537-522-3751-FU-1_S388_L001",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "537-522-3751-FU-1_S388_L001_R1_001.fastq.gz"
+    },
+    "537-522-3751-FU-1_S388_L001_R2_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "537-522-3751-FU-1_S388_L001",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "537-522-3751-FU-1_S388_L001_R2_001.fastq.gz"
+    },
+    "T01-Ad4-V2-R1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "T01-Ad4-V2",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "T01-Ad4-V2-R1.fastq"
+    },
+    "T01-Ad4-V2-R2.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "T01-Ad4-V2",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "T01-Ad4-V2-R2.fastq"
+    },
+    "S_r1_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_r1_001.fastq.gz"
+    },
+    "S_r2_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S_r2_001.fastq.gz"
+    },
+    "S.r1.fq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S.r1.fq"
+    },
+    "Sr1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Sr1",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Sr1.fastq"
+    },
+    "S_read1.fq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_read1.fq.gz"
+    },
+    "S_READ2.fq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S_READ2.fq"
+    },
+    "S_forward.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_forward.fastq"
+    },
+    "S_Reverse.fq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S_Reverse.fq.gz"
+    },
+    "S-F.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S-F.fastq"
+    },
+    "S_r.fq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S_r.fq.gz"
+    },
+    "S_f.FASTQ": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_f.FASTQ"
+    },
+    "S_F_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_F_001.fastq.gz"
+    },
+    "S_R_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S_R_001.fastq.gz"
+    },
+    "S_f_001.fq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_f_001.fq"
+    },
+    "S_F_x.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S_F_x",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_F_x.fastq"
+    },
+    "S_F_01.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S_F_01",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_F_01.fastq"
+    },
+    "SRR123_1.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "SRR123",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "SRR123_1.fastq.gz"
+    },
+    "SRR123_2.fq": {
+      "is_fastq_extension": true,
+      "base_name": "SRR123",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "SRR123_2.fq"
+    },
+    "S-1.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S-1",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S-1.fastq"
+    },
+    "S.1.fq": {
+      "is_fastq_extension": true,
+      "base_name": "S.1",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S.1.fq"
+    },
+    "S_1_001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S_1_001",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_1_001.fastq"
+    },
+    "Cohort_1_pool_R2_001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Cohort_1_pool",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "Cohort_1_pool_R2_001.fastq"
+    },
+    "X-2_S1_L001_R1_001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "X-2_S1_L001",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "X-2_S1_L001_R1_001.fastq"
+    },
+    "Patient_R1_rep_R2_001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "Patient_R1_rep",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "Patient_R1_rep_R2_001.fastq"
+    },
+    "S@F.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S@F.fastq"
+    },
+    "S@R.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S@R.fastq"
+    },
+    "SampleR.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "SampleR",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "SampleR.fastq"
+    },
+    "S_R1_001_trimmed.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_R1_001_trimmed.fastq.gz"
+    },
+    "mock-4-S1_R2_trimmed.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "mock-4-S1",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "mock-4-S1_R2_trimmed.fastq"
+    },
+    "Patient_R1_rep1_R1_001.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "Patient_R1_rep1",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Patient_R1_rep1_R1_001.fastq.gz"
+    },
+    "Cohort_1_pool_1.fastq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "Cohort_1_pool",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "Cohort_1_pool_1.fastq.gz"
+    },
+    "sample.1.fq": {
+      "is_fastq_extension": true,
+      "base_name": "sample.1",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "sample.1.fq"
+    },
+    "sample-1.fq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "sample-1",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "sample-1.fq.gz"
+    },
+    "sample_F.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "sample",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "sample_F.fastq"
+    },
+    "sample-r.fq.gz": {
+      "is_fastq_extension": true,
+      "base_name": "sample",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "sample-r.fq.gz"
+    },
+    "S_R1.faſtq": {
+      "is_fastq_extension": false,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_R1.faſtq"
+    },
+    "S_REVERſE.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S_REVERſE.fastq"
+    },
+    "S_F_١٢٣.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_F_١٢٣.fastq"
+    },
+    "S_1.fastq\n": {
+      "is_fastq_extension": false,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_1.fastq\n"
+    },
+    "S_1.fastq.gz.bak": {
+      "is_fastq_extension": false,
+      "base_name": "S_1.fastq.gz.bak",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_1.fastq.gz.bak"
+    },
+    "S_1.FASTQ.GZ": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_1.FASTQ.GZ"
+    },
+    "S_r1.fq.Gz": {
+      "is_fastq_extension": true,
+      "base_name": "S",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_r1.fq.Gz"
+    },
+    "S_F_0001.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S_F_0001",
+      "is_forward": false,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S_F_0001.fastq"
+    },
+    "S__R1__.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S_",
+      "is_forward": true,
+      "is_reverse": false,
+      "strip_illumina_suffix": "S__R1__.fastq"
+    },
+    "S-r1-r2.fastq": {
+      "is_fastq_extension": true,
+      "base_name": "S-r1",
+      "is_forward": false,
+      "is_reverse": true,
+      "strip_illumina_suffix": "S-r1-r2.fastq"
+    }
+  },
+  "tokens": {
+    "_R1_": "_R2_",
+    "-r1-": "-r2-",
+    ".R1": ".R2",
+    "_read1_": "_read2_",
+    "-READ1": "-READ2",
+    ".Read1.": ".Read2.",
+    "_forward_": "_reverse_",
+    "-FORWARD": "-REVERSE",
+    "_Forward": "_Reverse",
+    "_1": "_2",
+    "-1-": "-2-",
+    "_F_": "_R_",
+    ".f": ".r",
+    "@F": "@R",
+    "@f": "@r",
+    "_1_1_": "_1_2_",
+    "_R1": "_R2",
+    "-r1": "-r2",
+    "_read1": "_read2",
+    "_Read1": "_Read2",
+    "_READ1": "_READ2",
+    "_forward": "_reverse",
+    "-Forward": "-Reverse",
+    "_FORWARD": "_REVERSE",
+    "_F": "_R",
+    "-f": "-r",
+    "_f": "_r"
+  },
+  "content": {
+    "fastq": "QHIxCkFDR1QKKwpJSUlJCg==",
+    "fastq-gz": "H4sIAAAAAAACA3MoMuRydHYP4dLm8gQCLgD+SRYnEAAAAA==",
+    "fastq-crlf": "QHIxDQpBQ0dUDQorDQpJSUlJDQo=",
+    "fastq-gz-truncated": "H4sIAAAAAAACA+3HsREAEAAEsP5XUdmAUzi9SexfsIekSzs1fcydkg==",
+    "fastq-gz-truncated-header": "H4sIAAAAAAACA+3HsRE=",
+    "fasta": "PnIxCkFDR1QK",
+    "fasta-gz": "H4sIAAAAAAACA7MrMuRydHYP4QIAonjl5gkAAAA=",
+    "non-ascii-header": "QHLDq2FkCkFDR1QKKwpJSUlJCg==",
+    "empty": "",
+    "zst": "KLUv/QBYYQAA",
+    "invalid-utf8-early": "QHIxCkFDR1QKKwr//go=",
+    "invalid-utf8-late": "QHIxCkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQr/Cg==",
+    "text": "bm90IGEgc2VxdWVuY2UgZmlsZQo="
+  }
+}

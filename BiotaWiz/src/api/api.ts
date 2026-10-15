@@ -21,7 +21,9 @@ import {
     setAutoUpdateCheck,
     setTacticBaseDirectory
 } from "../utils/storage";
-import {detectStudyFolders} from "../utils/file-explorer";
+import {countSamples, detectStudyFolders} from "../utils/file-explorer";
+import {describeFastqDiscoveryRules, FastqDiscoveryRules, fastqDiscoveryRulesFor} from "../utils/fastqDiscovery";
+import {SemVer} from "semver";
 import {Environment, TacticAnalysisMode, SpikeMode} from "../enums";
 import {taskQueue} from '../utils/taskQueue';
 import {tacticConfiguration} from "../utils/tacticConfiguration";
@@ -168,12 +170,28 @@ ipcMain.handle("tactic:getBaseDirectory", async () => {
     return await getTacticBaseDirectory();
 });
 
+/**
+ * Choose the FASTQ discovery rules of the pipeline version that will run the analysis, and log the choice.
+ */
+async function chooseFastqDiscoveryRules(): Promise<{ rules: FastqDiscoveryRules, message: string }> {
+    let version: SemVer | null = null;
+    try {
+        version = await getImageTagOrLatestCompatible(Environment.TACTIC) ?? null;
+    } catch (error) {
+        logToDevTools(`FASTQ discovery: could not determine the pipeline version: ${error}`, 'warn');
+    }
+    const rules = fastqDiscoveryRulesFor(version);
+    const pipeline = version ? `pipeline v${getVersionString(version)}` : 'unknown pipeline version';
+    return {rules, message: `FASTQ discovery: ${describeFastqDiscoveryRules(rules)} for ${pipeline}`};
+}
+
 ipcMain.handle("loadStudiesFromBaseDirectory", async (): Promise<IFileSystemNode> => {
-    return new Promise<IFileSystemNode>((resolve) => {
-        getTacticBaseDirectory().then((baseDirectory) => {
-            resolve(detectStudyFolders(baseDirectory));
-        });
-    });
+    const baseDirectory = await getTacticBaseDirectory();
+    const {rules, message} = await chooseFastqDiscoveryRules();
+    const studies = detectStudyFolders(baseDirectory, rules);
+    logToDevTools(`${message}: ${countSamples(studies)} samples found in ${baseDirectory}`);
+    tacticConfiguration.setFastqDiscoveryMessage(message);
+    return studies;
 });
 
 ipcMain.handle("initializeEnvironment", async (event, environment: Environment) => {

@@ -20,6 +20,7 @@ export class TacticConfiguration {
 
     private spikeMode: SpikeMode | null = null;
     private samples: IFileSystemSample[] = [];
+    private fastqDiscoveryMessage: string | null = null;  // how the samples were found
     private parameters: ITacticArguments | null = null;
     private threads: number = 1;
 
@@ -63,6 +64,10 @@ export class TacticConfiguration {
     public setSkipNonBacterialFilter(skipNonBacterialFilter: boolean) {
         this.skipNonBacterialFilter = skipNonBacterialFilter;
         console.log(`Skip non-bacterial filter set to ${skipNonBacterialFilter}`);
+    }
+
+    public setFastqDiscoveryMessage(message: string) {
+        this.fastqDiscoveryMessage = message;
     }
 
     public setSamples(samples: IFileSystemSample[]) {
@@ -267,6 +272,9 @@ export class TacticConfiguration {
         const mappingFile = this.relativePathToBaseDirectory(this.mappingFile);
 
         logToSection(LogSection.PREPARE_BACKEND, "Pipeline will start after environment is initialized...");
+        if (this.fastqDiscoveryMessage) {
+            logToSection(LogSection.PREPARE_BACKEND, this.fastqDiscoveryMessage);
+        }
 
         const databaseDirectory = path.join(app.getPath("appData"), app.getName(), "resources", "databases")
         // create database directory if it does not exist

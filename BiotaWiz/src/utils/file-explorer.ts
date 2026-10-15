@@ -2,8 +2,14 @@
 import * as fs from "fs";
 import {readdirSync} from "fs";
 import {join, basename} from "path";
+import {FastqDiscoveryRules, getBaseName, pairSeqFiles} from "./fastqDiscovery";
 
-export function detectStudyFolders(baseDirectory: string): IFileSystemNode {
+/**
+ * Find the samples in the base directory and build the study tree.
+ * @param baseDirectory
+ * @param rules the FASTQ discovery rules of the pipeline version that will run the analysis
+ */
+export function detectStudyFolders(baseDirectory: string, rules: FastqDiscoveryRules): IFileSystemNode {
     const root: IFileSystemNode = {
         name: basename(baseDirectory),
         type: "directory",
@@ -11,11 +17,75 @@ export function detectStudyFolders(baseDirectory: string): IFileSystemNode {
         children: [],
     }
 
-    // recursively list all files in baseDirectory and build file tree
-    listDirectory(baseDirectory, root, baseDirectory);
+    if (rules === 'pipeline-v1') {
+        addPipelineSamples(baseDirectory, root);
+    } else {
+        // recursively list all files in baseDirectory and build file tree
+        listDirectory(baseDirectory, root, baseDirectory);
+    }
     // remove empty directories
     pruneEmptyDirectories(root);
     return root;
+}
+
+export function countSamples(node: IFileSystemNode): number {
+    if (node.type === "sample") {
+        return 1;
+    }
+    return (node.children ?? []).reduce((count, child) => count + countSamples(child), 0);
+}
+
+/**
+ * Add the samples the pipeline (v1.0.0 on) finds in the base directory, with the pipeline's sample IDs.
+ */
+function addPipelineSamples(baseDirectory: string, root: IFileSystemNode) {
+    const metadataByFolder = new Map<string, Map<string, ISampleMetadata>>();
+    for (const {forward, reverse} of pairSeqFiles(baseDirectory)) {
+        // the pipeline ignores Analysis_ directories of previous runs
+        const folders = forward.split('/').slice(0, -1);
+
+        // find or create the directory nodes of the sample
+        let folderNode = root;
+        for (const folder of folders) {
+            let child = folderNode.children!.find((node) => node.type === "directory" && node.name === folder);
+            if (child === undefined) {
+                child = {name: folder, type: "directory", path: join(folderNode.path, folder), children: []};
+                folderNode.children!.push(child);
+            }
+            folderNode = child;
+        }
+
+        if (!metadataByFolder.has(folderNode.path)) {
+            metadataByFolder.set(folderNode.path, readMetafile(folderNode.path));
+        }
+        const fileName = forward.slice(forward.lastIndexOf('/') + 1);
+        const sampleId = getBaseName(fileName);
+        const sample: IFileSystemSample = {
+            name: sampleId,
+            path: join(folderNode.path, fileName),
+            folder: folderNode.path,
+            type: "sample",
+            isPaired: reverse !== null,
+            isCompressed: fileName.toLowerCase().endsWith(".gz"),
+            metadata: metadataByFolder.get(folderNode.path)!.get(sampleId),
+        };
+        folderNode.children!.push(sample);
+    }
+}
+
+/**
+ * Read the sample metadata of a folder from its metafile.tab, if there is one.
+ */
+function readMetafile(path: string): Map<string, ISampleMetadata> {
+    if (!fs.existsSync(join(path, "metafile.tab"))) {
+        return new Map<string, ISampleMetadata>();
+    }
+    try {
+        return parseMetafile(fs.readFileSync(join(path, "metafile.tab"), "utf8"));
+    } catch (error) {
+        console.error(`Error parsing metafile: ${error}`);
+        return new Map<string, ISampleMetadata>();
+    }
 }
 
 function parseMetafile(metafile: string): Map<string, ISampleMetadata> {
@@ -78,15 +148,7 @@ function listDirectory(baseDirectory: string, currentRoot: IFileSystemNode, path
         const files = readdirSync(path);
 
         // check if folder contains a metafile
-        let metaMap = new Map<string, ISampleMetadata>();
-        if (files.includes("metafile.tab")) {
-            // parse metafile to get metadata
-            try {
-                metaMap = parseMetafile(fs.readFileSync(join(path, "metafile.tab"), "utf8"));
-            } catch (error) {
-                console.error(`Error parsing metafile: ${error}`);
-            }
-        }
+        const metaMap = readMetafile(path);
         console.log(metaMap)
 
         files.forEach((nodeName) => {
