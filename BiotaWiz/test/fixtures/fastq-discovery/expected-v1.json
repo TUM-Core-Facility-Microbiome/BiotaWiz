@@ -1,6 +1,6 @@
 {
   "generator": "test/fixtures/fastq-discovery/generate.py",
-  "pipeline_commit": "provisional: cb06cdf + unpushed diff (processing_helper blob 12ad9e8, expected 68798d1)",
+  "pipeline_commit": "48b800b9eddfe9c8694cc578370d76676420c07d",
   "python": "3.12.12",
   "pairs": [
     [
