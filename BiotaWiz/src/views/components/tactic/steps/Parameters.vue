@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-lg font-bold">Parameters</div>
+    <div class="text-lg font-bold">Pipeline parameters</div>
     <div class="text-sm text-gray-700">
       Set the parameters for the TACTIC pipeline.
     </div>
@@ -8,7 +8,7 @@
   <div class="mt-3 divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white select-none">
     <details class="group p-6" open>
       <summary class="flex cursor-pointer items-center justify-between gap-1.5 text-gray-900">
-        <h2 class="text-lg font-medium">Basic Parameters</h2>
+        <h2 class="text-lg font-medium">Basic settings</h2>
 
         <span class="relative h-5 w-5 shrink-0">
           <ReduceIcon/>
@@ -19,47 +19,6 @@
       <p class="leading-relaxed">
         <form>
           <div class="pt-6">
-            <div class="text-lg font-bold">Preprocessing</div>
-            <div class="mt-0">
-              <div class="flex items-start space-x-3">
-                <div class="relative mb-6">
-                  <input
-                      id="preprocess-to-individual-zotus"
-                      type="checkbox"
-                      v-model="preprocessToIndividualZOTUs"
-                      class="border rounded-md"
-                  >
-                </div>
-                <label for="preprocess-to-individual-zotus" class="pt-1">
-                  <p class="text-sm font-mono">Create ZOTU table for each sample</p>
-                  <p class="text-xs text-gray-500">
-                    Choosing this option will trigger full preprocessing for each sample. It produces ZOTUs table for each sample and
-                    increases pipeline run time.
-                  </p>
-                </label>
-              </div>
-              <div class="flex items-start space-x-3 mt-2">
-                <div class="relative mb-6">
-                  <input
-                      id="skip-non-bacterial-filter"
-                      type="checkbox"
-                      v-model="skipNonBacterialFilter"
-                      class="border rounded-md"
-                  >
-                </div>
-                <label for="skip-non-bacterial-filter" class="pt-1">
-                  <p class="text-sm font-mono">Do not filter for bacterial and archeal sequences</p>
-                  <p class="text-xs text-gray-500">
-                    If set, the filtering step to filter non-bacterial 16S
-                    sequences will be skipped. It speeds up the pipeline
-                    and makes the pipeline capable of handling non-16S
-                    sequences.
-                  </p>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="pt-6">
             <div class="text-lg font-bold">Threads</div>
             <div class="text-sm text-gray-700">
               Some pipeline steps might run in parallel to speed up the execution. You can restrict the number of threads
@@ -68,7 +27,8 @@
             <div class="mt-3">
               <div>
                 <label for="threads">
-                  <div class="text-sm font-mono">threads</div>
+                  <div class="text-sm font-medium">Number of CPU threads</div>
+                  <div class="text-xs font-mono text-gray-400">threads</div>
                   <div class="text-xs text-gray-500">Number of threads to be used by the pipeline.</div>
                 </label>
                 <div class="relative mb-6">
@@ -87,7 +47,7 @@
             </div>
           </div>
           <div class="pt-6">
-            <div class="text-lg font-bold">Trimming</div>
+            <div class="text-lg font-bold">Primer trimming</div>
             <div class="text-sm text-gray-700">
               Remove primer artifacts at the beginning and end of reads.
               Adjust these settings based on the length of the primers.
@@ -98,10 +58,9 @@
             <div class="grid grid-cols-1 gap-6 mt-3 sm:grid-cols-2">
               <div>
                 <label for="stripleft">
-                  <div class="text-sm font-mono">stripleft</div>
-                  <div class="text-xs text-gray-500">Number of nucleotides to be cut from left side of your merged
-                    sequence. Depends on length of your forward primer.
-                  </div>
+                  <div class="text-sm font-medium">Bases to trim from the start of merged reads</div>
+                  <div class="text-xs font-mono text-gray-400">stripleft</div>
+                  <div class="text-xs text-gray-500">Number of nucleotides to cut from the left side of your merged sequence. Depends on the length of your forward primer.</div>
                 </label>
                 <input
                     id="stripleft"
@@ -113,10 +72,9 @@
               </div>
               <div>
                 <label for="stripright">
-                  <div class="text-sm font-mono">stripright</div>
-                  <div class="text-xs text-gray-500">Number of nucleotides to be cut from left side of your merged
-                    sequence. Depends on length of your reverse primer.
-                  </div>
+                  <div class="text-sm font-medium">Bases to trim from the end of merged reads</div>
+                  <div class="text-xs font-mono text-gray-400">stripright</div>
+                  <div class="text-xs text-gray-500">Number of nucleotides to cut from the right side of your merged sequence. Depends on the length of your reverse primer.</div>
                 </label>
                 <input
                     id="stripright"
@@ -134,7 +92,7 @@
 
     <details class="group p-6 [&_summary::-webkit-details-marker]:hidden">
       <summary class="flex cursor-pointer items-center justify-between gap-1.5 text-gray-900">
-        <h2 class="text-lg font-medium">Advanced Parameters</h2>
+        <h2 class="text-lg font-medium">Advanced settings</h2>
 
         <span class="relative h-5 w-5 shrink-0">
           <ReduceIcon/>
@@ -154,17 +112,61 @@
 
         <form>
           <div class="pt-6">
-            <div class="text-lg font-bold">Merging of paired reads</div>
+            <div class="text-lg font-bold">Preprocessing</div>
             <div class="text-sm text-gray-700">
-              Parameters for merging paired reads.
+              Options for how reads are prepared before analysis.
+            </div>
+            <div class="mt-0">
+              <div class="flex items-start space-x-3">
+                <div class="relative mb-6">
+                  <input
+                      id="preprocess-to-individual-zotus"
+                      type="checkbox"
+                      v-model="preprocessToIndividualZOTUs"
+                      class="border rounded-md"
+                  >
+                </div>
+                <label for="preprocess-to-individual-zotus" class="pt-1">
+                  <p class="text-sm font-medium">Create a zOTU table for each sample</p>
+                  <p class="text-xs text-gray-500">
+                    Choosing this option will trigger full preprocessing for each sample. It produces a zOTU table for each sample and
+                    increases pipeline run time. When selected, the <em>zOTU picking per sample</em> settings appear
+                    below.
+                  </p>
+                </label>
+              </div>
+              <div class="flex items-start space-x-3 mt-2">
+                <div class="relative mb-6">
+                  <input
+                      id="skip-non-bacterial-filter"
+                      type="checkbox"
+                      v-model="skipNonBacterialFilter"
+                      class="border rounded-md"
+                  >
+                </div>
+                <label for="skip-non-bacterial-filter" class="pt-1">
+                  <p class="text-sm font-medium">Keep sequences that are not bacterial or archaeal</p>
+                  <p class="text-xs text-gray-500">
+                    If set, the filtering step to filter non-bacterial 16S
+                    sequences will be skipped. It speeds up the pipeline
+                    and makes the pipeline capable of handling non-16S
+                    sequences.
+                  </p>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="pt-6">
+            <div class="text-lg font-bold">Merging paired-end reads</div>
+            <div class="text-sm text-gray-700">
+              Settings for merging the forward and reverse reads of each pair into one sequence.
             </div>
             <div class="mt-3">
               <div>
                 <label for="fastq_maxdiffs">
-                  <div class="text-sm font-mono">fastq_maxdiffs</div>
-                  <div class="text-xs text-gray-500">Maximum number of mismatches when merging pairs of reads in paired
-                    sequencing layout.
-                  </div>
+                  <div class="text-sm font-medium">Maximum mismatches in the overlap</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_maxdiffs</div>
+                  <div class="text-xs text-gray-500">Maximum number of mismatches when merging pairs of reads in paired sequencing layout.</div>
                 </label>
                 <input
                     id="fastq_maxdiffs"
@@ -178,10 +180,9 @@
             <div class="mt-3">
               <div>
                 <label for="fastq_pctid">
-                  <div class="text-sm font-mono">fastq_pctid</div>
-                  <div class="text-xs text-gray-500">Minimum percentage of alignment identity when merging pairs of
-                    reads in paired sequencing layout.
-                  </div>
+                  <div class="text-sm font-medium">Minimum overlap identity (%)</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_pctid</div>
+                  <div class="text-xs text-gray-500">Minimum percentage of alignment identity when merging pairs of reads in paired sequencing layout.</div>
                 </label>
                 <input
                     id="fastq_pctid"
@@ -195,7 +196,8 @@
             <div class="grid grid-cols-1 gap-6 mt-3 sm:grid-cols-2">
               <div>
                 <label for="fastq_minmergelen">
-                  <div class="text-sm font-mono">fastq_minmergelen</div>
+                  <div class="text-sm font-medium">Minimum merged read length</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_minmergelen</div>
                   <div class="text-xs text-gray-500">Minimum required length for the merged sequence.</div>
                 </label>
                 <input
@@ -208,8 +210,9 @@
               </div>
               <div>
                 <label for="fastq_maxmergelen">
-                  <div class="text-sm font-mono">fastq_maxmergelen</div>
-                  <div class="text-xs text-gray-500">Maximum required length for the merged sequence.</div>
+                  <div class="text-sm font-medium">Maximum merged read length</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_maxmergelen</div>
+                  <div class="text-xs text-gray-500">Maximum allowed length for the merged sequence.</div>
                 </label>
                 <input
                     id="fastq_maxmergelen"
@@ -222,12 +225,15 @@
             </div>
           </div>
           <div class="pt-6">
-            <div class="text-lg font-bold">FilterBothSidesArgs</div>
-            <div class="text-sm text-gray-700"></div>
+            <div class="text-lg font-bold">Quality filtering: paired-end reads</div>
+            <div class="text-sm text-gray-700">
+              Filters merged paired-end reads by sequencing quality.
+            </div>
             <div class="mt-3">
               <div>
                 <label for="filterboth_fastq_maxee_rate">
-                  <div class="text-sm font-mono">fastq_maxee_rate</div>
+                  <div class="text-sm font-medium">Maximum expected errors per base</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_maxee_rate</div>
                   <div class="text-xs text-gray-500">Discard reads with > E expected errors per base. Calculated after any truncation options have been applied. For example, with the fastq_maxee_rate option set to 0.01, then a read of length 100 will be discarded if the expected errors is >1, and a read of length 1,000 will be discarded if the expected errors is >10.</div>
                 </label>
                 <input
@@ -242,7 +248,8 @@
             <div class="mt-3">
               <div>
                 <label for="filterboth_fastq_truncqual">
-                  <div class="text-sm font-mono">fastq_truncqual</div>
+                  <div class="text-sm font-medium">Truncate reads at quality score</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_truncqual</div>
                   <div class="text-xs text-gray-500">Truncate the read at the first position having quality score <= N, so that all remaining Q scores are >N.</div>
                 </label>
                 <input
@@ -256,12 +263,15 @@
             </div>
           </div>
           <div class="pt-6">
-            <div class="text-lg font-bold">FilterOneSidesArgs</div>
-            <div class="text-sm text-gray-700"></div>
+            <div class="text-lg font-bold">Quality filtering: single-end reads</div>
+            <div class="text-sm text-gray-700">
+              Filters single-end reads by sequencing quality.
+            </div>
             <div class="mt-3">
               <div>
                 <label for="filterone_fastq_maxee_rate">
-                  <div class="text-sm font-mono">fastq_maxee_rate</div>
+                  <div class="text-sm font-medium">Maximum expected errors per base</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_maxee_rate</div>
                   <div class="text-xs text-gray-500">Discard reads with > E expected errors per base. Calculated after any truncation options have been applied. For example, with the fastq_maxee_rate option set to 0.01, then a read of length 100 will be discarded if the expected errors is >1, and a read of length 1,000 will be discarded if the expected errors is >10.</div>
                 </label>
                 <input
@@ -276,7 +286,8 @@
             <div class="mt-3">
               <div>
                 <label for="filterone_fastq_truncqual">
-                  <div class="text-sm font-mono">fastq_truncqual</div>
+                  <div class="text-sm font-medium">Truncate reads at quality score</div>
+                  <div class="text-xs font-mono text-gray-400">fastq_truncqual</div>
                   <div class="text-xs text-gray-500">Truncate the read at the first position having quality score <= N, so that all remaining Q scores are >N.</div>
                 </label>
                 <input
@@ -289,14 +300,20 @@
               </div>
             </div>
           </div>
-          <div class="pt-6">
-            <div class="text-lg font-bold">IndividualSampleClusterZOTUsArgs</div>
-            <div class="text-sm text-gray-700"></div>
+          <div class="pt-6" v-if="preprocessToIndividualZOTUs">
+            <div class="text-lg font-bold">zOTU picking per sample</div>
+            <div class="text-sm text-gray-700">
+              This runs UNOISE3 on the reads of each sample individually. It slows down the process considerably and
+              is not recommended unless you specifically need it.
+              If you do not want it, uncheck <em>Create a zOTU table for each sample</em> at the top of the advanced
+              settings, and this section disappears.
+            </div>
             <div class="mt-3">
               <div>
                 <label for="minsize">
-                  <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500">This value filters out amplicons with less than selected reads. Lower values higher sensitivity, but may result in more noise.</div>
+                  <div class="text-sm font-medium">Minimum number of reads per zOTU</div>
+                  <div class="text-xs font-mono text-gray-400">minsize</div>
+                  <div class="text-xs text-gray-500">Filters out amplicons with fewer reads than this value. Lower values increase sensitivity but may add noise.</div>
                 </label>
                 <input
                     id="minsize"
@@ -309,13 +326,16 @@
             </div>
           </div>
           <div class="pt-6">
-            <div class="text-lg font-bold">ClusterZOTUsArgs</div>
-            <div class="text-sm text-gray-700"></div>
+            <div class="text-lg font-bold">zOTU picking (all samples together)</div>
+            <div class="text-sm text-gray-700">
+              Settings for picking zOTUs across all samples.
+            </div>
             <div class="mt-3">
               <div>
                 <label for="clusterZOTUsArgs_minsize">
-                  <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500">This value filters out amplicons with less than selected reads. Lower values higher sensitivity, but may result in more noise.</div>
+                  <div class="text-sm font-medium">Minimum number of reads per zOTU</div>
+                  <div class="text-xs font-mono text-gray-400">minsize</div>
+                  <div class="text-xs text-gray-500">Filters out amplicons with fewer reads than this value. Lower values increase sensitivity but may add noise.</div>
                 </label>
                 <input
                     id="clusterZOTUsArgs_minsize"
@@ -329,8 +349,9 @@
             <div class="mt-3">
               <div>
                 <label for="clusterZOTUsArgs_abund_limit">
-                  <div class="text-sm font-mono">abund_limit</div>
-                  <div class="text-xs text-gray-500"></div>
+                  <div class="text-sm font-medium">Minimum relative abundance</div>
+                  <div class="text-xs font-mono text-gray-400">abund_limit</div>
+                  <div class="text-xs text-gray-500">Minimum relative abundance of a zOTU across all samples for the zOTU to be kept.</div>
                 </label>
                 <input
                     id="clusterZOTUsArgs_abund_limit"
@@ -343,15 +364,16 @@
             </div>
             <div class="mt-3">
               <label for="clusterZOTUsArgs_sample-wise-correction">
-                <div class="text-sm font-mono">sample_wise_correction</div>
-                <div class="text-xs text-gray-500"></div>
+                <div class="text-sm font-medium">Sample-wise correction</div>
+                <div class="text-xs font-mono text-gray-400">sample_wise_correction</div>
+                <div class="text-xs text-gray-500">Relative abundances below the abundance limit (above) are rounded to zero.</div>
               </label>
               <fieldset class="flex flex-wrap gap-3">
                 <div>
                   <input
                       type="radio"
                       v-model="clusterZOTUsArgs_sample_wise_correction"
-                      value=true
+                      :value="true"
                       id="clusterZOTUsArgs_sample-wise-correction-yes"
                       class="peer hidden"
                   />
@@ -368,7 +390,7 @@
                   <input
                       type="radio"
                       v-model="clusterZOTUsArgs_sample_wise_correction"
-                      value=false
+                      :value="false"
                       id="clusterZOTUsArgs_sample-wise-correction-no"
                       class="peer hidden"
                       checked
@@ -386,8 +408,9 @@
             <div class="mt-3">
               <div>
                 <label for="clusterZOTUsArgs_match_id">
-                  <div class="text-sm font-mono">match_id</div>
-                  <div class="text-xs text-gray-500"></div>
+                  <div class="text-sm font-medium">Minimum identity for mapping reads to zOTUs</div>
+                  <div class="text-xs font-mono text-gray-400">match_id</div>
+                  <div class="text-xs text-gray-500">Minimum alignment identity for a read to be mapped to a zOTU.</div>
                 </label>
                 <input
                     id="clusterZOTUsArgs_match_id"
@@ -400,15 +423,16 @@
             </div>
           </div>
           <div class="pt-6" v-if="analysisMode == 'de-novo'">
-            <div class="text-lg font-bold">De-novo clustering arguments</div>
+            <div class="text-lg font-bold">UPARSE (OTU) arguments</div>
             <div class="text-sm text-gray-700">
-              Parameters for ZOTU clustering in de-novo clustering mode.
+              Settings for clustering sequences into OTUs with UPARSE.
             </div>
             <div class="mt-3">
               <div>
                 <label for="de_novo_minsize">
-                  <div class="text-sm font-mono">minsize</div>
-                  <div class="text-xs text-gray-500">This value filters out amplicons with less than selected reads. Lower values higher sensitivity, but may result in more noise.</div>
+                  <div class="text-sm font-medium">Minimum number of reads per OTU</div>
+                  <div class="text-xs font-mono text-gray-400">minsize</div>
+                  <div class="text-xs text-gray-500">Filters out amplicons with fewer reads than this value. Lower values increase sensitivity but may add noise.</div>
                 </label>
                 <input
                     id="de_novo_minsize"
@@ -422,8 +446,9 @@
             <div class="mt-3">
               <div>
                 <label for="de_novo_abund_limit">
-                  <div class="text-sm font-mono">abund_limit</div>
-                  <div class="text-xs text-gray-500"></div>
+                  <div class="text-sm font-medium">Minimum relative abundance</div>
+                  <div class="text-xs font-mono text-gray-400">abund_limit</div>
+                  <div class="text-xs text-gray-500">Minimum relative abundance of an OTU across all samples for the OTU to be kept.</div>
                 </label>
                 <input
                     id="de_novo_abund_limit"
@@ -436,15 +461,16 @@
             </div>
             <div class="mt-3">
               <label for="de_novo_sample-wise-correction">
-                <div class="text-sm font-mono">sample_wise_correction</div>
-                <div class="text-xs text-gray-500"></div>
+                <div class="text-sm font-medium">Sample-wise correction</div>
+                <div class="text-xs font-mono text-gray-400">sample_wise_correction</div>
+                <div class="text-xs text-gray-500">Relative abundances below the abundance limit (above) are rounded to zero.</div>
               </label>
               <fieldset class="flex flex-wrap gap-3">
                 <div>
                   <input
                       type="radio"
                       v-model="deNovoClusterZOTUsArgs_sample_wise_correction"
-                      value=true
+                      :value="true"
                       id="de_novo_sample-wise-correction-yes"
                       class="peer hidden"
                   />
@@ -461,7 +487,7 @@
                   <input
                       type="radio"
                       v-model="deNovoClusterZOTUsArgs_sample_wise_correction"
-                      value=false
+                      :value="false"
                       id="de_novo_sample-wise-correction-no"
                       class="peer hidden"
                       checked
@@ -478,19 +504,17 @@
             </div>
           </div>
           <div class="pt-6" v-if="analysisMode == 'TIC'">
-            <div class="text-lg font-bold">Complex TIC arguments</div>
+            <div class="text-lg font-bold">Taxonomy-informed clustering (TIC)</div>
             <div class="text-sm text-gray-700">
-              Thresholds for taxonomy informed clustering. Watch out to not set the threshold of a lower rank higher
+              Thresholds for taxonomy-informed clustering. Watch out to not set the threshold of a lower rank higher
               than the threshold of a higher rank.
             </div>
             <div class="mt-3">
               <div>
                 <label for="family_sim">
-                  <div class="text-sm font-mono">family_sim</div>
-                  <div class="text-xs text-gray-500">Family alignment identity threshold to group unknown ZOTUs into
-                    distinct clusters at family level. Sequences with alignment identity more than this value will be
-                    taken together as one (unknown) family.
-                  </div>
+                  <div class="text-sm font-medium">Family similarity threshold</div>
+                  <div class="text-xs font-mono text-gray-400">family_sim</div>
+                  <div class="text-xs text-gray-500">Family alignment identity threshold to group unknown zOTUs into distinct clusters at family level. Sequences with alignment identity more than this value will be taken together as one (unknown) family.</div>
                 </label>
                 <input
                     id="family_sim"
@@ -517,11 +541,9 @@
             <div class="mt-3 pt-4">
               <div>
                 <label for="genus_sim">
-                  <div class="text-sm font-mono">genus_sim</div>
-                  <div class="text-xs text-gray-500">Genus alignment identity threshold to group unknown ZOTUs into
-                    distinct clusters at genus level. Sequences with alignment identity more than this value will be
-                    taken together as one (unknown) genus.
-                  </div>
+                  <div class="text-sm font-medium">Genus similarity threshold</div>
+                  <div class="text-xs font-mono text-gray-400">genus_sim</div>
+                  <div class="text-xs text-gray-500">Genus alignment identity threshold to group unknown zOTUs into distinct clusters at genus level. Sequences with alignment identity more than this value will be taken together as one (unknown) genus.</div>
                 </label>
                 <input
                     id="genus_sim"
@@ -548,11 +570,9 @@
             <div class="mt-3 pt-4">
               <div>
                 <label for="species_sim">
-                  <div class="text-sm font-mono">species_sim</div>
-                  <div class="text-xs text-gray-500">Species alignment identity threshold to group unknown ZOTUs into
-                    distinct clusters at species level. Sequences with alignment identity more than this value will be
-                    taken together as one (unknown) species.
-                  </div>
+                  <div class="text-sm font-medium">Species similarity threshold</div>
+                  <div class="text-xs font-mono text-gray-400">species_sim</div>
+                  <div class="text-xs text-gray-500">Species alignment identity threshold to group unknown zOTUs into distinct clusters at species level. Sequences with alignment identity more than this value will be taken together as one (unknown) species.</div>
                 </label>
                 <input
                     id="species_sim"
@@ -576,143 +596,18 @@
                 </div>
               </div>
             </div>
-            <div role="note" class="rounded border-s-4 border-blue-500 bg-blue-50 p-4 mt-6">
-              <strong class="block font-medium text-blue-800">Not yet implemented</strong>
-              <p class="mt-2 text-sm text-blue-700">
-                <span class="font-mono">abund_limit</span> and <span class="font-mono">sample_wise_correction</span>
-                are not yet implemented for TIC.
-              </p>
-            </div>
-            <div class="mt-3">
-              <div>
-                <label for="tic_abund_limit">
-                  <div class="text-sm font-mono">abund_limit</div>
-                  <div class="text-xs text-gray-500"></div>
-                </label>
-                <input
-                    id="tic_abund_limit"
-                    type="text"
-                    v-model="complexTICArgs_abund_limit"
-                    placeholder="default: 0.0025"
-                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                >
-              </div>
-            </div>
-            <div class="mt-3">
-              <label for="cta-sample-wise-correction">
-                <div class="text-sm font-mono">sample_wise_correction</div>
-                <div class="text-xs text-gray-500"></div>
-              </label>
-              <fieldset class="flex flex-wrap gap-3">
-                <div>
-                  <input
-                      type="radio"
-                      v-model="complexTICArgs_sample_wise_correction"
-                      value=true
-                      id="cta-sample-wise-correction-yes"
-                      class="peer hidden"
-                  />
-
-                  <label
-                      for="cta-sample-wise-correction-yes"
-                      class="flex cursor-pointer items-center justify-center rounded-md border border-gray-100 bg-white px-3 py-2 text-gray-900 hover:border-gray-200 peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white"
-                  >
-                    <p class="text-sm font-medium">Yes</p>
-                  </label>
-                </div>
-
-                <div>
-                  <input
-                      type="radio"
-                      v-model="complexTICArgs_sample_wise_correction"
-                      value=false
-                      id="cta-sample-wise-correction-no"
-                      class="peer hidden"
-                      checked
-                  />
-
-                  <label
-                      for="cta-sample-wise-correction-no"
-                      class="flex cursor-pointer items-center justify-center rounded-md border border-gray-100 bg-white px-3 py-2 text-gray-900 hover:border-gray-200 peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white"
-                  >
-                    <p class="text-sm font-medium">No</p>
-                  </label>
-                </div>
-              </fieldset>
-            </div>
           </div>
           <div class="pt-6" v-if="analysisMode == 'TAC'">
-            <div class="text-lg font-bold">TAC arguments</div>
-            <div class="text-sm text-gray-700"></div>
-            <div role="note" class="rounded border-s-4 border-blue-500 bg-blue-50 p-4 mt-6">
-              <strong class="block font-medium text-blue-800">Not yet implemented</strong>
-              <p class="mt-2 text-sm text-blue-700">
-                <span class="font-mono">abund_limit</span> and <span class="font-mono">sample_wise_correction</span>
-                are not yet implemented for TAC.
-              </p>
-            </div>
-            <div class="mt-3">
-              <div>
-                <label for="tac_abund_limit">
-                  <div class="text-sm font-mono">abund_limit</div>
-                  <div class="text-xs text-gray-500"></div>
-                </label>
-                <input
-                    id="tac_abund_limit"
-                    type="text"
-                    v-model="tacClusterArgs_abund_limit"
-                    placeholder="default: 0.0025"
-                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                >
-              </div>
-            </div>
-            <div class="mt-3">
-              <label for="tac-sample-wise-correction">
-                <div class="text-sm font-mono">sample_wise_correction</div>
-                <div class="text-xs text-gray-500"></div>
-              </label>
-              <fieldset class="flex flex-wrap gap-3">
-                <div>
-                  <input
-                      type="radio"
-                      v-model="tacClusterArgs_sample_wise_correction"
-                      value=true
-                      id="tac-sample-wise-correction-yes"
-                      class="peer hidden"
-                  />
-
-                  <label
-                      for="tac-sample-wise-correction-yes"
-                      class="flex cursor-pointer items-center justify-center rounded-md border border-gray-100 bg-white px-3 py-2 text-gray-900 hover:border-gray-200 peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white"
-                  >
-                    <p class="text-sm font-medium">Yes</p>
-                  </label>
-                </div>
-
-                <div>
-                  <input
-                      type="radio"
-                      v-model="tacClusterArgs_sample_wise_correction"
-                      value=false
-                      id="tac-sample-wise-correction-no"
-                      class="peer hidden"
-                      checked
-                  />
-
-                  <label
-                      for="tac-sample-wise-correction-no"
-                      class="flex cursor-pointer items-center justify-center rounded-md border border-gray-100 bg-white px-3 py-2 text-gray-900 hover:border-gray-200 peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white"
-                  >
-                    <p class="text-sm font-medium">No</p>
-                  </label>
-                </div>
-              </fieldset>
+            <div class="text-lg font-bold">Taxonomy-agnostic clustering (TAC)</div>
+            <div class="text-sm text-gray-700">
+              Settings for clustering sequences by similarity alone, without using taxonomy.
             </div>
             <div class="mt-3">
               <div>
                 <label for="tac_cluster_thr">
-                  <div class="text-sm font-mono">cluster_thr</div>
-                  <div class="text-xs text-gray-500"></div>
+                  <div class="text-sm font-medium">Clustering similarity threshold</div>
+                  <div class="text-xs font-mono text-gray-400">cluster_thr</div>
+                  <div class="text-xs text-gray-500">Minimum similarity for sequences to be grouped into one cluster.</div>
                 </label>
                 <input
                     id="tac_cluster_thr"
