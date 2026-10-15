@@ -128,11 +128,14 @@
                 </div>
                 <label for="preprocess-to-individual-zotus" class="pt-1">
                   <p class="text-sm font-medium">Create a zOTU table for each sample</p>
-                  <p class="text-xs text-gray-500">
-                    Choosing this option will trigger full preprocessing for each sample. It produces a zOTU table for each sample and
-                    increases pipeline run time. When selected, the <em>zOTU picking per sample</em> settings appear
-                    below.
-                  </p>
+                  <div role="note" class="rounded border-s-4 border-red-500 bg-red-50 p-3 mt-2">
+                    <strong class="block text-xs font-medium text-red-800">Note</strong>
+                    <p class="mt-1 text-xs text-red-700">
+                      Choosing this option will trigger full preprocessing for each sample. It produces a zOTU table for
+                      each sample and increases pipeline run time. When selected, the <em>zOTU picking per sample</em>
+                      settings appear below.
+                    </p>
+                  </div>
                 </label>
               </div>
               <div class="flex items-start space-x-3 mt-2">
