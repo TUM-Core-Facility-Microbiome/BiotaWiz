@@ -1,70 +1,123 @@
 # BiotaWiz
-A desktop application for the analysis of 16S rRNA amplicon sequencing data.
+A desktop application for analyzing 16S rRNA amplicon sequencing data, with no command line needed.
 
-The application provides multiple modes that you might find useful for analyzing 16S rRNA amplicon data:
-- TIC (IMNGS2-Core)
-- De-novo Clustering
+BiotaWiz guides you step by step through an analysis with the TACTIC pipeline: pick your FASTQ files,
+set a few options, and get OTU tables, taxonomy and phylogenetic trees. It offers three analysis modes:
 
-When reviewing this application before the repos for the TIC pipeline is made public, please
-follow the instructions in `mock`.
+| Mode | What it does |
+|---|---|
+| **Taxonomy Informed Clustering (TIC)** | Clusters zOTUs at family, genus and species level where their taxonomy is unknown at that level. |
+| **Taxonomy Agnostic Clustering (TAC)** | Clusters zOTUs at 98.7% similarity into OTUs. |
+| **De Novo Clustering (UPARSE)** | Clusters the unique sequences of your samples at 97% similarity. |
 
-## Introduction
+## Quick start
+1. Install the backend: **WSL2** on Windows, **Docker Engine** on Linux (see [Installation](#installation)).
+2. Download BiotaWiz from the [latest release](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest) and install it.
+3. Start BiotaWiz, choose an analysis mode, and follow the wizard.
 
+## Requirements
+- Windows 10/11 (64-bit) with WSL2, or a 64-bit Debian-based Linux (e.g. Ubuntu) with Docker Engine
+- An internet connection when you first start BiotaWiz, to download the analysis pipeline
+- Enough free disk space for the pipeline (several GB) and your results
 
 ## Installation
 ### Windows
-#### Preparations
-Please install WSL2 as described [here](https://learn.microsoft.com/en-us/windows/wsl/install).
-WSL2 is the underlying technology that allows us to execute the pipeline on Windows.
+#### 1. Install WSL2
+BiotaWiz runs the analysis pipeline in WSL2 (Windows Subsystem for Linux).
+Open **PowerShell as administrator**, run the following command, and restart your computer:
+```powershell
+wsl --install
+```
+If you need more details, see Microsoft's [WSL installation guide](https://learn.microsoft.com/en-us/windows/wsl/install).
 
-#### Download
-Please download the installer from the Releases page.
-You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest).
+#### 2. Download BiotaWiz
+Open the [latest release](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest)
+and download the file ending in `Setup.exe`.
 
-For Windows, please download the file ending with `Setup.exe`, e.g., `BiotaWiz-0.0.1-Setup.exe` for version `v0.0.1`.
+#### 3. Install BiotaWiz
+The installer is not yet signed, so Windows shows some warnings. They are expected; here is how to continue.
 
-#### Setup
-Microsoft might warn you that the installer is not commonly downloaded and could be dangerous.
+<details>
+<summary><b>Your browser warns that the file is not commonly downloaded</b></summary>
 
 ![warning](docs/images/windows/download_warning.png)
 
-Please click on the context menu (the 3 dots) that is showing up when you hover the entry and select `Keep`.
+Hover over the download, click the three dots, and select `Keep`.
 
 ![hover and click keep](docs/images/windows/click_keep.png)
 
-You might get another warning that the installer is not commonly downloaded and could be dangerous.
+If a second warning appears, click `Show more` and then `Keep anyway`.
 
 ![click show more](docs/images/windows/click_show_more.png)
-
-Please click on `Show more` and then on `Keep anyway`.
-
 ![click keep anyway](docs/images/windows/click_keep_anyway.png)
+</details>
 
-SmartScreen might warn you that the application is unrecognized.
+<details>
+<summary><b>Windows SmartScreen says the app is unrecognized</b></summary>
+
+Click `More info` and then `Run anyway`.
 
 ![click more info](docs/images/windows/click_more.png)
-
-Please click on `More info` and then on `Run anyway`.
-
 ![click run anyway](docs/images/windows/click_run_anyway.png)
+</details>
 
+The installer then installs BiotaWiz and starts it. You can find BiotaWiz in the Start menu afterwards.
 
-### Linux
-#### Preparations
-Please install Docker Engine (not Docker Desktop) as described [here](https://docs.docker.com/engine/install/).
-Docker Engine is the underlying technology that allows us to execute the pipeline in an isolated environment.
+> [!TIP]
+> BiotaWiz uses WSL2 by default. If you prefer Docker Desktop, switch the backend in `Settings` > `Backend`.
 
-#### Download and installation
-##### Debian-based distributions (e.g., Ubuntu)
-Please download the `.deb` file from the Releases page.
-You can find the latest version [here](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest).
+### Linux (Debian, Ubuntu and derivatives)
+#### 1. Install Docker Engine
+BiotaWiz runs the analysis pipeline in Docker. Install **Docker Engine** (not Docker Desktop) by following the
+[official instructions](https://docs.docker.com/engine/install/) for your distribution.
 
-To install use Eddy, a graphical package manager, or the terminal:
+Then allow your user to use Docker without `sudo`, and **log out and back in** for this to take effect:
 ```bash
-sudo dpkg -i <path-to-deb-file>
+sudo usermod -aG docker $USER
 ```
+To check that Docker works, run `docker run hello-world`.
 
-### Updates
+#### 2. Download and install BiotaWiz
+Open the [latest release](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/latest)
+and download the `.deb` file. Install it by double-clicking it to open your software installer, or in the terminal:
+```bash
+sudo apt install ./<downloaded-file>.deb
+```
+Then start BiotaWiz from your applications menu.
+
+## First start
+When you choose an analysis mode for the first time, BiotaWiz downloads the analysis pipeline.
+This can take a few minutes, depending on your connection. Later starts reuse the download.
+
+If BiotaWiz says it **could not connect to the backend**:
+- **Windows:** make sure WSL2 is installed and you have restarted your computer since installing it.
+- **Linux:** make sure the Docker service is running (`sudo systemctl start docker`) and that your user is in the
+  `docker` group (see above).
+
+Then restart BiotaWiz.
+
+## Running an analysis
+Before you start, put all FASTQ files you want to analyze into one folder (sub-folders are fine).
+Gzip-compressed files (`.fastq.gz`, `.fq.gz`) work as well. BiotaWiz recognizes paired-end files by
+their names, e.g. `_R1_`/`_R2_` or `_1`/`_2`; see the
+[file naming guide](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/21).
+
+1. **Choose an analysis mode:** TIC, TAC or De Novo Clustering.
+2. **Select the base directory:** the folder that contains your FASTQ files. The results are written to this folder.
+3. **Select samples:** tick the samples to analyze. Only combine samples that were sequenced with the same primers.
+4. **Spike-in standard:** tell BiotaWiz whether spike-ins were added to all, some, or none of your samples.
+   If they were added to all samples, a spreadsheet opens: enter the sample weight and spike-in amount for each
+   sample, save it, and click `Check mapping file and continue`.
+5. **Parameters:** the defaults suit most analyses. Adjust the number of threads, and the primer trimming
+   (`stripleft`/`stripright`) to the length of your forward and reverse primers.
+6. **Run:** follow the progress in the log. When the analysis is done, click `Open analysis directory`.
+
+### Results
+Results are written to a new `Analysis_<date>_<time>` folder in your base directory. It contains the OTU/zOTU tables,
+taxonomy, phylogenetic trees and interactive Krona charts. For downstream analysis we recommend the
+[Namco microbiome explorer](https://exbio.wzw.tum.de/namco/).
+
+## Updates
 BiotaWiz checks for new versions at startup and every few hours.
 You can also check manually via `Help` > `Check for Updates…` or in `Settings` > `General`,
 where automatic checks can be turned off.
@@ -73,11 +126,21 @@ where automatic checks can be turned off.
   Once it has downloaded, restart BiotaWiz to apply it, or it will be applied the next time you start the application.
 - **Linux:** click `Open download page` and install the new `.deb` file as described above.
 
-## Usage
-
-## Misc
+## Getting help
+- If an error occurs, BiotaWiz shows a link to a help page for that error.
+- Questions and documentation: [BiotaWiz-docs discussions](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions)
+- Bugs, or files that are not recognized: [open an issue](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/issues)
 
 ## Development
+The application lives in the `BiotaWiz/` folder (Electron, Vue 3, TypeScript).
+```bash
+cd BiotaWiz/
+npm ci     # install dependencies
+npm start  # run the app in development mode
+npm test   # run the unit tests
+```
+To test pipeline version selection and updates without publishing a release, see [`mock`](mock/README.md).
+
 ### Run end-to-end tests
 WebdriverIO is set up to run end-to-end tests on Linux.
 ```bash
@@ -104,3 +167,6 @@ The workflow runs the unit tests, creates a draft release, builds the Windows in
 uploads them, and publishes the release once all files are there.
 If a step fails, the release stays a draft: fix the problem and re-run the workflow, or delete the draft and the tag.
 Versions with a suffix (e.g., `1.2.3-beta.1`) are published as pre-releases and are not offered as updates.
+
+## License
+BiotaWiz is released under the [MIT License](LICENSE).
