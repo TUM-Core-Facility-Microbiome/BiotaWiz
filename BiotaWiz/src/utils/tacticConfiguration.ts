@@ -13,6 +13,11 @@ import xlsx from 'node-xlsx';
 
 const MAPPING_FILE_MODE: MappingFileFormat = MappingFileFormat.XLSX;
 
+/**
+ * Appended to the argument file. fastq_truncqual is still written but hidden in the parameters step.
+ */
+export const ARGUMENT_FILE_FOOTER = "# fastq_truncqual is muted by the pipeline version >=0.7.3 and has no effect.\n";
+
 export class TacticConfiguration {
     private analysisMode = TacticAnalysisMode.TIC;
     private baseDirectory = "";
@@ -665,7 +670,7 @@ export class TacticConfiguration {
 
     private writeParameterFile() {
         this.yamlFile = path.join(this.baseDirectory, 'TACTICPipeline_args.yml');
-        writeFile(this.yamlFile, stringify(this.parameters), (err) => {
+        writeFile(this.yamlFile, stringify(this.parameters) + ARGUMENT_FILE_FOOTER, (err) => {
             console.error(err);
         });
     }
