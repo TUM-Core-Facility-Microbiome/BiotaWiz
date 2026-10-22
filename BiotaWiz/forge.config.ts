@@ -14,6 +14,8 @@ const config: ForgeConfig = {
     makers: [
         new MakerSquirrel({
             setupIcon: "./assets/icons/icon.ico",
+            // icon shown in the list of installed apps; Squirrel needs a URL and uses the Electron icon otherwise
+            iconUrl: "https://raw.githubusercontent.com/TUM-Core-Facility-Microbiome/BiotaWiz/main/BiotaWiz/assets/icons/icon.ico",
         }),
         // new MakerZIP({}, ['darwin']),
         // new MakerRpm({
