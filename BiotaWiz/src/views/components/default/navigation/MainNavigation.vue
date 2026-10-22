@@ -10,7 +10,17 @@
         </router-link>
 
         <div class="border-t border-gray-100">
-          <div class="px-2">
+          <div class="px-2 pt-2">
+            <a @click="startOver"
+               class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100 cursor-pointer"
+            >
+              <code class="absolute mt-6 text-xs">Home</code>
+              <HomeIcon></HomeIcon>
+              <span
+                  class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible min-w-28">
+                Start over
+              </span>
+            </a>
 <!--            <ul class="space-y-1 pt-4">-->
 <!--              <li>-->
 <!--                <router-link class="t group relative flex justify-center rounded px-2 py-1.5 hover:bg-gray-100"-->
@@ -74,6 +84,21 @@
 import SettingsIcon from "../icons/SettingsIcon.vue";
 import ChatBubbleLeftRightIcon from "../icons/ChatBubbleLeftRightIcon.vue";
 import FireIcon from "../icons/FireIcon.vue";
+import HomeIcon from "../icons/HomeIcon.vue";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+
+/**
+ * Go back to the start page. Starting the wizard from there checks the pipeline versions again.
+ */
+async function startOver() {
+  // asks first if a pipeline is being prepared or running, as leaving the wizard stops it
+  if (!await indexBridge.confirmStartOver()) {
+    return;
+  }
+  await router.push('/application-selector');
+}
 
 function openIssues() {
   indexBridge.openIssues();

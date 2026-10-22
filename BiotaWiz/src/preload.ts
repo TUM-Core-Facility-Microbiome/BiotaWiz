@@ -207,6 +207,12 @@ const indexBridge = {
     openExternalLink: async (url: string) => {
         return ipcRenderer.invoke('openExternalLink', url);
     },
+    confirmStartOver: async (): Promise<boolean> => {
+        return ipcRenderer.invoke('confirmStartOver');
+    },
+    selectPipelineVersion: async (environment: Environment): Promise<{ version: string, pinned: boolean, warning: string | null }> => {
+        return ipcRenderer.invoke('selectPipelineVersion', environment);
+    },
     changeEnvironment: async (environment: Environment | null) => {
         return ipcRenderer.invoke('changeEnvironment', environment);
     },
