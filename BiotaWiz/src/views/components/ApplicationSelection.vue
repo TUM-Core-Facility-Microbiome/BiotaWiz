@@ -74,6 +74,7 @@
           >
             <strong class="font-medium text-black">Taxonomy Informed Clustering (TIC)</strong>
             <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at family, genera and species level if their taxonomy is not known at the corresponding level.</p>
+            <p class="mt-1 text-xs font-medium text-blue-700">Runs the zOTU pipeline first.</p>
           </router-link>
         </li>
         <li>
@@ -83,6 +84,7 @@
           >
             <strong class="font-medium text-black">Taxonomy Agnostic Clustering (TAC)</strong>
             <p class="mt-1 text-xs font-medium text-gray-800">Takes ZOTUs and cluster them at 98.7% similarity to create OTUs</p>
+            <p class="mt-1 text-xs font-medium text-blue-700">Runs the zOTU pipeline first.</p>
           </router-link>
         </li>
         <li>
