@@ -7,28 +7,24 @@ import path from 'path';
 import "./api/api";
 
 import {Environment} from "./enums";
-import {BACKENDS, cleanUpBackend, setBackend, terminateBackend} from "./utils/backend";
+import {ensureWslDistributionsMigrated, removeWslDistributions, terminateBackend} from "./utils/backend";
 import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
 import {logToDevTools} from "./utils/logHandler";
 import {isInstallingUpdate, startAutoCheck} from "./utils/updater";
 
+// set on uninstall; electron-squirrel-startup quits the app once the shortcuts are removed, so quitting waits for it
+let uninstallCleanup: Promise<void> | null = null;
+
 if (squirrelStartup) {
     const squirrelEvent = process.argv[1];
     if (squirrelEvent === '--squirrel-uninstall') {  // on uninstall
         console.log("Running cleanup tasks for uninstallation");
-
-        // clean up WSL backend
-        logToDevTools("Cleaning up WSL backend");
-        for (const backend in BACKENDS) {
-            logToDevTools(`Cleaning up backend ${backend}`);
-            setBackend(backend).then(async () => {
-                await cleanUpBackend(Environment.TACTIC);
-            });
-        }
-
-        // handle removing shortcuts on Windows when uninstalling
-        app.exit();
+        // Squirrel only removes its installation folder; remove the WSL distributions and the folder with their disks
+        uninstallCleanup = removeWslDistributions(Environment.TACTIC).catch((error) => {
+            console.error(`Could not remove the WSL distributions: ${error}`);
+        });
+        uninstallCleanup.finally(() => app.exit());
     } else {  // on install
         app.exit();
     }
@@ -79,7 +75,15 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+    // no window while Squirrel runs the application to install, update or uninstall it
+    if (squirrelStartup) {
+        return;
+    }
+    // move WSL distributions out of the installation folder, which Squirrel deletes on reinstall
+    ensureWslDistributionsMigrated();
+    createWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -105,6 +109,11 @@ app.on('will-quit', async (event) => {
     }
 
     event.preventDefault();
+    if (uninstallCleanup) {
+        await uninstallCleanup;
+        app.exit();
+        return;
+    }
     console.log("Application will quit");
     console.log("Running cleanup tasks");
 

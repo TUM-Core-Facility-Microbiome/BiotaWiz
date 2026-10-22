@@ -3,32 +3,49 @@ import path from 'path';
 import {byOS, platforms} from "./platform";
 
 /**
- * Returns the path to the user's application data directory.
- *
- * This function first checks if the LOCALAPPDATA environment variable is set.
- * This folder is used for application data that should not roam with the user profile.
- * If it is not set, it falls back to using Electron's app.getPath('userData') method.
- * The 'userData' path is a directory for storing user data, such as settings, databases, etc.
- *
- * @returns {string} The path to the user's application data directory.
- */
-/**
  * Returns the directory with the pipeline's databases, mounted to /base/databases when running the pipeline.
  */
 export function getDatabaseDirectory(): string {
     return path.join(app.getPath("appData"), app.getName(), "resources", "databases");
 }
 
-export function getLocalAppDataPath(): string {
+/**
+ * Returns the directory for large application data that should not roam with the user profile, e.g., WSL distributions.
+ *
+ * On Windows, this is %LOCALAPPDATA%\BiotaWiz-Data. It must not be %LOCALAPPDATA%\BiotaWiz: that is the installation
+ * folder of Squirrel, which deletes it when the application is installed again.
+ * If LOCALAPPDATA is not set, and on other platforms, Electron's userData directory is used.
+ */
+export function getLocalDataPath(): string {
     return (byOS({
         [platforms.WINDOWS]: () => {
-            // avoid using userData as this is a roaming profile, try using an app folder in %LOCALAPPDATA%
             const localAppData = process.env.LOCALAPPDATA;
             if (localAppData === undefined) {
                 return app.getPath('userData');  // fallback when environment variable is not set
             }
-            return path.join(localAppData, app.name);
+            return path.join(localAppData, `${app.name}-Data`);
         },
         default: () => app.getPath('userData'),
     }) as () => string)();
+}
+
+/**
+ * Returns the directory where the WSL distributions are stored.
+ */
+export function getWslDistributionRoot(): string {
+    return path.join(getLocalDataPath(), 'wsl-distro');
+}
+
+/**
+ * Returns the directory where versions up to 1.0.1-rc.1 stored the WSL distributions, inside the installation folder
+ * of Squirrel, or null if there is none.
+ */
+export function getLegacyWslDistributionRoot(): string | null {
+    return (byOS({
+        [platforms.WINDOWS]: () => {
+            const localAppData = process.env.LOCALAPPDATA;
+            return localAppData === undefined ? null : path.join(localAppData, app.name, 'wsl-distro');
+        },
+        default: () => null,
+    }) as () => string | null)();
 }

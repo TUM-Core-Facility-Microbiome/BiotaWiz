@@ -20,7 +20,7 @@ import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
 import {app} from "electron";
 import Dockerode from "dockerode";
-import {getLocalAppDataPath} from "./helpers";
+import {getLegacyWslDistributionRoot, getWslDistributionRoot} from "./helpers";
 import * as child_process from "node:child_process";
 import {combineReachability, wgetExitCodeToReachability, wgetProbeArguments} from "./internetCheck";
 
@@ -174,6 +174,7 @@ export async function checkBackendInternetAccess(urls: string[]): Promise<boolea
     if (backend.type !== WSL.type) {
         return null;
     }
+    await ensureWslDistributionsMigrated();
     let distribution: string | undefined;
     try {
         const baseName = await getImageBaseName(Environment.TACTIC);
@@ -555,8 +556,8 @@ async function getExpectedDistributionTarPath(environment: Environment, releaseT
 }
 
 async function getDistributionInstallLocation(environment: Environment, releaseTag: SemVer) {
-    const appDataDirectory = getLocalAppDataPath();
-    const installDir = path.join(appDataDirectory, 'wsl-distro', await getImageName(environment, releaseTag));
+    // outside the installation folder, which Squirrel deletes when the application is installed again
+    const installDir = path.join(getWslDistributionRoot(), await getImageName(environment, releaseTag));
 
     // make sure the path exists
     if (!fs.existsSync(installDir)) {
@@ -713,6 +714,14 @@ export async function registerWslDistribution(environment: Environment, releaseT
 /**
  * Get the name of the image excluding the version tag.
  */
+/**
+ * Prefix of the names of the WSL distributions of the environment.
+ */
+function getWslBaseName(environment: Environment) {
+    const repo = getRepository(environment);
+    return `${repo.owner}.${repo.repo}`;
+}
+
 async function getImageBaseName(environment: Environment) {
     const backend = await getBackend();
     const repo = getRepository(environment);
@@ -720,7 +729,7 @@ async function getImageBaseName(environment: Environment) {
         case DOCKER.type:
             return `${CONTAINER_REGISTRY}/${repo.owner}/${repo.repo}`;
         case WSL.type:
-            return `${repo.owner}.${repo.repo}`;
+            return getWslBaseName(environment);
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
@@ -745,6 +754,7 @@ async function getImageName(environment: Environment, releaseTag: SemVer) {
 }
 
 export async function initializeWslBackend(environment: Environment, releaseTag: SemVer) {
+    await ensureWslDistributionsMigrated();
     // check if the distribution is registered
     const distribution = await getImageName(environment, releaseTag);
     const installed = await wsl.isInstalled(distribution);
@@ -916,11 +926,11 @@ function sleep(ms: number) {
  * Names of the running WSL distributions of the environment. Uses the quiet listing, which only holds the names,
  * as the state shown by the verbose listing is translated to the language of Windows.
  */
-async function listRunningWslDistributions(environment: Environment): Promise<string[]> {
-    const baseName = await getImageBaseName(environment);
+async function listWslDistributions(environment: Environment, {running = false} = {}): Promise<string[]> {
+    const baseName = getWslBaseName(environment);
     let output = "";
-    // exits with a non-zero code if no distribution is running
-    await runSubprocess(WSL.command, ["--list", "--running", "--quiet"], (msg, isStderr) => {
+    // exits with a non-zero code if no distribution is registered or running
+    await runSubprocess(WSL.command, ["--list", ...(running ? ["--running"] : []), "--quiet"], (msg, isStderr) => {
         if (!isStderr) {
             output += msg;
         }
@@ -929,6 +939,79 @@ async function listRunningWslDistributions(environment: Environment): Promise<st
     // eslint-disable-next-line no-control-regex
     return output.replace(/\x00/g, "").split(/\r?\n/).map((line) => line.trim())
         .filter((name) => name.startsWith(baseName));
+}
+
+function listRunningWslDistributions(environment: Environment): Promise<string[]> {
+    return listWslDistributions(environment, {running: true});
+}
+
+function removeDirectory(directory: string) {
+    try {
+        fs.rmSync(directory, {recursive: true, force: true});
+    } catch (error) {
+        logToDevTools(`Could not remove ${directory}: ${error}`, 'warn');
+    }
+}
+
+/**
+ * Move the WSL distributions out of the folder where versions up to 1.0.1-rc.1 stored them: the installation folder
+ * of Squirrel, which Squirrel deletes when the application is installed again. That failed on the locked disk of a
+ * running distribution, or would have deleted the disk of a registered distribution.
+ * A distribution is moved with `wsl --manage --move`; if this WSL version cannot move it, it is unregistered and
+ * imported again when it is needed.
+ */
+async function migrateWslDistributions(environment: Environment) {
+    const legacyRoot = getLegacyWslDistributionRoot();
+    if (legacyRoot === null || !fs.existsSync(legacyRoot)) {
+        return;
+    }
+    const registered = await listWslDistributions(environment);
+    for (const distribution of fs.readdirSync(legacyRoot)) {
+        const legacyLocation = path.join(legacyRoot, distribution);
+        if (registered.includes(distribution)) {
+            const newLocation = path.join(getWslDistributionRoot(), distribution);
+            fs.mkdirSync(newLocation, {recursive: true});
+            await runSubprocess(WSL.command, ["--terminate", distribution]);
+            const moved = await runSubprocess(WSL.command, ["--manage", distribution, "--move", newLocation]);
+            if (moved === 0) {
+                logToDevTools(`Moved WSL distribution ${distribution} to ${newLocation}`);
+            } else {
+                logToDevTools(`Could not move WSL distribution ${distribution} (exit code ${moved}); unregistering it`, 'warn');
+                await runSubprocess(WSL.command, ["--unregister", distribution]);
+                removeDirectory(newLocation);
+            }
+        }
+        removeDirectory(legacyLocation);
+    }
+    if (fs.readdirSync(legacyRoot).length === 0) {
+        removeDirectory(legacyRoot);
+    }
+}
+
+let wslMigration: Promise<void> | null = null;
+
+/**
+ * Make sure the WSL distributions are migrated out of the installation folder. Runs once per start of the application.
+ */
+export function ensureWslDistributionsMigrated(): Promise<void> {
+    if (wslMigration === null) {
+        wslMigration = migrateWslDistributions(Environment.TACTIC).catch((error) => {
+            logToDevTools(`Could not migrate the WSL distributions: ${error}`, 'warn');
+        });
+    }
+    return wslMigration;
+}
+
+/**
+ * Unregister all WSL distributions of the environment and delete the folder with their disks, e.g., on uninstall.
+ * Does not depend on the selected backend, as distributions may remain from when WSL was selected.
+ */
+export async function removeWslDistributions(environment: Environment) {
+    for (const distribution of await listWslDistributions(environment)) {
+        logToDevTools(`Unregistering WSL distribution ${distribution}`);
+        await runSubprocess(WSL.command, ["--unregister", distribution]);
+    }
+    removeDirectory(getWslDistributionRoot());
 }
 
 /**
@@ -1241,6 +1324,7 @@ async function getAssociatedImagesDocker(environment: Environment): Promise<IIma
  * Identify images associated with the application at the WSL backend.
  */
 async function getAssociatedImagesWsl(environment: Environment): Promise<IImage[]> {
+    await ensureWslDistributionsMigrated();
     return new Promise<IImage[]>((resolve, reject) => {
         getImageBaseName(environment).then((baseName) => {
             wsl.listVerbose().then(async (distributions: { name: string }[]) => {
