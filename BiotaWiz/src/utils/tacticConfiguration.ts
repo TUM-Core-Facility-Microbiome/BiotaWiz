@@ -7,6 +7,7 @@ import {taskQueue} from "./taskQueue";
 import {logToSection, updateProgress} from "./logHandler";
 import {run} from "./backend";
 import {helpPages} from "./helpPages";
+import {getDatabaseDirectory} from "./helpers";
 import xlsx from 'node-xlsx';
 
 
@@ -276,7 +277,7 @@ export class TacticConfiguration {
             logToSection(LogSection.PREPARE_BACKEND, this.fastqDiscoveryMessage);
         }
 
-        const databaseDirectory = path.join(app.getPath("appData"), app.getName(), "resources", "databases")
+        const databaseDirectory = getDatabaseDirectory();
         // create database directory if it does not exist
         if (!fs.existsSync(databaseDirectory)) {
             fs.mkdirSync(databaseDirectory, {recursive: true});
@@ -479,6 +480,12 @@ export class TacticConfiguration {
                                 code: "F171",
                                 helpUrl: helpPages.F171,
                             },
+                        });
+                    } else if (statusCode == 172) {  // SILVA database could not be downloaded and no local copy exists
+                        updateProgress({
+                            step: "Running TACTIC",
+                            message: "Could not download the SILVA database. Make sure the pipeline has internet access",
+                            state: "error",
                         });
                     } else {
                         updateProgress({

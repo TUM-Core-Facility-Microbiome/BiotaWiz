@@ -29,6 +29,13 @@
             </div>
             <div>&nbsp;Backend connected</div>
           </div>
+          <div v-if="state.internetWarning" role="alert" class="border-l-4 px-3 py-2 mt-2 text-sm"
+               :class="state.internetWarning.severity === 'error'
+                 ? 'bg-red-100 border-red-500 text-red-800'
+                 : 'bg-yellow-100 border-yellow-500 text-yellow-800'">
+            <span class="font-bold">{{ state.internetWarning.title }}</span>
+            {{ state.internetWarning.detail }}
+          </div>
         </div>
         <div v-if="state.backendAvailable === false">
           <div class="flex">
@@ -95,6 +102,7 @@
 <script setup lang="ts">
 import {reactive} from "vue";
 import {TacticAnalysisMode} from "../../enums";
+import type {InternetWarning} from "../../utils/internetCheck";
 
 // inform about env change
 indexBridge.changeEnvironment(null);
@@ -104,7 +112,20 @@ const state = reactive({
   version: null as string | null,
   backendAvailable: null as boolean | null,
   backendName: null,
+  internetWarning: null as InternetWarning | null,
 });
+
+/**
+ * Warn before a run if the pipeline cannot reach the SILVA servers. Runs in the background and does not block the page.
+ */
+function checkInternetAccess() {
+  state.internetWarning = null;
+  indexBridge.checkInternetAccess().then((warning: InternetWarning | null) => {
+    state.internetWarning = warning;
+  }).catch((error: unknown) => {
+    console.log(`Could not check internet access: ${error}`);
+  });
+}
 
 function getName() {
   indexBridge.getName().then((name: string) => {
@@ -134,6 +155,7 @@ function getBackendInfo() {
     indexBridge.checkBackendConnection().then(() => {
       console.log("Successfully connected to backend");
       setBackendAvailable(true);
+      checkInternetAccess();
     }).catch(() => {
       console.log("Could not connect to backend");
       setBackendAvailable(false);

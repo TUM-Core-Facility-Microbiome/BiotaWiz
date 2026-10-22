@@ -2,6 +2,7 @@ import {app, BrowserWindow, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
     checkBackendConnection,
+    checkBackendInternetAccess,
     deleteAllDistributionTarFiles,
     deleteImage,
     getAssociatedImages,
@@ -31,6 +32,13 @@ import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 import {getVersionString} from "../utils/releasetag";
 import {getMachineThreads, getRecommendedThreads} from "../utils/machine";
+import {getDatabaseDirectory} from "../utils/helpers";
+import {
+    checkHostInternetAccess,
+    describeInternetStatus,
+    findLocalSilvaVersion,
+    SILVA_HOST_URLS
+} from "../utils/internetCheck";
 import {
     checkForUpdates,
     dismissUpdate,
@@ -109,6 +117,16 @@ ipcMain.handle("getBackend", () => {
 
 ipcMain.handle("checkBackendConnection", async () => {
     return checkBackendConnection();
+});
+
+ipcMain.handle("checkInternetAccess", async () => {
+    const [hostOnline, backendOnline] = await Promise.all([
+        checkHostInternetAccess(SILVA_HOST_URLS),
+        checkBackendInternetAccess(SILVA_HOST_URLS),
+    ]);
+    const localDatabaseVersion = findLocalSilvaVersion(getDatabaseDirectory());
+    logToDevTools(`Internet check: host ${hostOnline}, backend ${backendOnline}, local SILVA ${localDatabaseVersion}`);
+    return describeInternetStatus({hostOnline, backendOnline, localDatabaseVersion});
 });
 
 ipcMain.handle("getBackendVersion", async () => {

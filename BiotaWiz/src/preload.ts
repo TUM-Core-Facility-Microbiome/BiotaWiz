@@ -4,6 +4,7 @@ import {contextBridge, ipcRenderer} from "electron";
 import {Environment, TacticAnalysisMode, LogSection} from "./enums";
 import {logToDevTools} from "./utils/logHandler";
 import type {UpdateState} from "./utils/updater";
+import type {InternetWarning} from "./utils/internetCheck";
 
 const indexBridge = {
     // renderer to main
@@ -102,6 +103,9 @@ const indexBridge = {
     },
     checkBackendConnection: async () => {
         return ipcRenderer.invoke('checkBackendConnection');
+    },
+    checkInternetAccess: async (): Promise<InternetWarning | null> => {
+        return ipcRenderer.invoke('checkInternetAccess');
     },
     setBackendByType: async (backendType: string) => {
         return ipcRenderer.invoke('setBackendByType', backendType);

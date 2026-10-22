@@ -15,3 +15,16 @@ export const ANALYSIS_DONE_PREFIX = "Analysis done. Results directory: ";
 export function getAnnouncedAnalysisDirectory(message: string): string | null {
     return message.startsWith(ANALYSIS_DONE_PREFIX) ? message.slice(ANALYSIS_DONE_PREFIX.length) : null;
 }
+
+/**
+ * Logged by the pipeline when it cannot reach the SILVA server and uses a local copy, followed by its version.
+ * Must match SILVA_OFFLINE_PREFIX in the pipeline's processing_helper.py.
+ */
+export const DATABASE_OFFLINE_PREFIX = "Could not check for SILVA database updates. Using local SILVA database version: ";
+
+/**
+ * Get the version of the local SILVA database if the log message announces that it is used offline, else null.
+ */
+export function getAnnouncedOfflineDatabaseVersion(message: string): string | null {
+    return message.startsWith(DATABASE_OFFLINE_PREFIX) ? message.slice(DATABASE_OFFLINE_PREFIX.length).trim() : null;
+}

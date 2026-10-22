@@ -22,6 +22,7 @@ import {app} from "electron";
 import Dockerode from "dockerode";
 import {getLocalAppDataPath} from "./helpers";
 import * as child_process from "node:child_process";
+import {combineReachability, wgetExitCodeToReachability, wgetProbeArguments} from "./internetCheck";
 
 import wsl from "@endevr-io/wsl-api";
 import { windowsToWsl } from "@endevr-io/wsl-path";
@@ -160,6 +161,41 @@ export async function checkBackendConnection() {
                 throw new Error(`Backend ${backend.type} not supported`);
         }
     });
+}
+
+/**
+ * Check whether the pipeline can reach any of the URLs from inside the backend.
+ * For WSL, wget runs in any registered distribution of the application, as all WSL2 distributions share one network.
+ * @returns null if it cannot be checked inside the backend: for Docker, whose containers use the network of the host,
+ * and for WSL as long as no distribution is registered.
+ */
+export async function checkBackendInternetAccess(urls: string[]): Promise<boolean | null> {
+    const backend = await getBackend();
+    if (backend.type !== WSL.type) {
+        return null;
+    }
+    let distribution: string | undefined;
+    try {
+        const baseName = await getImageBaseName(Environment.TACTIC);
+        const distributions: { name: string }[] = await wsl.listVerbose();
+        distribution = distributions.find((distro) => distro.name.startsWith(baseName))?.name;
+    } catch (error) {
+        logToDevTools(`Could not list WSL distributions to check internet access: ${error}`);
+        return null;
+    }
+    if (distribution === undefined) {
+        return null;
+    }
+    const results = await Promise.all(urls.map(async (url) => {
+        try {
+            const code = await runSubprocess(backend.command, ["--distribution", distribution, "--", ...wgetProbeArguments(url)]);
+            logToDevTools(`Internet check from WSL for ${url} exited with code ${code}`);
+            return wgetExitCodeToReachability(code);
+        } catch {
+            return null;
+        }
+    }));
+    return combineReachability(results);
 }
 
 export async function resetToDefaultBackend() {
