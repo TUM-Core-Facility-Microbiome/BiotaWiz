@@ -22,6 +22,7 @@ import {app} from "electron";
 import Dockerode from "dockerode";
 import {getLocalAppDataPath} from "./helpers";
 import * as child_process from "node:child_process";
+import {combineReachability, wgetExitCodeToReachability, wgetProbeArguments} from "./internetCheck";
 
 import wsl from "@endevr-io/wsl-api";
 import { windowsToWsl } from "@endevr-io/wsl-path";
@@ -162,6 +163,41 @@ export async function checkBackendConnection() {
     });
 }
 
+/**
+ * Check whether the pipeline can reach any of the URLs from inside the backend.
+ * For WSL, wget runs in any registered distribution of the application, as all WSL2 distributions share one network.
+ * @returns null if it cannot be checked inside the backend: for Docker, whose containers use the network of the host,
+ * and for WSL as long as no distribution is registered.
+ */
+export async function checkBackendInternetAccess(urls: string[]): Promise<boolean | null> {
+    const backend = await getBackend();
+    if (backend.type !== WSL.type) {
+        return null;
+    }
+    let distribution: string | undefined;
+    try {
+        const baseName = await getImageBaseName(Environment.TACTIC);
+        const distributions: { name: string }[] = await wsl.listVerbose();
+        distribution = distributions.find((distro) => distro.name.startsWith(baseName))?.name;
+    } catch (error) {
+        logToDevTools(`Could not list WSL distributions to check internet access: ${error}`);
+        return null;
+    }
+    if (distribution === undefined) {
+        return null;
+    }
+    const results = await Promise.all(urls.map(async (url) => {
+        try {
+            const code = await runSubprocess(backend.command, ["--distribution", distribution, "--", ...wgetProbeArguments(url)]);
+            logToDevTools(`Internet check from WSL for ${url} exited with code ${code}`);
+            return wgetExitCodeToReachability(code);
+        } catch {
+            return null;
+        }
+    }));
+    return combineReachability(results);
+}
+
 export async function resetToDefaultBackend() {
     await setBackend(getDefaultBackend());
 }
@@ -229,6 +265,25 @@ export async function getCompatibleReleaseTagStrings(environment: Environment) {
 
 const RELEASES_PER_PAGE = 100;  // maximum allowed by the GitHub API
 const MAX_RELEASE_PAGES = 10;
+const RELEASE_QUERY_TIMEOUT_MS = 15 * 1000;  // give up on a page of the GitHub API after this time
+
+/**
+ * Turn errors of the release query into messages that can be shown to the user.
+ */
+export function describeReleaseQueryError(error: unknown): string {
+    // compare by name, as the DOMException thrown on timeout is not necessarily an instance of Error
+    const name = (error as { name?: string } | null)?.name;
+    if (name === 'TimeoutError') {
+        return `GitHub did not respond within ${RELEASE_QUERY_TIMEOUT_MS / 1000} seconds.`;
+    }
+    if (name === 'TypeError') {
+        // fetch() rejects with a TypeError on network failures; its cause holds the details, e.g., ENOTFOUND
+        const cause = (error as { cause?: { code?: string, message?: string } }).cause;
+        const detail = cause?.code ?? cause?.message;
+        return `Could not connect to GitHub${detail ? ` (${detail})` : ''}. Please check your internet connection.`;
+    }
+    return error instanceof Error ? error.message : String(error);
+}
 
 /**
  * Get all releases of the repository. The GitHub API returns them in pages, newest first.
@@ -238,9 +293,17 @@ async function queryAllReleases(owner: string, repo: string): Promise<GitHubRele
     for (let page = 1; page <= MAX_RELEASE_PAGES; page++) {
         const response = await fetch(
             `${GITHUB_API_BASE_URL}/repos/${owner}/${repo}/releases?per_page=${RELEASES_PER_PAGE}&page=${page}`,
-            { headers: { 'X-GitHub-Api-Version': '2022-11-28' } }
+            { headers: { 'X-GitHub-Api-Version': '2022-11-28' }, signal: AbortSignal.timeout(RELEASE_QUERY_TIMEOUT_MS) }
         );
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) {
+            // unauthenticated requests are limited to 60 per hour and IP address, which a shared network may exhaust
+            if ((response.status === 403 || response.status === 429) && response.headers?.get('x-ratelimit-remaining') === '0') {
+                const reset = Number(response.headers.get('x-ratelimit-reset'));
+                const retry = reset > 0 ? ` Please try again after ${new Date(reset * 1000).toLocaleTimeString()}.` : '';
+                throw new Error(`GitHub API rate limit reached (HTTP ${response.status}).${retry}`);
+            }
+            throw new Error(`HTTP ${response.status}`);
+        }
         const data: GitHubRelease[] = await response.json();
         releases.push(...data);
         if (data.length < RELEASES_PER_PAGE) {
@@ -250,9 +313,25 @@ async function queryAllReleases(owner: string, repo: string): Promise<GitHubRele
     return releases;
 }
 
+const RELEASE_CACHE_MS = 5 * 60 * 1000;  // reuse the release list for this long to stay within the GitHub rate limit
+const releaseCache = new Map<Environment, { tags: SemVer[], time: number }>();
+
+/**
+ * Forget the cached release lists, so the next query asks GitHub again.
+ */
+export function clearReleaseCache() {
+    releaseCache.clear();
+    releaseSelections.clear();
+}
+
 async function queryAvailableReleaseTags(environment: Environment) {
+    const cached = releaseCache.get(environment);
+    if (cached && Date.now() - cached.time < RELEASE_CACHE_MS) {
+        return [...cached.tags];  // copy, as callers sort the list in place
+    }
     const repo = getRepository(environment);
     try {
+        logToDevTools(`Querying releases of ${repo.owner}/${repo.repo}`);
         const data = await queryAllReleases(repo.owner, repo.repo);
         const availableTags = data.map((release) => {
             try {
@@ -265,16 +344,19 @@ async function queryAvailableReleaseTags(environment: Environment) {
                 return null;
             }
         }).filter((tag) => tag !== null) as SemVer[];
-        console.debug(`Repo offers ${availableTags.length} releases: ${availableTags.map((version: SemVer) => getVersionString(version)).join(', ')}`);
+        logToDevTools(`Repo offers ${availableTags.length} releases: ${availableTags.map((version: SemVer) => getVersionString(version)).join(', ')}`);
+        releaseCache.set(environment, {tags: [...availableTags], time: Date.now()});
         return availableTags;
     } catch (error) {
+        const message = describeReleaseQueryError(error);
+        logToDevTools(`Failed to query releases of ${repo.owner}/${repo.repo}: ${message}`, 'error');
         updateProgress({
             step: `Initializing ${environment} environment`,
-            message: `Failed to query available releases.`,
+            message: `Failed to query available releases: ${message}`,
             state: "error",
             error: { code: "RAPIOF", helpUrl: helpPages.RAPIOF },
         });
-        throw error;
+        throw new Error(message);
     }
 }
 
@@ -295,6 +377,10 @@ async function getLatestCompatibleImageReleaseTag(environment: Environment) {
     return new Promise<SemVer>((resolve, reject) => {
         getCompatibleImageReleaseTags(environment).then((compatibleTags) => {
             const latestTag = getLatestVersion(compatibleTags);
+            if (latestTag === undefined) {
+                reject(new Error(`No release of the pipeline is compatible with ${getAllowedRange(environment)}.`));
+                return;
+            }
             resolve(latestTag);
         }).catch((error) => {
             reject(error);
@@ -788,7 +874,16 @@ export async function initializeDockerBackend(environment: Environment, releaseT
     });
 }
 
+const STOP_TIMEOUT_MS = 30 * 1000;  // how long to wait for the pipeline to stop
+// set when the pipeline is stopped on request, so that the interrupted run is not reported as failed
+let terminationRequested = false;
+
+/**
+ * Stop the pipeline. Resolves only once it is verified that nothing of it is running anymore.
+ * @throws Error if the pipeline could not be stopped
+ */
 export async function terminateBackend(environment: Environment) {
+    terminationRequested = true;
     updateProgress({
         step: `Terminating ${environment} environment`,
         message: `Terminating...`,
@@ -800,7 +895,7 @@ export async function terminateBackend(environment: Environment) {
             await terminateDockerBackend();
             break;
         case WSL.type:
-            await terminateWslBackend();
+            await terminateWslBackend(environment);
             break;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
@@ -813,48 +908,97 @@ export async function terminateBackend(environment: Environment) {
     return;
 }
 
-async function terminateWslBackend() {
-    return new Promise<void>(async (resolve, reject) => {
-        console.log(`Number of running WSL main processes: ${runningWslMainProcesses.size}`)
-        if (runningWslMainProcesses.size == 0) {
-            console.log(`No WSL main processes running. Nothing to terminate.`);
-            resolve();
-        }
-        return await Promise.all(Array.from(runningWslMainProcesses).map(async (childProcess) => {
-            console.log(`Terminating process ${childProcess.pid}`);
-            const success = childProcess.kill();
-            if (success) {
-                resolve();
-            } else {
-                reject();
-            }
-        }));
-    });
+function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function terminateDockerBackend() {
-    return new Promise<void>(async (resolve, reject) => {
-        console.log(`Number of running containers: ${runningContainers.size}`)
-        if (runningContainers.size == 0) {
-            console.log(`No containers running. Nothing to terminate.`);
-            resolve();
+/**
+ * Names of the running WSL distributions of the environment. Uses the quiet listing, which only holds the names,
+ * as the state shown by the verbose listing is translated to the language of Windows.
+ */
+async function listRunningWslDistributions(environment: Environment): Promise<string[]> {
+    const baseName = await getImageBaseName(environment);
+    let output = "";
+    // exits with a non-zero code if no distribution is running
+    await runSubprocess(WSL.command, ["--list", "--running", "--quiet"], (msg, isStderr) => {
+        if (!isStderr) {
+            output += msg;
         }
-        return await Promise.all(Array.from(runningContainers).map(async (containerId) => {
-            console.log(`Stopping container ${containerId}`);
-            const container = docker.getContainer(containerId);
-            // try to stop the container for 10 seconds, then kill it
-            return await container.stop({t: 10}).catch(() => {
-                console.log(`Killing container ${containerId}`);
-                container.kill().then(() => {
-                    resolve();
-                }).catch(() => {
-                    reject();
-                });
-            }).then(() => {
-                resolve();
-            });
-        }));
-    })
+    });
+    // remove null bytes as WSL likes to output them
+    // eslint-disable-next-line no-control-regex
+    return output.replace(/\x00/g, "").split(/\r?\n/).map((line) => line.trim())
+        .filter((name) => name.startsWith(baseName));
+}
+
+/**
+ * Stop the pipeline in WSL. Killing the wsl.exe process that started the pipeline does not reliably stop the
+ * processes inside the distribution, so the distributions of the application are terminated, which stops all of them.
+ */
+async function terminateWslBackend(environment: Environment) {
+    for (const distribution of await listRunningWslDistributions(environment)) {
+        logToDevTools(`Terminating WSL distribution ${distribution}`);
+        const code = await runSubprocess(WSL.command, ["--terminate", distribution]);
+        if (code !== 0) {
+            logToDevTools(`wsl --terminate ${distribution} exited with code ${code}`, 'warn');
+        }
+    }
+    // the wsl.exe processes end with their distribution; kill any that are left
+    for (const childProcess of runningWslMainProcesses) {
+        logToDevTools(`Killing process ${childProcess.pid}`);
+        childProcess.kill();
+    }
+
+    // verify that nothing is running anymore
+    const deadline = Date.now() + STOP_TIMEOUT_MS;
+    let running = await listRunningWslDistributions(environment);
+    while (running.length > 0 || runningWslMainProcesses.size > 0) {
+        if (Date.now() > deadline) {
+            const left = running.length > 0 ? running.join(', ') : 'wsl.exe';
+            throw new Error(`The pipeline did not stop within ${STOP_TIMEOUT_MS / 1000} seconds (still running: ${left}).`);
+        }
+        await sleep(1000);
+        running = await listRunningWslDistributions(environment);
+    }
+    logToDevTools("Pipeline stopped: no WSL distribution of the application is running");
+}
+
+/**
+ * Whether the container is running; false if it was removed.
+ */
+async function isContainerRunning(container: Dockerode.Container) {
+    try {
+        return (await container.inspect()).State.Running;
+    } catch (error) {
+        if ((error as { statusCode?: number }).statusCode === 404) {
+            return false;  // removed, as containers are started with AutoRemove
+        }
+        throw error;
+    }
+}
+
+/**
+ * Stop the pipeline in Docker and verify that its containers are not running anymore.
+ */
+async function terminateDockerBackend() {
+    await Promise.all(Array.from(runningContainers).map(async (containerId) => {
+        const container = docker.getContainer(containerId);
+        logToDevTools(`Stopping container ${containerId}`);
+        try {
+            await container.stop({t: 10});  // SIGTERM, and SIGKILL after 10 seconds
+        } catch {
+            // already stopped or removed, or stopping failed: kill to make sure
+            await container.kill().catch(() => undefined);
+        }
+        const deadline = Date.now() + STOP_TIMEOUT_MS;
+        while (await isContainerRunning(container)) {
+            if (Date.now() > deadline) {
+                throw new Error(`The pipeline did not stop within ${STOP_TIMEOUT_MS / 1000} seconds (container ${containerId}).`);
+            }
+            await sleep(1000);
+        }
+        logToDevTools(`Pipeline stopped: container ${containerId} is not running`);
+    }));
 }
 
 /**
@@ -879,6 +1023,7 @@ export async function getFixedImageTagString(environment: Environment) {
 export async function setFixedImageTagString(environment: Environment, tag: string) {
     // might be null when latest compatible version strategy is selected
     console.log(`Setting fixed image version to ${tag}`)
+    releaseSelections.delete(environment);  // select again with the new strategy
     if (tag == null) {
         console.log(`Deleting fixed image version`);
         // delete any previously set fixed version
@@ -894,57 +1039,133 @@ export async function setFixedImageTagString(environment: Environment, tag: stri
 }
 
 /**
- * Get a fixed version of the image from storage or query GitHub for the latest compatible version.
+ * Get the newest installed image of the environment that is compatible, or null if there is none.
+ */
+async function getLatestInstalledCompatibleReleaseTag(environment: Environment): Promise<SemVer | null> {
+    let images: IImage[];
+    try {
+        images = await getAssociatedImages(environment);
+    } catch (error) {
+        logToDevTools(`Could not list installed images: ${error}`, 'warn');
+        return null;
+    }
+    const installedTags = images.flatMap((image) => {
+        try {
+            return [new SemVer(image.tag)];
+        } catch {
+            return [];  // e.g., an image tagged "latest"
+        }
+    });
+    const compatibleTags = getMatchingVersions(installedTags, getAllowedRange(environment));
+    return getLatestVersion(compatibleTags) ?? null;
+}
+
+/**
+ * Get the version to use: the fixed version from storage, or else the latest compatible release on GitHub.
+ * If GitHub cannot be queried, the newest compatible installed version is used, and a warning explains why.
+ */
+async function resolveReleaseTag(environment: Environment): Promise<{ releaseTag: SemVer, warning: string | null }> {
+    const fixedTag = getImageTag(environment);
+    if (fixedTag !== null) {
+        logToDevTools(`Expecting image version: ${getVersionString(fixedTag)}`);
+        return {releaseTag: fixedTag, warning: null};
+    }
+    logToDevTools("No image version specified in storage, querying GitHub for latest version");
+    try {
+        const releaseTag = await getLatestCompatibleImageReleaseTag(environment);
+        logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
+        return {releaseTag, warning: null};
+    } catch (error) {
+        const installedTag = await getLatestInstalledCompatibleReleaseTag(environment);
+        if (installedTag === null) {
+            throw error;
+        }
+        const reason = error instanceof Error ? error.message : String(error);
+        return {
+            releaseTag: installedTag,
+            warning: `Could not check for newer pipeline versions (${reason}). ` +
+                `Using the installed version v${getVersionString(installedTag)}.`,
+        };
+    }
+}
+
+export interface IReleaseSelection {
+    releaseTag: SemVer;
+    warning: string | null;  // set if the latest version could not be checked and an installed version is used
+}
+
+// the version selected for each environment; shared by all steps until the selection is made again
+const releaseSelections = new Map<Environment, Promise<IReleaseSelection>>();
+
+/**
+ * Check again which version of the environment to use, asking GitHub afresh, e.g., when the user starts the wizard.
+ * The selection is then used by all later steps, so that discovery, initialization and the run use the same version.
+ */
+export function selectReleaseTag(environment: Environment): Promise<IReleaseSelection> {
+    releaseCache.delete(environment);
+    const selection = resolveReleaseTag(environment);
+    releaseSelections.set(environment, selection);
+    selection.then(({releaseTag, warning}) => {
+        logToDevTools(`Selected ${environment} version v${getVersionString(releaseTag)}`);
+        if (warning) {
+            logToDevTools(warning, 'warn');
+        }
+    }, (error) => {
+        // forget a failed selection, so that the next step tries again
+        if (releaseSelections.get(environment) === selection) {
+            releaseSelections.delete(environment);
+        }
+        logToDevTools(`Could not select a ${environment} version: ${error}`, 'error');
+    });
+    return selection;
+}
+
+function getReleaseSelection(environment: Environment): Promise<IReleaseSelection> {
+    return releaseSelections.get(environment) ?? selectReleaseTag(environment);
+}
+
+/**
+ * Get the selected version: the fixed version from storage or the latest compatible version.
  */
 export async function getImageTagOrLatestCompatible(environment: Environment) {
-    let releaseTag = getImageTag(environment);
-    if (releaseTag === null) {
-        logToDevTools("No image version specified in storage, querying GitHub for latest version");
-        releaseTag = await getLatestCompatibleImageReleaseTag(environment);
-        logToDevTools(`Latest compatible version: ${getVersionString(releaseTag)}`);
-    } else {
-        logToDevTools(`Expecting image version: ${getVersionString(releaseTag)}`);
-    }
-    return releaseTag;
+    return (await getReleaseSelection(environment)).releaseTag;
 }
 
 /**
  * Prepare the backend by downloading and registering the image if necessary.
  */
 export async function initializeBackend(environment: Environment) {
-    return new Promise<void>((resolve, reject) => {
-        updateProgress({
-            step: `Initializing ${environment} environment`,
-            message: `Initializing ${environment} environment`,
-            state: "running",
-        });
+    const step = `Initializing ${environment} environment`;
+    updateProgress({step, message: step, state: "running"});
+    try {
         // get the version of the image
-        getImageTagOrLatestCompatible(environment).then(async (releaseTag) => {
-            // run initialization
-            // this will download and register the image if necessary
-            getBackend().then(async (backend) => {
-                switch (backend.type) {
-                    case DOCKER.type:
-                        logToDevTools(`Initializing Docker backend`);
-                        await initializeDockerBackend(environment, releaseTag);
-                        updateProgress({
-                            step: `Initializing ${environment} environment`,
-                            message: "Finished initializing Docker backend",
-                            state: "done",
-                        });
-                        resolve();
-                        break;
-                    case WSL.type:
-                        logToDevTools(`Initializing WSL backend`);
-                        await initializeWslBackend(environment, releaseTag);
-                        resolve();
-                        break;
-                    default:
-                        reject(`Backend ${backend.type} not supported`);
-                }
-            });
-        });
-    });
+        const {releaseTag, warning} = await getReleaseSelection(environment);
+        if (warning) {
+            logToDevTools(warning, 'warn');
+            logToSection(LogSection.PREPARE_BACKEND, `Warning: ${warning}`);
+        }
+        // this will download and register the image if necessary
+        const backend = await getBackend();
+        switch (backend.type) {
+            case DOCKER.type:
+                logToDevTools(`Initializing Docker backend`);
+                await initializeDockerBackend(environment, releaseTag);
+                updateProgress({step, message: "Finished initializing Docker backend", state: "done"});
+                break;
+            case WSL.type:
+                logToDevTools(`Initializing WSL backend`);
+                await initializeWslBackend(environment, releaseTag);
+                break;
+            default:
+                throw new Error(`Backend ${backend.type} not supported`);
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        logToDevTools(`${step} failed: ${message}`, 'error');
+        logToSection(LogSection.PREPARE_BACKEND, `${step} failed: ${message}`);
+        updateProgress({step, message: `Failed: ${message}`, state: "error"});
+        throw error;
+    }
 }
 
 /**
@@ -992,7 +1213,7 @@ export async function getAssociatedImages(environment: Environment): Promise<IIm
  * Identify images associated with the application at the Docker backend.
  */
 async function getAssociatedImagesDocker(environment: Environment): Promise<IImage[]> {
-    return new Promise<IImage[]>((resolve) => {
+    return new Promise<IImage[]>((resolve, reject) => {
         getImageBaseName(environment).then((baseName) => {
             // filter for images where the name starts with the base name
             docker.listImages().then(async (images: Dockerode.ImageInfo[]) => {
@@ -1011,8 +1232,8 @@ async function getAssociatedImagesDocker(environment: Environment): Promise<IIma
                     console.debug(`Found associated image: ${JSON.stringify(image)}`);
                 }
                 resolve(ret);
-            });
-        });
+            }).catch(reject);
+        }).catch(reject);
     });
 }
 
@@ -1020,7 +1241,7 @@ async function getAssociatedImagesDocker(environment: Environment): Promise<IIma
  * Identify images associated with the application at the WSL backend.
  */
 async function getAssociatedImagesWsl(environment: Environment): Promise<IImage[]> {
-    return new Promise<IImage[]>((resolve) => {
+    return new Promise<IImage[]>((resolve, reject) => {
         getImageBaseName(environment).then((baseName) => {
             wsl.listVerbose().then(async (distributions: { name: string }[]) => {
                 // filter for distributions where the name starts with the base name
@@ -1036,8 +1257,8 @@ async function getAssociatedImagesWsl(environment: Environment): Promise<IImage[
                     console.debug(`Found associated image: ${JSON.stringify(image)}`);
                 }
                 resolve(ret);
-            });
-        });
+            }).catch(reject);
+        }).catch(reject);
     });
 }
 
@@ -1121,15 +1342,21 @@ export async function run(
     options: IRunOptions = {binds: []},
     argumentList: string[]
 ) {
+    terminationRequested = false;
     const backend = await getBackend();
+    let statusCode: number;
     switch (backend.type) {
         case DOCKER.type:
-            return await runWithDocker(environment, entrypoint, argumentList, options);
+            statusCode = await runWithDocker(environment, entrypoint, argumentList, options);
+            break;
         case WSL.type:
-            return await runWithWsl(environment, entrypoint, argumentList, options);
+            statusCode = await runWithWsl(environment, entrypoint, argumentList, options);
+            break;
         default:
             throw new Error(`Backend ${backend.type} not supported`);
     }
+    // report a run stopped on request like one ended by SIGTERM, so that it is shown as terminated, not as failed
+    return terminationRequested ? 143 : statusCode;
 }
 
 /**

@@ -1,6 +1,6 @@
 import * as os from "os";
 import {Environment} from "../../../src/enums";
-import {getCompatibleReleaseTagStrings} from "../../../src/utils/backend";
+import {clearReleaseCache, getCompatibleReleaseTagStrings} from "../../../src/utils/backend";
 
 // backend.ts pulls in Electron and the settings storage, which cannot run outside of Electron
 jest.mock('electron', () => ({
@@ -37,6 +37,7 @@ const PAGES = [
 ];
 
 beforeEach(() => {
+    clearReleaseCache();
     global.fetch = jest.fn(async (url: string) => {
         const page = Number(new URL(url).searchParams.get('page'));
         return {ok: true, status: 200, json: async () => PAGES[page - 1] ?? []};
@@ -69,5 +70,31 @@ describe('getCompatibleReleaseTagStrings', () => {
     test('fails when GitHub returns an error', async () => {
         global.fetch = jest.fn().mockResolvedValue({ok: false, status: 403}) as jest.Mock;
         await expect(getCompatibleReleaseTagStrings(Environment.TACTIC)).rejects.toThrow('HTTP 403');
+    });
+
+    test('reports when the GitHub rate limit is reached', async () => {
+        const headers = new Map([['x-ratelimit-remaining', '0'], ['x-ratelimit-reset', '1792675200']]);
+        global.fetch = jest.fn().mockResolvedValue({ok: false, status: 403, headers}) as jest.Mock;
+        await expect(getCompatibleReleaseTagStrings(Environment.TACTIC)).rejects.toThrow(
+            /^GitHub API rate limit reached \(HTTP 403\)\. Please try again after /
+        );
+    });
+
+    test('gives up when GitHub does not respond in time', async () => {
+        global.fetch = jest.fn((url: string, init: RequestInit) => {
+            expect(init.signal).toBeInstanceOf(AbortSignal);
+            return Promise.reject(Object.assign(new Error('aborted'), {name: 'TimeoutError'}));
+        }) as jest.Mock;
+        await expect(getCompatibleReleaseTagStrings(Environment.TACTIC)).rejects.toThrow(
+            'GitHub did not respond within 15 seconds.'
+        );
+    });
+
+    test('names the cause of network errors', async () => {
+        const error = new TypeError('fetch failed', {cause: {code: 'ENOTFOUND'}});
+        global.fetch = jest.fn().mockRejectedValue(error) as jest.Mock;
+        await expect(getCompatibleReleaseTagStrings(Environment.TACTIC)).rejects.toThrow(
+            'Could not connect to GitHub (ENOTFOUND). Please check your internet connection.'
+        );
     });
 });

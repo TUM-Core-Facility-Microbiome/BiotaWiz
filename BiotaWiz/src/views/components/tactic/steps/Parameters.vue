@@ -248,22 +248,6 @@
                 >
               </div>
             </div>
-            <div class="mt-3">
-              <div>
-                <label for="filterboth_fastq_truncqual">
-                  <div class="text-sm font-medium">Truncate reads at quality score</div>
-                  <div class="text-xs font-mono text-gray-400">fastq_truncqual</div>
-                  <div class="text-xs text-gray-500">Truncate the read at the first position having quality score <= N, so that all remaining Q scores are >N.</div>
-                </label>
-                <input
-                    id="filterboth_fastq_truncqual"
-                    type="text"
-                    v-model="filterBothSidesArgs_fastq_truncqual"
-                    placeholder="default: 10"
-                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                >
-              </div>
-            </div>
           </div>
           <div class="pt-6">
             <div class="text-lg font-bold">Quality filtering: single-end reads</div>
@@ -282,22 +266,6 @@
                     type="text"
                     v-model="filterOneSideArgs_fastq_maxee_rate"
                     placeholder="default: 0.002"
-                    class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                >
-              </div>
-            </div>
-            <div class="mt-3">
-              <div>
-                <label for="filterone_fastq_truncqual">
-                  <div class="text-sm font-medium">Truncate reads at quality score</div>
-                  <div class="text-xs font-mono text-gray-400">fastq_truncqual</div>
-                  <div class="text-xs text-gray-500">Truncate the read at the first position having quality score <= N, so that all remaining Q scores are >N.</div>
-                </label>
-                <input
-                    id="filterone_fastq_truncqual"
-                    type="text"
-                    v-model="filterOneSideArgs_fastq_truncqual"
-                    placeholder="default: 10"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
               </div>
@@ -701,6 +669,7 @@ let mergePairsArgs_fastq_minmergelen = ref(200);
 let mergePairsArgs_fastq_maxmergelen = ref(600);
 // FilterBothSidesArgs
 let filterBothSidesArgs_fastq_maxee_rate = ref(0.002);
+// fastq_truncqual is not shown as the pipeline ignores it from v0.7.3 on, but it is still written to the argument file
 let filterBothSidesArgs_fastq_truncqual = ref(10);
 // FilterOneSideArgs
 let filterOneSideArgs_fastq_maxee_rate = ref(0.002);

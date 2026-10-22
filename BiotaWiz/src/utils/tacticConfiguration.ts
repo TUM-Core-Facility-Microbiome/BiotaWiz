@@ -7,10 +7,16 @@ import {taskQueue} from "./taskQueue";
 import {logToSection, updateProgress} from "./logHandler";
 import {run} from "./backend";
 import {helpPages} from "./helpPages";
+import {getDatabaseDirectory} from "./helpers";
 import xlsx from 'node-xlsx';
 
 
 const MAPPING_FILE_MODE: MappingFileFormat = MappingFileFormat.XLSX;
+
+/**
+ * Appended to the argument file. fastq_truncqual is still written but hidden in the parameters step.
+ */
+export const ARGUMENT_FILE_FOOTER = "# fastq_truncqual is muted by the pipeline version >=0.7.3 and has no effect.\n";
 
 export class TacticConfiguration {
     private analysisMode = TacticAnalysisMode.TIC;
@@ -276,7 +282,7 @@ export class TacticConfiguration {
             logToSection(LogSection.PREPARE_BACKEND, this.fastqDiscoveryMessage);
         }
 
-        const databaseDirectory = path.join(app.getPath("appData"), app.getName(), "resources", "databases")
+        const databaseDirectory = getDatabaseDirectory();
         // create database directory if it does not exist
         if (!fs.existsSync(databaseDirectory)) {
             fs.mkdirSync(databaseDirectory, {recursive: true});
@@ -480,6 +486,12 @@ export class TacticConfiguration {
                                 helpUrl: helpPages.F171,
                             },
                         });
+                    } else if (statusCode == 172) {  // SILVA database could not be downloaded and no local copy exists
+                        updateProgress({
+                            step: "Running TACTIC",
+                            message: "Could not download the SILVA database. Make sure the pipeline has internet access",
+                            state: "error",
+                        });
                     } else {
                         updateProgress({
                             step: "Running TACTIC",
@@ -658,7 +670,7 @@ export class TacticConfiguration {
 
     private writeParameterFile() {
         this.yamlFile = path.join(this.baseDirectory, 'TACTICPipeline_args.yml');
-        writeFile(this.yamlFile, stringify(this.parameters), (err) => {
+        writeFile(this.yamlFile, stringify(this.parameters) + ARGUMENT_FILE_FOOTER, (err) => {
             console.error(err);
         });
     }

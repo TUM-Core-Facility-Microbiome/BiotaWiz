@@ -12,7 +12,11 @@
           </p>
         </div>
         <div class="text-sm">
-          latest version: {{ latest }}
+          latest version: {{ latest ?? (loadError ? 'unknown' : 'checking...') }}
+        </div>
+        <div v-if="loadError" role="alert" class="rounded border-s-4 border-red-500 bg-red-50 p-3 text-sm text-red-800">
+          Could not check for pipeline versions: {{ loadError }}
+          <a @click="loadReleaseTags" class="underline cursor-pointer text-blue-500">Retry</a>
         </div>
         <div class="space-y-8">
           <div class="space-y-2">
@@ -56,6 +60,7 @@ const compatibleTagStrings = ref([]);
 const selectedTag = ref(null);
 const associatedImages = ref([]);
 const latest = ref(null);
+const loadError = ref<string | null>(null);
 
 const environment = Environment.TACTIC;
 
@@ -69,11 +74,16 @@ function loadFixedReleaseTag() {
 
 function loadReleaseTags() {
   loadFixedReleaseTag();
+  loadError.value = null;
   indexBridge.getCompatibleReleaseTagStrings(environment).then((tags: string[]) => {
     // reverse to get the latest release first
     tags.reverse();
     latest.value = tags[0];
     compatibleTagStrings.value = tags;
+  }).catch((error: Error) => {
+    console.error('Could not load pipeline versions', error);
+    // remove the prefix Electron adds to errors of IPC calls
+    loadError.value = String(error?.message ?? error).replace(/^Error invoking remote method '[^']*': (Error: )?/, '');
   });
 }
 

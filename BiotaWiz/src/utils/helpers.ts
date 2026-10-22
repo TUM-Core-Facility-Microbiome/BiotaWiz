@@ -12,6 +12,13 @@ import {byOS, platforms} from "./platform";
  *
  * @returns {string} The path to the user's application data directory.
  */
+/**
+ * Returns the directory with the pipeline's databases, mounted to /base/databases when running the pipeline.
+ */
+export function getDatabaseDirectory(): string {
+    return path.join(app.getPath("appData"), app.getName(), "resources", "databases");
+}
+
 export function getLocalAppDataPath(): string {
     return (byOS({
         [platforms.WINDOWS]: () => {

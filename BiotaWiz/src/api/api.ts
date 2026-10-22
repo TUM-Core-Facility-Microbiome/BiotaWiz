@@ -1,7 +1,9 @@
-import {app, BrowserWindow, ipcMain, shell} from 'electron';
+import {app, BrowserWindow, dialog, ipcMain, shell} from 'electron';
 import {getPlatform} from "../utils/platform";
 import {
     checkBackendConnection,
+    checkBackendInternetAccess,
+    clearReleaseCache,
     deleteAllDistributionTarFiles,
     deleteImage,
     getAssociatedImages,
@@ -9,6 +11,7 @@ import {
     getFixedImageTagString, getImageTagOrLatestCompatible,
     initializeBackend,
     resetToDefaultBackend,
+    selectReleaseTag,
     setBackendByType,
     setFixedImageTagString, terminateBackend
 } from "../utils/backend";
@@ -31,6 +34,13 @@ import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
 import {getVersionString} from "../utils/releasetag";
 import {getMachineThreads, getRecommendedThreads} from "../utils/machine";
+import {getDatabaseDirectory} from "../utils/helpers";
+import {
+    checkHostInternetAccess,
+    describeInternetStatus,
+    findLocalSilvaVersion,
+    SILVA_HOST_URLS
+} from "../utils/internetCheck";
 import {
     checkForUpdates,
     dismissUpdate,
@@ -111,6 +121,16 @@ ipcMain.handle("checkBackendConnection", async () => {
     return checkBackendConnection();
 });
 
+ipcMain.handle("checkInternetAccess", async () => {
+    const [hostOnline, backendOnline] = await Promise.all([
+        checkHostInternetAccess(SILVA_HOST_URLS),
+        checkBackendInternetAccess(SILVA_HOST_URLS),
+    ]);
+    const localDatabaseVersion = findLocalSilvaVersion(getDatabaseDirectory());
+    logToDevTools(`Internet check: host ${hostOnline}, backend ${backendOnline}, local SILVA ${localDatabaseVersion}`);
+    return describeInternetStatus({hostOnline, backendOnline, localDatabaseVersion});
+});
+
 ipcMain.handle("getBackendVersion", async () => {
     return getBackendVersion();
 });
@@ -159,6 +179,53 @@ ipcMain.handle("changeEnvironment", async (event, environment: Environment | nul
             window.webContents.send('envChange', environment, `v${vString}`);
         }
     }
+});
+
+/**
+ * Check which pipeline version to use when the user starts the wizard; later steps use this selection.
+ */
+ipcMain.handle("selectPipelineVersion", async (event, environment: Environment) => {
+    const {releaseTag, warning} = await selectReleaseTag(environment);
+    const version = getVersionString(releaseTag);
+    BrowserWindow.fromId(1)?.webContents.send('envChange', environment, `v${version}`);
+    return {version, pinned: await getFixedImageTagString(environment) !== null, warning};
+});
+
+/**
+ * Ask before starting over while a pipeline is being prepared or running, as leaving the wizard stops it.
+ * @returns true if the user may start over
+ */
+ipcMain.handle("confirmStartOver", async () => {
+    if (!taskQueue.isBusy()) {
+        clearReleaseCache();  // check the pipeline versions afresh
+        return true;
+    }
+    const options = {
+        type: 'warning' as const,
+        message: 'Start over?',
+        detail: `${app.getName()} is still preparing or running the pipeline. Starting over stops it.`,
+        buttons: ['Start over', 'Cancel'],
+        defaultId: 1,
+        cancelId: 1,
+    };
+    const window = BrowserWindow.fromId(1);
+    const {response} = window ? await dialog.showMessageBox(window, options) : await dialog.showMessageBox(options);
+    if (response !== 0) {
+        return false;
+    }
+    taskQueue.clear();  // do not start queued tasks, e.g., a run waiting for the initialization
+    try {
+        // stop the pipeline before leaving the wizard; resolves only once it is verified to be stopped
+        await terminateBackend(Environment.TACTIC);
+    } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        logToDevTools(`Could not stop the pipeline: ${detail}`, 'error');
+        const errorOptions = {type: 'error' as const, message: 'Could not stop the pipeline.', detail, buttons: ['OK']};
+        await (window ? dialog.showMessageBox(window, errorOptions) : dialog.showMessageBox(errorOptions));
+        return false;
+    }
+    clearReleaseCache();
+    return true;
 });
 
 ipcMain.handle("runMockProcess", async () => {

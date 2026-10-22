@@ -4,6 +4,7 @@ import {contextBridge, ipcRenderer} from "electron";
 import {Environment, TacticAnalysisMode, LogSection} from "./enums";
 import {logToDevTools} from "./utils/logHandler";
 import type {UpdateState} from "./utils/updater";
+import type {InternetWarning} from "./utils/internetCheck";
 
 const indexBridge = {
     // renderer to main
@@ -102,6 +103,9 @@ const indexBridge = {
     },
     checkBackendConnection: async () => {
         return ipcRenderer.invoke('checkBackendConnection');
+    },
+    checkInternetAccess: async (): Promise<InternetWarning | null> => {
+        return ipcRenderer.invoke('checkInternetAccess');
     },
     setBackendByType: async (backendType: string) => {
         return ipcRenderer.invoke('setBackendByType', backendType);
@@ -202,6 +206,12 @@ const indexBridge = {
     },
     openExternalLink: async (url: string) => {
         return ipcRenderer.invoke('openExternalLink', url);
+    },
+    confirmStartOver: async (): Promise<boolean> => {
+        return ipcRenderer.invoke('confirmStartOver');
+    },
+    selectPipelineVersion: async (environment: Environment): Promise<{ version: string, pinned: boolean, warning: string | null }> => {
+        return ipcRenderer.invoke('selectPipelineVersion', environment);
     },
     changeEnvironment: async (environment: Environment | null) => {
         return ipcRenderer.invoke('changeEnvironment', environment);

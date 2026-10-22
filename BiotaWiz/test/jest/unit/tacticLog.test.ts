@@ -1,5 +1,9 @@
 import {LineBuffer} from "../../../src/utils/lineBuffer";
-import {getAnnouncedAnalysisDirectory, PYTHON_LOGGER_REGEX} from "../../../src/views/components/tactic/tacticLog";
+import {
+    getAnnouncedAnalysisDirectory,
+    getAnnouncedOfflineDatabaseVersion,
+    PYTHON_LOGGER_REGEX
+} from "../../../src/views/components/tactic/tacticLog";
 
 const ANALYSIS_DONE = "2026-10-14 12:00:02 - analysis:analysis.py:1811 - INFO - ANALYSIS DONE\r\n";
 const ANNOUNCEMENT = "2026-10-14 12:00:02 - run_tactic:run_tactic.py:1173 - INFO - Analysis done. Results directory: fastq/Analysis_20261014120002\r\n";
@@ -58,5 +62,25 @@ describe('announcement of the analysis directory at the end of a run', () => {
 
     test('is not reported for other log messages', () => {
         expect(announcedDirectories([ANALYSIS_DONE])).toEqual([]);
+    });
+});
+
+describe('announcement of a local database used offline', () => {
+    function offlineDatabaseVersion(line: string) {
+        const m = PYTHON_LOGGER_REGEX.exec(line);
+        return m ? getAnnouncedOfflineDatabaseVersion(m.groups?.message ?? '') : null;
+    }
+
+    test('yields the version of the local database', () => {
+        expect(offlineDatabaseVersion(
+            "2026-10-22 12:00:02 - run_tactic:run_tactic.py:1320 - WARNING - " +
+            "Could not check for SILVA database updates. Using local SILVA database version: 138.2\r\n"
+        )).toBe('138.2');
+    });
+
+    test('is not reported for other log messages', () => {
+        expect(offlineDatabaseVersion(
+            "2026-10-22 12:00:02 - run_tactic:run_tactic.py:1320 - WARNING - Could not reach the SILVA server: timeout\r\n"
+        )).toBeNull();
     });
 });

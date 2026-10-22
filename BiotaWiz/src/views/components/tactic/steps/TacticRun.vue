@@ -6,6 +6,11 @@
       <br>
       {{ state.baseDir }}
     </div>
+    <div v-if="state.offlineDatabaseVersion" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 px-3 py-2 mt-2 text-sm" role="alert">
+      <span class="font-bold">Warning: </span>
+      Could not check for updates of the SILVA database because the pipeline has no internet access.
+      Using the local SILVA database version <strong>{{ state.offlineDatabaseVersion }}</strong>.
+    </div>
     <p>
       <div v-if="state.analysisDir">
         <div class="flex">
@@ -146,7 +151,7 @@
 <script setup lang="ts">
 import {defineExpose, ref, reactive, onActivated, watchEffect} from "vue";
 import {Environment, LogSection} from "../../../../enums";
-import {getAnnouncedAnalysisDirectory, PYTHON_LOGGER_REGEX} from "../tacticLog";
+import {getAnnouncedAnalysisDirectory, getAnnouncedOfflineDatabaseVersion, PYTHON_LOGGER_REGEX} from "../tacticLog";
 
 class TacticLogLine {
   level: string | null;
@@ -286,6 +291,7 @@ async function openDocumentationPreprocessing() {
 onActivated(() => {
   console.log("TACTIC run activated. Triggering run.");
   state.autoScroll = true;
+  state.offlineDatabaseVersion = null;
   getTacticBaseDirectory();
   // prepare the environment
   indexBridge.initializeEnvironment(Environment.TACTIC).then(() => {
@@ -308,6 +314,7 @@ onActivated(() => {
 const state = reactive({
   baseDir: null as string | null,
   analysisDir: null as string | null,  // signal that pipeline is done and wrote to analysis dir
+  offlineDatabaseVersion: null as string | null,  // set when the pipeline could not check for database updates
   autoScroll: true,
 });
 
@@ -343,6 +350,11 @@ function processLogLine(section: LogSection, logMessage: string) {
       if (analysisDir !== null) {
         state.analysisDir = analysisDir;
         indexBridge.publishTacticAnalysisDirectory(state.analysisDir);
+      }
+      // watch for the pipeline falling back to a local database because it is offline
+      const offlineDatabaseVersion = getAnnouncedOfflineDatabaseVersion(m.groups?.message ?? '');
+      if (offlineDatabaseVersion !== null) {
+        state.offlineDatabaseVersion = offlineDatabaseVersion;
       }
 
       const loggerName = m.groups?.name;

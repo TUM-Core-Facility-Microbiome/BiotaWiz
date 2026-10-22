@@ -3,7 +3,7 @@ import * as os from "os";
 import * as path from "path";
 import {parse} from "yaml";
 import {TacticAnalysisMode} from "../../../src/enums";
-import {TacticConfiguration} from "../../../src/utils/tacticConfiguration";
+import {ARGUMENT_FILE_FOOTER, TacticConfiguration} from "../../../src/utils/tacticConfiguration";
 
 // tacticConfiguration.ts pulls in Electron and the backend, which cannot run outside of Electron
 jest.mock('electron', () => ({
@@ -60,5 +60,14 @@ describe('argument file', () => {
         const args = await writtenArguments(TacticAnalysisMode.DE_NOVO);
         expect(args.ClusterZOTUsArgs).toMatchObject({abund_limit: expect.any(Number), sample_wise_correction: false});
         expect(args.DeNovoClusterOTUsArgs).toEqual({minsize: 8, abund_limit: 0.0025, sample_wise_correction: false});
+    });
+
+    test('still passes fastq_truncqual and ends with a comment that the pipeline mutes it', async () => {
+        const args = await writtenArguments(TacticAnalysisMode.TIC);
+        expect(args.FilterBothSidesArgs.fastq_truncqual).toBe(10);
+        expect(args.FilterOneSideArgs.fastq_truncqual).toBe(10);
+        const content = fs.readFileSync(path.join(baseDirectory, 'TACTICPipeline_args.yml'), 'utf8');
+        expect(content.endsWith(ARGUMENT_FILE_FOOTER)).toBe(true);
+        expect(ARGUMENT_FILE_FOOTER).toMatch(/^# fastq_truncqual .*>=0\.7\.3/);
     });
 });
