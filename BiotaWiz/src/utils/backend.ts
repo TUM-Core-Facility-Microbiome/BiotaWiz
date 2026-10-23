@@ -1275,6 +1275,67 @@ async function getLatestInstalledCompatibleReleaseTag(environment: Environment):
 }
 
 /**
+ * Whether the release of a version was removed from GitHub. Only true if the complete list of releases, including
+ * pre-releases, could be queried and has no release with the tag of the version; a failed query, an empty list or a
+ * list that might be incomplete say nothing, so that nothing is deleted by mistake.
+ * @returns null if it cannot be determined, e.g., without internet access
+ */
+async function isReleaseRemovedFromGitHub(environment: Environment, releaseTag: SemVer): Promise<boolean | null> {
+    const repo = getRepository(environment);
+    let releases: GitHubRelease[];
+    try {
+        releases = await queryAllReleases(repo.owner, repo.repo);
+    } catch (error) {
+        logToDevTools(`Could not check whether release v${getVersionString(releaseTag)} still exists: ` +
+            describeReleaseQueryError(error), 'warn');
+        return null;
+    }
+    if (releases.length === 0 || releases.length >= RELEASES_PER_PAGE * MAX_RELEASE_PAGES) {
+        return null;  // an empty list rather means a wrong or inaccessible repository; a full one might be cut off
+    }
+    const tag = `v${getVersionString(releaseTag)}`;
+    return !releases.some((release) => release.tag_name === tag);
+}
+
+/**
+ * Delete everything of a version from this computer: its WSL distribution with its folder and checksum record, the
+ * downloaded pipeline file with its record, and its Docker image.
+ * @throws Error if the WSL distribution could not be unregistered
+ */
+async function deleteVersionCompletely(environment: Environment, releaseTag: SemVer) {
+    const version = getVersionString(releaseTag);
+    const distribution = `${getWslBaseName(environment)}_${version}`;
+    let registered = false;
+    try {
+        registered = (await listWslDistributions(environment)).includes(distribution);
+    } catch {
+        // WSL is not available on this computer
+    }
+    if (registered) {
+        logToDevTools(`Unregistering WSL distribution ${distribution}`);
+        await runSubprocess(WSL.command, ["--terminate", distribution]);
+        await runSubprocess(WSL.command, ["--unregister", distribution]);
+        if ((await listWslDistributions(environment)).includes(distribution)) {
+            throw new Error(`Could not unregister the WSL distribution ${distribution}.`);
+        }
+    }
+    removeDirectory(path.join(getWslDistributionRoot(), distribution));
+    const file = path.join(getPipelineDownloadRoot(), `${distribution}.tar.gz`);
+    for (const leftover of [file, getDownloadRecordPath(file), `${file}.tmp`,
+        path.join(app.getPath('temp'), `${distribution}.tar.gz`)]) {  // the last one from versions up to 1.0.1-rc.3
+        removeFile(leftover);
+    }
+    if ((await getBackend()).type === DOCKER.type) {
+        try {
+            await deleteImageDocker({name: await getImageBaseName(environment), tag: version});
+        } catch (error) {
+            logToDevTools(`Could not delete the Docker image of v${version}, e.g., as it is not installed: ${error}`);
+        }
+    }
+    logToDevTools(`Deleted pipeline v${version} from this computer`);
+}
+
+/**
  * Get the version to use: the fixed version from storage, or else the latest compatible release on GitHub.
  * If GitHub cannot be queried, the newest compatible installed version is used, and a warning explains why.
  */
@@ -1282,6 +1343,15 @@ async function resolveReleaseTag(environment: Environment): Promise<{ releaseTag
     const fixedTag = getImageTag(environment);
     if (fixedTag !== null) {
         logToDevTools(`Expecting image version: ${getVersionString(fixedTag)}`);
+        if (await isReleaseRemovedFromGitHub(environment, fixedTag) === true) {
+            const version = getVersionString(fixedTag);
+            logToDevTools(`The pinned version v${version} was removed from GitHub; deleting it from this computer`, 'warn');
+            await deleteVersionCompletely(environment, fixedTag);
+            await deleteImageTag(environment);
+            throw new Error(`The pinned TACTIC pipeline version v${version} was removed from GitHub, so it was deleted ` +
+                `from this computer and is no longer pinned. Retry to use the latest version, or choose another ` +
+                `version on the version page.`);
+        }
         return {releaseTag: fixedTag, warning: null};
     }
     logToDevTools("No image version specified in storage, querying GitHub for latest version");
