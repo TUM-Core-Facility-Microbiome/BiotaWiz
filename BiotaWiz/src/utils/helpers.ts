@@ -37,6 +37,14 @@ export function getWslDistributionRoot(): string {
 }
 
 /**
+ * Returns the directory where the downloaded pipeline files (WSL images) and their checksum records are stored.
+ * Not the temp folder, which Windows cleans up on its own.
+ */
+export function getPipelineDownloadRoot(): string {
+    return path.join(getLocalDataPath(), 'downloads');
+}
+
+/**
  * Returns the directory where versions up to 1.0.1-rc.1 stored the WSL distributions, inside the installation folder
  * of Squirrel, or null if there is none.
  */

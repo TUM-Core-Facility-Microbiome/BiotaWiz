@@ -155,6 +155,7 @@ interface GitHubAsset {
     "state": string;
     "content_type": string;
     "size": number;
+    "digest"?: string | null;  // e.g., "sha256:1d27…", computed by GitHub; null for files uploaded before mid-2025
     "download_count": number;
     "created_at": string;
     "updated_at": string;

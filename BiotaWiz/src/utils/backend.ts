@@ -20,7 +20,8 @@ import {docker} from "./makeDockerConnection";
 import {helpPages} from "./helpPages";
 import {app} from "electron";
 import Dockerode from "dockerode";
-import {getLegacyWslDistributionRoot, getWslDistributionRoot} from "./helpers";
+import {getLegacyWslDistributionRoot, getPipelineDownloadRoot, getWslDistributionRoot} from "./helpers";
+import {decidePipelineFileAction, parseSha256Digest, readDigestRecord, sha256File, writeDigestRecord} from "./pipelineFile";
 import * as child_process from "node:child_process";
 import {combineReachability, wgetExitCodeToReachability, wgetProbeArguments} from "./internetCheck";
 
@@ -238,18 +239,6 @@ export function isTarballValid(filePath: string, expectedSize?: number): boolean
     }
 }
 
-/**
- * Ensure that the distribution tarball exists and is valid.
- * @param path
- * @param expectedSize
- * @throws Error if the tarball does not exist or is invalid.
- */
-function checkTarExists(path: string, expectedSize?: number) {
-    if (!isTarballValid(path, expectedSize)) {
-        throw new Error(`Distribution tarball does not exist or is invalid at ${path}`);
-    }
-}
-
 export async function getCompatibleReleaseTagStrings(environment: Environment) {
     return new Promise<string[]>((resolve, reject) => {
         getCompatibleImageReleaseTags(environment).then((tags) => {
@@ -298,7 +287,7 @@ async function queryAllReleases(owner: string, repo: string): Promise<GitHubRele
         );
         if (!response.ok) {
             // unauthenticated requests are limited to 60 per hour and IP address, which a shared network may exhaust
-            if ((response.status === 403 || response.status === 429) && response.headers?.get('x-ratelimit-remaining') === '0') {
+            if (isRateLimited(response)) {
                 const reset = Number(response.headers.get('x-ratelimit-reset'));
                 const retry = reset > 0 ? ` Please try again after ${new Date(reset * 1000).toLocaleTimeString()}.` : '';
                 throw new Error(`GitHub API rate limit reached (HTTP ${response.status}).${retry}`);
@@ -389,69 +378,111 @@ async function getLatestCompatibleImageReleaseTag(environment: Environment) {
     });
 }
 
-async function getImageReleaseAsset(environment: Environment, releaseTag: SemVer): Promise<{ url: string; size?: number }> {
-    const repo = getRepository(environment);
-    const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/tags/v${getVersionString(releaseTag)}`;
-    logToDevTools(`Querying GitHub for release v${getVersionString(releaseTag)} at ${RELEASE_URL}`);
-    try {
-        const response = await fetch(RELEASE_URL, {
-            headers: { 'X-GitHub-Api-Version': '2022-11-28' },
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data: GitHubRelease = await response.json();
-        const assets = data.assets;
-
-        logToDevTools(`Release has ${assets.length} assets attached. Searching for ${IMAGE_ASSET_NAME}`);
-        const tarball = assets.find((asset) => asset.name === IMAGE_ASSET_NAME);
-
-        if (tarball === undefined) {
-            updateProgress({
-                step: `Initializing ${environment} environment`,
-                message: `Release v${getVersionString(releaseTag)} is missing required asset.`,
-                state: "error",
-                error: { code: "RASMIS", helpUrl: helpPages.RASMIS },
-            });
-            throw new Error(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${getVersionString(releaseTag)}`);
-        }
-
-        const url = tarball.url || tarball.browser_download_url;
-        const size = (typeof tarball.size === 'number' && tarball.size > 0) ? tarball.size : undefined;
-        return { url, size };
-    } catch (error) {
-        updateProgress({
-            step: `Initializing ${environment} environment`,
-            message: `Failed to query release v${getVersionString(releaseTag)}.`,
-            state: "error",
-            error: { code: "RAPIOF", helpUrl: helpPages.RAPIOF },
-        });
-        throw error;
-    }
-}
-
-async function getImageReleaseAssetUrl(environment: Environment, releaseTag: SemVer): Promise<string> {
-    const asset = await getImageReleaseAsset(environment, releaseTag);
-    return asset.url;
+/**
+ * Thrown if GitHub cannot be reached to look up a release, e.g., without internet access.
+ */
+class ReleaseUnreachableError extends Error {
 }
 
 /**
- * Download the distribution tarball and places it to the expected path.
+ * Whether GitHub rejected the request because the limit for unauthenticated requests is reached.
  */
-async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, _path: string, expectedSize?: number) {
-    const asset = await getImageReleaseAsset(environment, releaseTag);
+function isRateLimited(response: Response) {
+    return (response.status === 403 || response.status === 429) && response.headers?.get('x-ratelimit-remaining') === '0';
+}
+
+interface IImageReleaseAsset {
+    url: string;
+    size?: number;
+    digest: string;  // SHA-256 that GitHub reports for the file
+}
+
+/**
+ * Look up the pipeline file (WSL image) of a release on GitHub, including the SHA-256 GitHub reports for it.
+ * @throws ReleaseUnreachableError if GitHub cannot be reached
+ * @throws Error if the release has no such file or GitHub reports no checksum for it
+ */
+async function getImageReleaseAsset(environment: Environment, releaseTag: SemVer): Promise<IImageReleaseAsset> {
+    const repo = getRepository(environment);
+    const version = getVersionString(releaseTag);
+    const RELEASE_URL = `${GITHUB_API_BASE_URL}/repos/${repo.owner}/${repo.repo}/releases/tags/v${version}`;
+    logToDevTools(`Querying GitHub for release v${version} at ${RELEASE_URL}`);
+    let response: Response;
+    try {
+        response = await fetch(RELEASE_URL, {
+            headers: { 'X-GitHub-Api-Version': '2022-11-28' },
+            signal: AbortSignal.timeout(RELEASE_QUERY_TIMEOUT_MS),
+        });
+    } catch (error) {
+        throw new ReleaseUnreachableError(describeReleaseQueryError(error));
+    }
+    if (isRateLimited(response)) {
+        throw new ReleaseUnreachableError(`GitHub API rate limit reached (HTTP ${response.status}).`);
+    }
+    if (!response.ok) {
+        throw new Error(`Could not look up release v${version} on GitHub (HTTP ${response.status}).`);
+    }
+    const data: GitHubRelease = await response.json();
+    logToDevTools(`Release has ${data.assets.length} assets attached. Searching for ${IMAGE_ASSET_NAME}`);
+    const tarball = data.assets.find((asset) => asset.name === IMAGE_ASSET_NAME);
+    if (tarball === undefined) {
+        updateProgress({
+            step: `Initializing ${environment} environment`,
+            message: `Release v${version} is missing required asset.`,
+            state: "error",
+            error: { code: "RASMIS", helpUrl: helpPages.RASMIS },
+        });
+        throw new Error(`Could not find tarball attached to release. Expected ${IMAGE_ASSET_NAME} at v${version}`);
+    }
+    const digest = parseSha256Digest(tarball.digest);
+    if (digest === null) {
+        throw new Error(`GitHub did not provide a checksum for ${IMAGE_ASSET_NAME} of release v${version}, ` +
+            `so it cannot be verified.`);
+    }
+    const url = tarball.url || tarball.browser_download_url;
+    const size = (typeof tarball.size === 'number' && tarball.size > 0) ? tarball.size : undefined;
+    return { url, size, digest };
+}
+
+/**
+ * Thrown if a downloaded pipeline file does not have the SHA-256 GitHub reports for it.
+ */
+class ChecksumMismatchError extends Error {
+}
+
+function removeFile(filePath: string) {
+    try {
+        fs.rmSync(filePath, {force: true});
+    } catch (error) {
+        logToDevTools(`Could not remove ${filePath}: ${error}`, 'warn');
+    }
+}
+
+/**
+ * Compute the SHA-256 of a pipeline file and show the progress.
+ */
+async function hashPipelineFile(environment: Environment, filePath: string) {
+    logToDevTools(`Computing SHA-256 of ${filePath}`);
+    return await sha256File(filePath, (fraction) => updateProgress({
+        step: `Initializing ${environment} environment`,
+        message: `Verifying pipeline file (${Math.round(fraction * 100)}%)`,
+        state: "running",
+    }));
+}
+
+/**
+ * Download the pipeline file, check that its SHA-256 matches the one GitHub reports, and store it with a record of
+ * that checksum. The download is only kept if it matches.
+ */
+async function downloadDistributionTar(environment: Environment, releaseTag: SemVer, asset: IImageReleaseAsset, expectedPath: string) {
     const tarballUrl = asset.url;
-    const targetSize = expectedSize ?? asset.size;
-    const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
+    const targetSize = asset.size;
     const tempPath = `${expectedPath}.tmp`;
+    fs.mkdirSync(path.dirname(expectedPath), {recursive: true});
     logToDevTools(`Downloading tarball from ${tarballUrl} to ${expectedPath}`);
 
     // If a stale temporary file exists, delete it before starting
-    if (fs.existsSync(tempPath)) {
-        try {
-            fs.unlinkSync(tempPath);
-        } catch (e) {
-            logToDevTools(`Failed to remove stale temp file ${tempPath}: ${e}`);
-        }
-    }
+    removeFile(tempPath);
 
     let response: Response;
     try {
@@ -491,9 +522,7 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
         }
     } catch (error) {
         writer.destroy();
-        if (fs.existsSync(tempPath)) {
-            fs.unlinkSync(tempPath);
-        }
+        removeFile(tempPath);
         updateProgress({
             step: `Initializing ${environment} environment`,
             message: `Failed to download distribution files.`,
@@ -510,9 +539,7 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
 
     // Verify stream completed with non-zero bytes
     if (loaded === 0) {
-        if (fs.existsSync(tempPath)) {
-            fs.unlinkSync(tempPath);
-        }
+        removeFile(tempPath);
         updateProgress({
             step: `Initializing ${environment} environment`,
             message: `Failed to download distribution files (empty file).`,
@@ -523,9 +550,7 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
 
     // Verify total byte count if total was known
     if (total > 0 && loaded !== total) {
-        if (fs.existsSync(tempPath)) {
-            fs.unlinkSync(tempPath);
-        }
+        removeFile(tempPath);
         updateProgress({
             step: `Initializing ${environment} environment`,
             message: `Failed to download distribution files (incomplete download).`,
@@ -536,9 +561,7 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
 
     // Validate the completed temp file format and size before committing
     if (!isTarballValid(tempPath, total > 0 ? total : undefined)) {
-        if (fs.existsSync(tempPath)) {
-            fs.unlinkSync(tempPath);
-        }
+        removeFile(tempPath);
         updateProgress({
             step: `Initializing ${environment} environment`,
             message: `Downloaded distribution file is invalid or corrupt.`,
@@ -547,12 +570,72 @@ async function downloadDistributionTar(environment: Environment, releaseTag: Sem
         throw new Error(`Downloaded distribution file is not a valid gzip tarball.`);
     }
 
+    // keep the file only if it is exactly the file of the release
+    const digest = await hashPipelineFile(environment, tempPath);
+    if (digest !== asset.digest) {
+        removeFile(tempPath);
+        throw new ChecksumMismatchError(`The downloaded pipeline file v${getVersionString(releaseTag)} has the SHA-256 ` +
+            `${digest}, but GitHub reports ${asset.digest}.`);
+    }
     fs.renameSync(tempPath, expectedPath);
+    writeDigestRecord(getDownloadRecordPath(expectedPath), digest, path.basename(expectedPath));
+    logToDevTools(`Downloaded and verified ${expectedPath} (SHA-256 ${digest})`);
 }
 
+/**
+ * Download and verify the pipeline file, and try once more if the checksum does not match.
+ */
+async function downloadVerifiedPipelineFile(environment: Environment, releaseTag: SemVer, asset: IImageReleaseAsset, expectedPath: string) {
+    try {
+        await downloadDistributionTar(environment, releaseTag, asset, expectedPath);
+    } catch (error) {
+        if (!(error instanceof ChecksumMismatchError)) {
+            throw error;
+        }
+        logToDevTools(`${error.message} Downloading again.`, 'warn');
+        await downloadDistributionTar(environment, releaseTag, asset, expectedPath);
+    }
+}
+
+/**
+ * Path of the downloaded pipeline file (WSL image) of a version.
+ */
 async function getExpectedDistributionTarPath(environment: Environment, releaseTag: SemVer) {
-    const appDataDirectory = app.getPath('temp');
-    return path.join(appDataDirectory, `${await getImageName(environment, releaseTag)}.tar.gz`);
+    return path.join(getPipelineDownloadRoot(), `${await getImageName(environment, releaseTag)}.tar.gz`);
+}
+
+/**
+ * Path of the record holding the SHA-256 the downloaded file was verified with.
+ */
+function getDownloadRecordPath(filePath: string) {
+    return `${filePath}.sha256`;
+}
+
+/**
+ * Path of the record holding the SHA-256 of the file a WSL distribution was registered from.
+ */
+async function getRegistrationRecordPath(environment: Environment, releaseTag: SemVer) {
+    return path.join(getWslDistributionRoot(), await getImageName(environment, releaseTag), 'source.sha256');
+}
+
+/**
+ * Versions up to 1.0.1-rc.3 downloaded the pipeline file to the temp folder. Move such a file to the download folder,
+ * where it is verified before it is used.
+ */
+function moveLegacyDownload(expectedPath: string) {
+    const legacyPath = path.join(app.getPath('temp'), path.basename(expectedPath));
+    if (!fs.existsSync(legacyPath) || fs.existsSync(expectedPath)) {
+        return;
+    }
+    try {
+        fs.mkdirSync(path.dirname(expectedPath), {recursive: true});
+        fs.copyFileSync(legacyPath, expectedPath);  // the folders may be on different drives
+        fs.rmSync(legacyPath, {force: true});
+        logToDevTools(`Moved ${legacyPath} to ${expectedPath}`);
+    } catch (error) {
+        logToDevTools(`Could not move ${legacyPath}: ${error}`, 'warn');
+        removeFile(expectedPath);
+    }
 }
 
 async function getDistributionInstallLocation(environment: Environment, releaseTag: SemVer) {
@@ -569,56 +652,25 @@ async function getDistributionInstallLocation(environment: Environment, releaseT
 }
 
 /**
- * Get the path of the image tarball. If it does not exist, download it.
- *
- * @returns The path of the distribution tarball.
- */
-export async function getImageTarball(environment: Environment, releaseTag: SemVer) {
-    const expectedPath = await getExpectedDistributionTarPath(environment, releaseTag);
-    const asset = await getImageReleaseAsset(environment, releaseTag);
-
-    updateProgress({
-        step: `Initializing ${environment} environment`,
-        message: `Getting distribution files`,
-        state: "running",
-    });
-
-    if (fs.existsSync(expectedPath)) {
-        if (isTarballValid(expectedPath, asset.size)) {
-            logToDevTools(`Valid distribution tarball already exists at ${expectedPath}`);
-        } else {
-            logToDevTools(`Existing tarball at ${expectedPath} is invalid or incomplete. Removing and re-downloading.`);
-            try {
-                fs.unlinkSync(expectedPath);
-            } catch (err) {
-                logToDevTools(`Failed to delete invalid tarball at ${expectedPath}: ${err}`);
-            }
-            await downloadDistributionTar(environment, releaseTag, expectedPath, asset.size);
-        }
-    } else {
-        await downloadDistributionTar(environment, releaseTag, expectedPath, asset.size);
-    }
-
-    checkTarExists(expectedPath, asset.size);
-
-    return expectedPath;
-}
-
-/**
- * Delete all cached distribution tarballs for an environment from the temp directory.
- * Removes both completed (.tar.gz) and in-progress (.tar.gz.tmp) files.
- * @returns The number of files deleted.
+ * Delete all downloaded pipeline files of an environment, with their checksum records and unfinished downloads.
+ * Also removes files that versions up to 1.0.1-rc.3 left in the temp folder.
+ * @returns The number of pipeline files deleted.
  */
 export async function deleteAllDistributionTarFiles(environment: Environment): Promise<number> {
-    const tempDir = app.getPath('temp');
-    const repo = getRepository(environment);
-    const prefix = `${repo.owner}.${repo.repo}_`;
+    const prefix = `${getWslBaseName(environment)}_`;
     let count = 0;
-    for (const file of fs.readdirSync(tempDir)) {
-        if (file.startsWith(prefix) && (file.endsWith('.tar.gz') || file.endsWith('.tar.gz.tmp'))) {
-            fs.unlinkSync(path.join(tempDir, file));
-            logToDevTools(`Deleted cached tarball: ${file}`);
-            count++;
+    for (const directory of [getPipelineDownloadRoot(), app.getPath('temp')]) {
+        if (!fs.existsSync(directory)) {
+            continue;
+        }
+        for (const file of fs.readdirSync(directory)) {
+            if (file.startsWith(prefix) && /\.tar\.gz(\.tmp|\.sha256)?$/.test(file)) {
+                fs.unlinkSync(path.join(directory, file));
+                logToDevTools(`Deleted cached file: ${file}`);
+                if (file.endsWith('.tar.gz')) {
+                    count++;
+                }
+            }
         }
     }
     return count;
@@ -627,9 +679,8 @@ export async function deleteAllDistributionTarFiles(environment: Environment): P
 export async function deleteTar(image: IImage) {
     const semVer = semVerFromGitHubTag(`v${image.tag}`);
     const tarPath = await getExpectedDistributionTarPath(Environment.TACTIC, semVer);
-    if (fs.existsSync(tarPath)) {
-        fs.unlinkSync(tarPath);
-    }
+    removeFile(tarPath);
+    removeFile(getDownloadRecordPath(tarPath));
 }
 
 export async function getDistroWslVersion(distribution: string) {
@@ -654,10 +705,12 @@ function runWslImport(distributionName: string, installLocation: string, tarBall
         );
 
         proc.stdout?.on("data", (buf: Buffer) => {
+            // eslint-disable-next-line no-control-regex
             const msg = buf.toString("utf8").replace(/\x00/g, "");
             logToDevTools(msg);
         });
         proc.stderr?.on("data", (buf: Buffer) => {
+            // eslint-disable-next-line no-control-regex
             const msg = buf.toString("utf8").replace(/\x00/g, "");
             logToDevTools(msg);
         });
@@ -670,18 +723,11 @@ function runWslImport(distributionName: string, installLocation: string, tarBall
     });
 }
 
-
-export async function registerWslDistribution(environment: Environment, releaseTag: SemVer) {
-    let tarBall;
-    try {
-        tarBall = await getImageTarball(environment, releaseTag);
-    } catch {
-        return;
-    }
-
+/**
+ * Register the WSL distribution from a verified pipeline file and record the file's SHA-256 with it.
+ */
+async function registerWslDistribution(environment: Environment, releaseTag: SemVer, tarBall: string, digest: string) {
     const installLocation = await getDistributionInstallLocation(environment, releaseTag);
-
-    // import distribution
     const distributionName = await getImageName(environment, releaseTag);
     logToDevTools(`Importing distribution ${distributionName} from ${tarBall} to ${installLocation}`);
     updateProgress({
@@ -692,22 +738,98 @@ export async function registerWslDistribution(environment: Environment, releaseT
     try {
         await runWslImport(distributionName, installLocation, tarBall);
     } catch (error) {
-        logToDevTools(`WSL import failed for ${distributionName}: ${error}. Cleaning up tarball and install directory.`);
-        if (tarBall && fs.existsSync(tarBall)) {
-            try {
-                fs.unlinkSync(tarBall);
-            } catch (e) {
-                logToDevTools(`Failed to delete invalid tarball ${tarBall}: ${e}`);
-            }
-        }
-        if (fs.existsSync(installLocation)) {
-            try {
-                fs.rmSync(installLocation, { recursive: true, force: true });
-            } catch (e) {
-                logToDevTools(`Failed to clean up install location ${installLocation}: ${e}`);
-            }
-        }
+        logToDevTools(`WSL import failed for ${distributionName}: ${error}. Cleaning up install directory.`);
+        removeDirectory(installLocation);
         throw error;
+    }
+    writeDigestRecord(await getRegistrationRecordPath(environment, releaseTag), digest, path.basename(tarBall));
+}
+
+/**
+ * Unregister a WSL distribution and delete its folder, e.g., because it was not registered from the expected file.
+ */
+async function unregisterWslDistribution(environment: Environment, releaseTag: SemVer) {
+    const distribution = await getImageName(environment, releaseTag);
+    logToDevTools(`Unregistering WSL distribution ${distribution}`);
+    updateProgress({
+        step: `Initializing ${environment} environment`,
+        message: `Removing unverified WSL distribution v${getVersionString(releaseTag)}`,
+        state: "running",
+    });
+    await runSubprocess(WSL.command, ["--terminate", distribution]);
+    await runSubprocess(WSL.command, ["--unregister", distribution]);
+    if ((await listWslDistributions(environment)).includes(distribution)) {
+        throw new Error(`Could not unregister the WSL distribution ${distribution}.`);
+    }
+    removeDirectory(path.join(getWslDistributionRoot(), distribution));
+}
+
+/**
+ * Make sure the registered WSL distribution of the version comes from the file GitHub publishes for the release,
+ * by comparing SHA-256 checksums. Downloads, registers or replaces the distribution as needed.
+ */
+async function prepareVerifiedWslDistribution(environment: Environment, releaseTag: SemVer) {
+    const step = `Initializing ${environment} environment`;
+    const version = getVersionString(releaseTag);
+    const distribution = await getImageName(environment, releaseTag);
+    const filePath = await getExpectedDistributionTarPath(environment, releaseTag);
+    moveLegacyDownload(filePath);
+
+    updateProgress({step, message: `Checking TACTIC pipeline v${version}`, state: "running"});
+    let asset: IImageReleaseAsset | null = null;
+    try {
+        asset = await getImageReleaseAsset(environment, releaseTag);
+    } catch (error) {
+        if (!(error instanceof ReleaseUnreachableError)) {
+            throw error;
+        }
+        logToDevTools(`Could not reach GitHub to verify pipeline v${version}: ${error.message}`, 'warn');
+    }
+
+    const registered = (await listWslDistributions(environment)).includes(distribution);
+    const fileDigest = fs.existsSync(filePath) ? await hashPipelineFile(environment, filePath) : null;
+    const decision = decidePipelineFileAction({
+        expectedDigest: asset?.digest ?? null,
+        registered,
+        registrationDigest: readDigestRecord(await getRegistrationRecordPath(environment, releaseTag)),
+        fileDigest,
+        downloadDigest: readDigestRecord(getDownloadRecordPath(filePath)),
+    }, version);
+    logToDevTools(`Pipeline v${version}: registered ${registered}, file ${fileDigest ?? 'missing'}, ` +
+        `expected ${asset?.digest ?? 'unknown (offline)'}: ${decision.action}`);
+
+    switch (decision.action) {
+        case 'use':
+            if (decision.devWarning) {
+                logToDevTools(decision.devWarning, 'warn');
+            }
+            if (decision.warning) {
+                logToDevTools(decision.warning, 'warn');
+                logToSection(LogSection.PREPARE_BACKEND, `Warning: ${decision.warning}`);
+            }
+            logToDevTools(`WSL distribution ${distribution} is registered and verified.`);
+            return;
+        case 'register':
+            await registerWslDistribution(environment, releaseTag, filePath, fileDigest!);
+            return;
+        case 'download':
+            removeFile(filePath);
+            removeFile(getDownloadRecordPath(filePath));
+            await downloadVerifiedPipelineFile(environment, releaseTag, asset!, filePath);
+            await registerWslDistribution(environment, releaseTag, filePath, asset!.digest);
+            return;
+        case 'reregister':
+            logToDevTools(`WSL distribution ${distribution} was not registered from the expected file; replacing it`, 'warn');
+            await unregisterWslDistribution(environment, releaseTag);
+            if (!decision.reuseFile) {
+                removeFile(filePath);
+                removeFile(getDownloadRecordPath(filePath));
+                await downloadVerifiedPipelineFile(environment, releaseTag, asset!, filePath);
+            }
+            await registerWslDistribution(environment, releaseTag, filePath, asset!.digest);
+            return;
+        case 'fail':
+            throw new Error(decision.error);
     }
 }
 
@@ -755,20 +877,9 @@ async function getImageName(environment: Environment, releaseTag: SemVer) {
 
 export async function initializeWslBackend(environment: Environment, releaseTag: SemVer) {
     await ensureWslDistributionsMigrated();
-    // check if the distribution is registered
     const distribution = await getImageName(environment, releaseTag);
-    const installed = await wsl.isInstalled(distribution);
-    if (installed) {
-        logToDevTools(`WSL distribution ${distribution} is registered.`);
-        updateProgress({
-            step: `Initializing ${environment} environment`,
-            message: `WSL distribution v${getVersionString(releaseTag)} is registered`,
-            state: "running",
-        });
-    } else {
-        logToDevTools(`WSL distribution ${distribution} is not registered.`);
-        await registerWslDistribution(environment, releaseTag);
-    }
+    // download, register or replace the distribution, so that it comes from the file of the release
+    await prepareVerifiedWslDistribution(environment, releaseTag);
 
     // ensure distribution is running on WSL2
     updateProgress({
@@ -1012,6 +1123,7 @@ export async function removeWslDistributions(environment: Environment) {
         await runSubprocess(WSL.command, ["--unregister", distribution]);
     }
     removeDirectory(getWslDistributionRoot());
+    removeDirectory(getPipelineDownloadRoot());
 }
 
 /**
@@ -1410,10 +1522,12 @@ async function deleteImageWsl(image: IImage) {
         const distroName = `${image.name}_${image.tag}`;
         wsl.unregister(distroName).then(() => {
             logToDevTools(`WSL distribution ${distroName} deleted`);
-            resolve();
         }).catch((error: Error) => {
             logToDevTools(`Error deleting WSL distribution ${distroName}: ${error}`);
             // somehow this fails even if the distribution is deleted
+        }).finally(() => {
+            // also remove the folder with the record of the file it was registered from
+            removeDirectory(path.join(getWslDistributionRoot(), distroName));
             resolve();
         });
     });
