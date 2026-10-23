@@ -4,6 +4,37 @@ All notable changes to BiotaWiz are recorded in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and BiotaWiz uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.2] - 2026-10-23
+
+Release candidates: 1.0.2-rc.1, 1.0.2-rc.2, 1.0.2-rc.3 (2026-10-23).
+
+### Upgrade note (Windows)
+BiotaWiz now only uses a pipeline environment that it has verified against GitHub. Environments set up
+by earlier versions have no record of this yet, so on the first start with internet access after the
+update, BiotaWiz sets up the pipeline environment again once. This downloads the pipeline file (about
+0.5 GB) unless a matching copy from an earlier download is still on the computer.
+
+### Added
+- The pipeline file (WSL image) is checked against the SHA-256 checksum that GitHub publishes for the
+  release. A download is only kept if it matches, and is downloaded once more otherwise. The pipeline
+  environment is only used if it was set up from the expected file; otherwise BiotaWiz replaces it.
+  Without internet access, BiotaWiz checks against the checksums it recorded earlier.
+- Developer setting in Settings > General to show release candidates of the pipeline, so that they can
+  be pinned on the version page for testing, with a warning that they might fail or stop BiotaWiz from
+  working. "Auto-update to latest version" keeps using stable releases.
+- If a pinned pipeline version was removed from GitHub, BiotaWiz deletes it completely from the
+  computer (its environment, the downloaded file and the checksum records), removes the pin and
+  explains why. Nothing is deleted if GitHub cannot be reached.
+
+### Changed
+- Downloaded pipeline files are stored in `%LOCALAPPDATA%\BiotaWiz-Data\downloads` instead of the
+  temp folder, which Windows cleans up on its own. Files left in the temp folder by earlier versions
+  are moved and verified.
+
+### Fixed
+- A failed download of the pipeline file was not reported, and setting up the pipeline environment
+  then failed later with an unclear message.
+
 ## [1.0.1] - 2026-10-23
 
 Release candidates: 1.0.1-rc.1, 1.0.1-rc.2, 1.0.1-rc.3 (2026-10-23).
@@ -104,6 +135,7 @@ Release candidate: 1.0.0-rc.1 (2026-10-15).
 
 Pre-release: 0.1.6-beta-1 (2026-05-21). Earlier changes are not recorded in this file.
 
-[1.0.1]: https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/compare/v1.0.0...version-1.0.1
+[1.0.2]: https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/compare/v0.1.6...v1.0.0
 [0.1.6]: https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/releases/tag/v0.1.6
