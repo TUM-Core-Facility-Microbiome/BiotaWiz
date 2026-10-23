@@ -1,6 +1,11 @@
 import * as os from "os";
 import {Environment} from "../../../src/enums";
-import {clearReleaseCache, getImageTagOrLatestCompatible, selectReleaseTag} from "../../../src/utils/backend";
+import {
+    clearReleaseCache,
+    getImageTagOrLatestCompatible,
+    getInstalledReleaseTagStrings,
+    selectReleaseTag
+} from "../../../src/utils/backend";
 import {getVersionString} from "../../../src/utils/releasetag";
 
 // backend.ts pulls in Electron and the settings storage, which cannot run outside of Electron
@@ -110,5 +115,20 @@ describe('selecting the pipeline version when the wizard starts', () => {
         await expect(selectReleaseTag(Environment.TACTIC)).rejects.toThrow('Could not connect to GitHub');
         githubOffers('v1.0.0');
         expect(await resolvedVersion()).toBe('1.0.0');
+    });
+});
+
+describe('installed pipeline versions, usable without internet access', () => {
+    test('lists the compatible installed versions from oldest to newest', async () => {
+        mockListImages.mockResolvedValue([
+            ...installedImages('0.7.6', '0.7.5', '2.0.0', 'latest'),
+            {RepoTags: ['ubuntu:24.04']},
+        ]);
+        expect(await getInstalledReleaseTagStrings(Environment.TACTIC)).toEqual(['0.7.5', '0.7.6']);
+    });
+
+    test('is empty if the installed images cannot be listed', async () => {
+        mockListImages.mockRejectedValue(new Error('Docker daemon not running'));
+        expect(await getInstalledReleaseTagStrings(Environment.TACTIC)).toEqual([]);
     });
 });

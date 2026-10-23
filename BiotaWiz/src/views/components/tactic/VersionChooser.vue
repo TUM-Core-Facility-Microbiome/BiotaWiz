@@ -12,10 +12,21 @@
           </p>
         </div>
         <div class="text-sm">
-          latest version: {{ latest ?? (loadError ? 'unknown' : 'checking...') }}
+          <template v-if="loadError && installedTagStrings.length > 0">latest installed version: {{ installedTagStrings[0] }}</template>
+          <template v-else>latest version: {{ latest ?? (loadError ? 'unknown' : 'checking...') }}</template>
         </div>
-        <div v-if="loadError" role="alert" class="rounded border-s-4 border-red-500 bg-red-50 p-3 text-sm text-red-800">
+        <div v-if="loadError && installedTagStrings.length > 0" role="alert"
+             class="rounded border-s-4 border-yellow-500 bg-yellow-100 p-3 text-sm text-yellow-800">
+          Could not check for new pipeline versions online: {{ loadError }}
+          <br>
+          You can continue offline with an installed version: <strong>{{ installedTagStrings.map((tag) => `v${tag}`).join(', ') }}</strong>.
+          Auto-update will use the newest installed version, v{{ installedTagStrings[0] }}.
+          <a @click="loadReleaseTags" class="underline cursor-pointer text-blue-500">Retry</a>
+        </div>
+        <div v-else-if="loadError" role="alert" class="rounded border-s-4 border-red-500 bg-red-50 p-3 text-sm text-red-800">
           Could not check for pipeline versions: {{ loadError }}
+          <br>
+          No pipeline version is installed yet, so internet access is needed to download one.
           <a @click="loadReleaseTags" class="underline cursor-pointer text-blue-500">Retry</a>
         </div>
         <div class="space-y-8">
@@ -29,7 +40,9 @@
                 v-model="selectedTag"
             >
               <option :value="null">auto-update to latest version every run</option>
-              <option v-for="option in compatibleTagStrings" :value="option" :key="option">always use version {{option}}</option>
+              <option v-for="option in versionOptions" :value="option" :key="option">
+                always use version {{ option }}{{ installedTagStrings.includes(option) ? ' (installed)' : (loadError ? ' (not installed)' : '') }}
+              </option>
             </select>
             <p id="ImageTag" class="text-xs text-muted-foreground">
               Using a different version of the pipeline might affect the results of the pipeline. You can pin a version
@@ -52,15 +65,26 @@
 </template>
 
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 import {Environment} from "../../../enums";
 import {useRouter} from "vue-router";
 
-const compatibleTagStrings = ref([]);
+const compatibleTagStrings = ref<string[]>([]);
+const installedTagStrings = ref<string[]>([]);  // usable without internet access, newest first
 const selectedTag = ref(null);
 const associatedImages = ref([]);
 const latest = ref(null);
 const loadError = ref<string | null>(null);
+
+// versions to pin: those available online, or the installed ones if the online check failed
+const versionOptions = computed(() => {
+  const options = loadError.value ? [...installedTagStrings.value] : [...compatibleTagStrings.value];
+  // keep showing a pinned version that is not in the list
+  if (typeof selectedTag.value === 'string' && !options.includes(selectedTag.value)) {
+    options.unshift(selectedTag.value);
+  }
+  return options;
+});
 
 const environment = Environment.TACTIC;
 
@@ -72,8 +96,17 @@ function loadFixedReleaseTag() {
   });
 }
 
+function loadInstalledReleaseTags() {
+  indexBridge.getInstalledReleaseTagStrings(environment).then((tags: string[]) => {
+    installedTagStrings.value = tags.reverse();  // newest first
+  }).catch((error: Error) => {
+    console.error('Could not list installed pipeline versions', error);
+  });
+}
+
 function loadReleaseTags() {
   loadFixedReleaseTag();
+  loadInstalledReleaseTags();
   loadError.value = null;
   indexBridge.getCompatibleReleaseTagStrings(environment).then((tags: string[]) => {
     // reverse to get the latest release first

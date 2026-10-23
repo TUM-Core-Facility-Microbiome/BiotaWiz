@@ -125,6 +125,9 @@ const indexBridge = {
     getCompatibleReleaseTagStrings: async (environment: Environment): Promise<string[]> => {
         return ipcRenderer.invoke('getCompatibleReleaseTagStrings', environment);
     },
+    getInstalledReleaseTagStrings: async (environment: Environment): Promise<string[]> => {
+        return ipcRenderer.invoke('getInstalledReleaseTagStrings', environment);
+    },
     getFixedImageTagString: async (environment: Environment): Promise<string> => {
         return ipcRenderer.invoke('getFixedImageTagString', environment);
     },

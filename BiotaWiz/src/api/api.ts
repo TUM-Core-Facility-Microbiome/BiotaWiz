@@ -8,6 +8,7 @@ import {
     deleteImage,
     getAssociatedImages,
     getCompatibleReleaseTagStrings,
+    getInstalledReleaseTagStrings,
     getFixedImageTagString, getImageTagOrLatestCompatible,
     initializeBackend,
     resetToDefaultBackend,
@@ -145,6 +146,10 @@ ipcMain.handle("resetBackend", async () => {
 
 ipcMain.handle("getCompatibleReleaseTagStrings", async (event, environment: Environment): Promise<string[]> => {
     return await getCompatibleReleaseTagStrings(environment);
+});
+
+ipcMain.handle("getInstalledReleaseTagStrings", async (event, environment: Environment): Promise<string[]> => {
+    return await getInstalledReleaseTagStrings(environment);
 });
 
 ipcMain.handle("getFixedImageTagString", async (event, environment: Environment) => {

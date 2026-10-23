@@ -1124,13 +1124,16 @@ export async function setFixedImageTagString(environment: Environment, tag: stri
 /**
  * Get the newest installed image of the environment that is compatible, or null if there is none.
  */
-async function getLatestInstalledCompatibleReleaseTag(environment: Environment): Promise<SemVer | null> {
+/**
+ * Get the installed images of the environment that are compatible, which can be used without internet access.
+ */
+async function getInstalledCompatibleReleaseTags(environment: Environment): Promise<SemVer[]> {
     let images: IImage[];
     try {
         images = await getAssociatedImages(environment);
     } catch (error) {
         logToDevTools(`Could not list installed images: ${error}`, 'warn');
-        return null;
+        return [];
     }
     const installedTags = images.flatMap((image) => {
         try {
@@ -1139,8 +1142,23 @@ async function getLatestInstalledCompatibleReleaseTag(environment: Environment):
             return [];  // e.g., an image tagged "latest"
         }
     });
-    const compatibleTags = getMatchingVersions(installedTags, getAllowedRange(environment));
-    return getLatestVersion(compatibleTags) ?? null;
+    return getMatchingVersions(installedTags, getAllowedRange(environment));
+}
+
+/**
+ * Get the versions of the installed compatible images, sorted from oldest to newest.
+ */
+export async function getInstalledReleaseTagStrings(environment: Environment): Promise<string[]> {
+    const tags = await getInstalledCompatibleReleaseTags(environment);
+    tags.sort((a, b) => a.compare(b));
+    return [...new Set(tags.map((tag) => getVersionString(tag)))];
+}
+
+/**
+ * Get the newest installed image of the environment that is compatible, or null if there is none.
+ */
+async function getLatestInstalledCompatibleReleaseTag(environment: Environment): Promise<SemVer | null> {
+    return getLatestVersion(await getInstalledCompatibleReleaseTags(environment)) ?? null;
 }
 
 /**
