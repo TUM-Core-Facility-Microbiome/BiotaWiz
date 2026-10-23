@@ -19,6 +19,21 @@
             Automatically check for updates
           </label>
           <br>
+          <h4 class="text-lg font-medium">Developer settings:</h4>
+          <label class="mt-2 flex items-center gap-2 text-sm">
+            <input type="checkbox" v-model="state.showPipelinePrereleases" @change="setShowPipelinePrereleases">
+            Show release candidates of the TACTIC pipeline
+          </label>
+          <p class="mt-1 text-xs text-muted-foreground">
+            Release candidates can then be selected on the pipeline version page.
+            "Auto-update to latest version" keeps using stable releases.
+          </p>
+          <div role="alert" class="mt-2 rounded border-s-4 border-red-500 bg-red-50 p-3 text-sm text-red-800">
+            <strong>Warning:</strong> release candidates are test versions of the pipeline. They might fail, give
+            wrong results, or stop {{ state.appName ?? 'the application' }} from working. Use them only for testing,
+            not for analyses you rely on.
+          </div>
+          <br>
           <h4 class="text-lg font-medium">Developed by:</h4>
           <p class="text-sm text-muted-foreground">GUI Application Author: Zeno Sewald</p>
           <p class="text-sm text-muted-foreground">Analysis pipeline author: Mohsen Pourjam</p>
@@ -43,6 +58,7 @@ const state = reactive({
   appVersion: null as string | null,
   updateStatus: 'idle' as UpdateState['status'],
   autoUpdateCheck: true,
+  showPipelinePrereleases: false,
 });
 
 const updateStatusText = computed(() => {
@@ -82,6 +98,14 @@ onUnmounted(removeUpdateStateListener);
 
 indexBridge.getAutoUpdateCheck().then((enabled: boolean) => {
   state.autoUpdateCheck = enabled;
+});
+
+function setShowPipelinePrereleases() {
+  indexBridge.setShowPipelinePrereleases(state.showPipelinePrereleases);
+}
+
+indexBridge.getShowPipelinePrereleases().then((enabled: boolean) => {
+  state.showPipelinePrereleases = enabled;
 });
 
 function updateState() {

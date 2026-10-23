@@ -2,6 +2,20 @@ import semver, {SemVer} from "semver";
 import {cmArgs} from "./command-line-arguments";
 import {Environment} from "../enums";
 
+// developer setting: offer release candidates (pre-releases) of the pipeline for pinning
+let showPrereleases = false;
+
+export function setShowPrereleases(enabled: boolean) {
+    showPrereleases = enabled;
+}
+
+/**
+ * Whether pre-releases of the pipeline are offered: set in the settings or by command line argument.
+ */
+export function prereleasesShown(): boolean {
+    return showPrereleases || cmArgs['allow-prerelease-tags'] === true;
+}
+
 export function getVersionString(version: SemVer) {
     return version.format();
 }
@@ -43,7 +57,7 @@ export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
     }
     return tags.filter((version: SemVer) =>
         semver.satisfies(version, range, {
-            includePrerelease: cmArgs['allow-prerelease-tags']  // default: false; set by command line argument
+            includePrerelease: prereleasesShown()
         })
     );
 }
@@ -53,7 +67,7 @@ export function getMatchingVersions(tags: SemVer[], allowedRange: string) {
  * @param tags
  */
 export function getLatestVersion(tags: SemVer[]) {
-    // filter out pre-releases
+    // filter out pre-releases; the setting only offers them for pinning, auto-update keeps using stable releases
     if (!cmArgs['allow-prerelease-tags']) {
         tags = tags.filter(tag => !tag.prerelease.length);
     }

@@ -12,6 +12,8 @@ import {taskQueue} from "./utils/taskQueue";
 import {cmArgs} from "./utils/command-line-arguments";
 import {logToDevTools} from "./utils/logHandler";
 import {isInstallingUpdate, startAutoCheck} from "./utils/updater";
+import {setShowPrereleases} from "./utils/releasetag";
+import {getShowPipelinePrereleases} from "./utils/storage";
 
 // set on uninstall; electron-squirrel-startup quits the app once the shortcuts are removed, so quitting waits for it
 let uninstallCleanup: Promise<void> | null = null;
@@ -82,6 +84,7 @@ app.on('ready', () => {
     }
     // move WSL distributions out of the installation folder, which Squirrel deletes on reinstall
     ensureWslDistributionsMigrated();
+    setShowPrereleases(getShowPipelinePrereleases());
     createWindow();
 });
 

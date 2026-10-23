@@ -21,6 +21,8 @@ import {handleFileOpen, handleFolderOpen} from "./dialogs";
 import {
     getAutoUpdateCheck,
     getBackend,
+    getShowPipelinePrereleases,
+    setShowPipelinePrereleases,
     getTacticBaseDirectory,
     setAutoUpdateCheck,
     setTacticBaseDirectory
@@ -33,7 +35,7 @@ import {taskQueue} from '../utils/taskQueue';
 import {tacticConfiguration} from "../utils/tacticConfiguration";
 import {openCommunityDiscussions, openIssues} from "../electron/browserLinks";
 import {logToDevTools} from "../utils/logHandler";
-import {getVersionString} from "../utils/releasetag";
+import {getVersionString, setShowPrereleases} from "../utils/releasetag";
 import {getMachineThreads, getRecommendedThreads} from "../utils/machine";
 import {getDatabaseDirectory} from "../utils/helpers";
 import {
@@ -142,6 +144,16 @@ ipcMain.handle("setBackendByType", async (event, backend) => {
 
 ipcMain.handle("resetBackend", async () => {
     return resetToDefaultBackend();
+});
+
+ipcMain.handle("settings:getShowPipelinePrereleases", () => {
+    return getShowPipelinePrereleases();
+});
+
+ipcMain.handle("settings:setShowPipelinePrereleases", async (event, enabled: boolean) => {
+    await setShowPipelinePrereleases(enabled);
+    setShowPrereleases(enabled);
+    clearReleaseCache();  // list the releases again with or without the release candidates
 });
 
 ipcMain.handle("getCompatibleReleaseTagStrings", async (event, environment: Environment): Promise<string[]> => {

@@ -1,6 +1,8 @@
 import * as os from "os";
 import {Environment} from "../../../src/enums";
 import {clearReleaseCache, getCompatibleReleaseTagStrings} from "../../../src/utils/backend";
+import {getLatestVersion, setShowPrereleases} from "../../../src/utils/releasetag";
+import {SemVer} from "semver";
 
 // backend.ts pulls in Electron and the settings storage, which cannot run outside of Electron
 jest.mock('electron', () => ({
@@ -96,5 +98,27 @@ describe('getCompatibleReleaseTagStrings', () => {
         await expect(getCompatibleReleaseTagStrings(Environment.TACTIC)).rejects.toThrow(
             'Could not connect to GitHub (ENOTFOUND). Please check your internet connection.'
         );
+    });
+});
+
+describe('release candidates (developer setting)', () => {
+    afterEach(() => {
+        setShowPrereleases(false);
+    });
+
+    test('are not offered by default', async () => {
+        expect(await getCompatibleReleaseTagStrings(Environment.TACTIC)).not.toContain('0.7.5-alpha');
+    });
+
+    test('are offered when shown, within the compatible range', async () => {
+        setShowPrereleases(true);
+        const tags = await getCompatibleReleaseTagStrings(Environment.TACTIC);
+        expect(tags).toEqual(['0.7.3', '0.7.4', '0.7.5-alpha', '0.7.5', '0.7.6', '0.8.0', '1.2.0', '1.9.9']);
+        expect(tags).not.toContain('0.7.2-beta-1');  // below v0.7.3
+    });
+
+    test('are not used by auto-update, even when shown', () => {
+        setShowPrereleases(true);
+        expect(getLatestVersion([new SemVer('1.0.1'), new SemVer('1.0.2-rc.1')])?.format()).toBe('1.0.1');
     });
 });

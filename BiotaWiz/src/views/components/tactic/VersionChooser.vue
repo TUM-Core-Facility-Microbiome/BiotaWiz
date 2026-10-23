@@ -12,7 +12,7 @@
           </p>
         </div>
         <div class="text-sm">
-          <template v-if="loadError && installedTagStrings.length > 0">latest installed version: {{ installedTagStrings[0] }}</template>
+          <template v-if="loadError && installedTagStrings.length > 0">latest installed version: {{ newestStableInstalled ?? installedTagStrings[0] }}</template>
           <template v-else>latest version: {{ latest ?? (loadError ? 'unknown' : 'checking...') }}</template>
         </div>
         <div v-if="loadError && installedTagStrings.length > 0" role="alert"
@@ -20,7 +20,7 @@
           Could not check for new pipeline versions online: {{ loadError }}
           <br>
           You can continue offline with an installed version: <strong>{{ installedTagStrings.map((tag) => `v${tag}`).join(', ') }}</strong>.
-          Auto-update will use the newest installed version, v{{ installedTagStrings[0] }}.
+          <template v-if="newestStableInstalled">Auto-update will use the newest installed version, v{{ newestStableInstalled }}.</template>
           <a @click="loadReleaseTags" class="underline cursor-pointer text-blue-500">Retry</a>
         </div>
         <div v-else-if="loadError" role="alert" class="rounded border-s-4 border-red-500 bg-red-50 p-3 text-sm text-red-800">
@@ -41,7 +41,7 @@
             >
               <option :value="null">auto-update to latest version every run</option>
               <option v-for="option in versionOptions" :value="option" :key="option">
-                always use version {{ option }}{{ installedTagStrings.includes(option) ? ' (installed)' : (loadError ? ' (not installed)' : '') }}
+                always use version {{ option }}{{ isPrerelease(option) ? ' (release candidate)' : '' }}{{ installedTagStrings.includes(option) ? ' (installed)' : (loadError ? ' (not installed)' : '') }}
               </option>
             </select>
             <p id="ImageTag" class="text-xs text-muted-foreground">
@@ -76,6 +76,9 @@ const associatedImages = ref([]);
 const latest = ref(null);
 const loadError = ref<string | null>(null);
 
+// auto-update falls back to the newest installed stable release
+const newestStableInstalled = computed(() => installedTagStrings.value.find((tag) => !isPrerelease(tag)) ?? null);
+
 // versions to pin: those available online, or the installed ones if the online check failed
 const versionOptions = computed(() => {
   const options = loadError.value ? [...installedTagStrings.value] : [...compatibleTagStrings.value];
@@ -87,6 +90,11 @@ const versionOptions = computed(() => {
 });
 
 const environment = Environment.TACTIC;
+
+// versions like 1.0.2-rc.1 are pre-releases
+function isPrerelease(version: string) {
+  return version.includes('-');
+}
 
 function loadFixedReleaseTag() {
   indexBridge.getFixedImageTagString(environment).then((tag: string) => {
@@ -111,7 +119,8 @@ function loadReleaseTags() {
   indexBridge.getCompatibleReleaseTagStrings(environment).then((tags: string[]) => {
     // reverse to get the latest release first
     tags.reverse();
-    latest.value = tags[0];
+    // auto-update uses the latest stable release, also when release candidates are shown
+    latest.value = tags.find((tag) => !isPrerelease(tag)) ?? null;
     compatibleTagStrings.value = tags;
   }).catch((error: Error) => {
     console.error('Could not load pipeline versions', error);

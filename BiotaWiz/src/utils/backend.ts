@@ -8,6 +8,7 @@ import {
     getLatestVersion,
     getMatchingVersions,
     getVersionString,
+    prereleasesShown,
     semVerFromGitHubTag
 } from "./releasetag";
 import {logToDevTools, logToSection, updateProgress} from "./logHandler";
@@ -325,7 +326,7 @@ async function queryAvailableReleaseTags(environment: Environment) {
         const data = await queryAllReleases(repo.owner, repo.repo);
         const availableTags = data.map((release) => {
             try {
-                if (!cmArgs['allow-prerelease-tags']) {
+                if (!prereleasesShown()) {
                     if (release.prerelease) return null;
                 }
                 // use the tag, not the release title: the image and its download are looked up by tag

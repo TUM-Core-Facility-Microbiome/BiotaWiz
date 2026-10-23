@@ -26,6 +26,12 @@ const indexBridge = {
     dismissUpdate: async (): Promise<void> => {
         return ipcRenderer.invoke('update:dismiss');
     },
+    getShowPipelinePrereleases: async (): Promise<boolean> => {
+        return ipcRenderer.invoke('settings:getShowPipelinePrereleases');
+    },
+    setShowPipelinePrereleases: async (enabled: boolean): Promise<void> => {
+        return ipcRenderer.invoke('settings:setShowPipelinePrereleases', enabled);
+    },
     getAutoUpdateCheck: async (): Promise<boolean> => {
         return ipcRenderer.invoke('update:getAutoCheck');
     },

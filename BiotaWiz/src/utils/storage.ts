@@ -169,6 +169,26 @@ export function setAutoUpdateCheck(enabled: boolean) {
 }
 
 /**
+ * Developer setting: whether release candidates (pre-releases) of the pipeline are offered. Disabled by default.
+ */
+export function getShowPipelinePrereleases(): boolean {
+    const setting = jsonStorage.getSync('showPipelinePrereleases') as { enabled?: boolean };
+    return setting?.enabled === true;
+}
+
+export function setShowPipelinePrereleases(enabled: boolean) {
+    return new Promise<void>((resolve, reject) => {
+        jsonStorage.set('showPipelinePrereleases', {enabled: enabled}, (error) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+/**
  * Whether the application should check for updates automatically. Enabled by default.
  */
 export function getAutoUpdateCheck(): boolean {
