@@ -156,7 +156,7 @@ sequence. To see all variants of the unit, collect the sequences of every zOTU f
 
 ## Limits of the evidence
 
-The benchmark used **mock communities** and only the **V4 region** of the 16S gene. The authors expect the same
+The benchmark in TACTIC paper used **mock communities** and only the **V4 region** of the 16S gene. The authors expect the same
 principles to apply to natural samples and other regions, but mock communities are simpler than real
 microbiota. In samples with many closely related species (the paper's example is *Enterobacterales*), V4 may be
 too short to separate them with any method.
