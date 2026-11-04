@@ -45,12 +45,15 @@ Only the folders of the analysis you ran are created. A TIC run, for example, gi
 
 ## Which table should I use?
 
+Not sure which **folder** (TIC, TAC, zOTU or OTU) fits your question? See
+[Which pipeline and which files?](../knowledge-base/choosing-a-pipeline.md), based on the TACTIC benchmark paper.
+
 Most tables come in several versions:
 
 | File name starts with | Values are | Use it for |
 |---|---|---|
 | *(nothing, e.g. `SOTUs-Table-TIC.tab`)* | Read counts | Most downstream tools (Namco, Rhea); they normalise themselves |
-| `SampleMinCount_Normalized-…` | Counts after randomly subsampling (*rarefying*) every sample down to the read number of the smallest sample | Alpha and beta diversity comparisons without differences in sequencing depth |
+| `SampleMinCount_Normalized-…` | Counts **scaled** so that every sample has the same total as the smallest sample (values can have decimals) | Comparing composition and abundance-based distances (e.g. Bray-Curtis) without differences in sequencing depth. Not for richness: scaling does not remove rare taxa, so use raw counts in a tool that rarefies |
 | `Spike_Normalized-…` | Absolute abundances, calculated from the spike-in | Only produced when samples were spiked ([mapping file](07-mapping-file.md)) |
 
 Files ending in **`-8Levels`** use the newer 8-rank SILVA taxonomy, which adds a *Kingdom* rank (for example

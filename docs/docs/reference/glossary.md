@@ -31,15 +31,21 @@ Terms are sorted alphabetically within each group.
 | Term | Meaning |
 |---|---|
 | **Abundance (relative / absolute)** | *Relative*: share of reads in a sample (e.g. 20 %). *Absolute*: amount per gram of sample, only available with a spike-in. |
+| **Alpha diversity** | Diversity *within* one sample: how many different bacteria (**richness**) and how evenly they are spread (e.g. Shannon index). |
+| **Beta diversity** | How different two samples are, given as a distance between 0 (identical) and 1 (nothing shared). Common measures: **Jaccard** (which taxa are present), **Bray-Curtis** (taxa and their abundances), and **UniFrac** (also uses the phylogenetic tree, so closely related taxa count as similar). See [Which pipeline and which files?](../knowledge-base/kb-choosing-a-pipeline). |
 | **Clustering** | Grouping similar sequences into one unit (e.g. all sequences that are ≥ 97 % identical). |
 | **Denoising** | Removing sequencing errors so that only true biological sequences remain. TACTIC uses UNOISE3. |
 | **Diversity inflation** | Overestimating the number of different bacteria, e.g. because one bacterium has several slightly different 16S copies. TIC and TAC reduce it. |
 | **FOTU / GOTU / SOTU** | Family-, Genus- and Species-level OTU: the units TIC creates at 90 %, 95 % and 98.7 % similarity. |
 | **Krona chart** | An interactive, zoomable pie chart of the taxonomic composition (an `.html` file). |
-| **Normalisation** | Making samples comparable despite different numbers of reads. TACTIC writes `SampleMinCount_Normalized` (every sample randomly subsampled, *rarefied*, to the read number of the smallest one) and, with spike-ins, `Spike_Normalized` (absolute) tables. |
+| **Mock community** | A sample mixed from known bacteria in known amounts. Used to test how accurately an analysis method finds the true composition. |
+| **Normalisation** | Making samples comparable despite different numbers of reads. TACTIC writes `SampleMinCount_Normalized` (every sample's counts scaled to the total of the smallest sample) and, with spike-ins, `Spike_Normalized` (absolute) tables. |
 | **OTU** | *Operational Taxonomic Unit*: a group of sequences that are at least a set percentage identical (classically 97 %). See [OTU](../knowledge-base/description-of-pipelines/kb-pipelines-otu). |
+| **Phylogeny-aware / phylogeny-agnostic** | Whether a diversity measure uses the phylogenetic tree (aware, e.g. UniFrac) or treats all taxa as equally different (agnostic, e.g. Jaccard, Bray-Curtis). |
 | **Phylogenetic tree** | A tree diagram showing how related the sequences are. Needed for UniFrac distances. TACTIC builds trees with *rapidnj* (`-nj` files). |
 | **PICRUSt2** | A tool that predicts the functional potential (genes, pathways) of a community from 16S data. TACTIC prepares its input files. |
+| **Rarefying** | Randomly subsampling every sample down to the same number of reads, usually before comparing richness. Tools such as Rhea and Namco can do it. TACTIC's `SampleMinCount_Normalized` tables are *scaled*, not rarefied. |
+| **Richness** | The number of different taxa (e.g. species) in a sample. Inflated if one species is split into several units. |
 | **TAC** | *Taxonomy Agnostic Clustering*: clustering zOTUs at 98.7 % without using taxonomy. See [TAC](../knowledge-base/description-of-pipelines/kb-pipelines-tac). |
 | **Taxonomy** | The classification of an organism: Domain › (Kingdom ›) Phylum › Class › Order › Family › Genus › Species. |
 | **TIC** | *Taxonomy Informed Clustering*: clustering that uses taxonomy to create species-, genus- and family-level units. See [TIC](../knowledge-base/description-of-pipelines/kb-pipelines-tic). |

@@ -35,6 +35,8 @@ TACTIC offers four ways to group sequences. BiotaWiz offers the first three as c
 | De Novo Clustering (UPARSE OTU clustering) | OTU | Classic 97 % OTU clustering, comparable to older studies. | [OTU](knowledge-base/description-of-pipelines/kb-pipelines-otu) |
 | *(always produced)* | zOTU | Exact, error-corrected sequence variants. TIC and TAC are built on them. | [zOTU](knowledge-base/description-of-pipelines/kb-pipelines-zotu) |
 
+Not sure? [Which pipeline and which files?](knowledge-base/choosing-a-pipeline.md) gives concrete advice per research question.
+
 ## Two ways to run TACTIC
 
 | | **BiotaWiz (desktop program)** | **TACTIC command line** |
