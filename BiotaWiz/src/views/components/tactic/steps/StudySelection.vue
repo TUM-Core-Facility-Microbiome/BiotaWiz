@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import {DOCS_BASE_URL} from "../../../../config";
 import StudyBrowser from "../../default/StudyBrowser.vue";
 import {reactive, watchEffect} from "vue";
 
@@ -55,7 +56,7 @@ async function apply() {
 }
 
 async function openDocumentationOnFileNaming() {
-  const url = "https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/21";
+  const url = `${DOCS_BASE_URL}/getting-started/prepare-your-data#how-biotawiz-finds-read-pairs`;
   await indexBridge.openExternalLink(url);
 }
 

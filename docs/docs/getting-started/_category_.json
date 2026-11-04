@@ -1,0 +1,9 @@
+{
+  "label": "Getting started (BiotaWiz)",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "title": "Getting started with BiotaWiz",
+    "description": "Install BiotaWiz, check that it is ready, run your first analysis and understand the results. Follow the pages in order."
+  }
+}

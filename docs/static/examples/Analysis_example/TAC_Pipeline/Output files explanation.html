@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TAC Pipeline Output Files</title><style>
+:root{--bg:#f6f7f9;--surface:#ffffff;--surface-2:#f0f2f5;--text:#1d2330;--muted:#5b6475;--border:#e1e5eb;
+--accent:#1f6feb;--accent-soft:#e7f0fe;--pill:#fff4e0;--pill-text:#8a5300;--code:#eef1f5;
+--t-table:#1f6feb;--t-seq:#7c3aed;--t-tree:#15803d;--t-chart:#c2410c;--t-map:#0e7490;--t-folder:#a16207;
+--t-log:#475569;--t-doc:#475569;--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--surface:#171b23;--surface-2:#1e2430;--text:#e6e9ef;
+--muted:#9aa4b5;--border:#2a3140;--accent:#5b9dff;--accent-soft:#1a2740;--pill:#3a2a10;--pill-text:#f5c27a;
+--code:#232a37;--t-table:#5b9dff;--t-seq:#a78bfa;--t-tree:#4ade80;--t-chart:#fb923c;--t-map:#22d3ee;
+--t-folder:#facc15;--t-log:#94a3b8;--t-doc:#94a3b8;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",
+Roboto,"Helvetica Neue",Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:.88em}
+code{background:var(--code);padding:.1em .35em;border-radius:4px;overflow-wrap:anywhere}
+pre{background:var(--code);padding:.7em .9em;border-radius:8px;overflow-x:auto;margin:.6em 0 0}
+pre code{background:none;padding:0}
+header{background:var(--surface);border-bottom:1px solid var(--border)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header .wrap{padding-top:28px;padding-bottom:24px}
+.eyebrow{color:var(--accent);font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;margin:0}
+h1{font-size:clamp(1.6rem,3.5vw,2.2rem);line-height:1.2;margin:.25em 0 .2em}
+.folder{color:var(--muted);margin:0;font-size:.95rem}
+.search{margin-top:18px;position:relative;max-width:520px}
+.search input{width:100%;font:inherit;padding:.65em .9em;border:1px solid var(--border);border-radius:10px;
+background:var(--surface-2);color:var(--text)}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding-top:28px;padding-bottom:48px}
+nav.toc{position:sticky;top:20px;align-self:start;font-size:.92rem}
+nav.toc p{margin:0 0 .5em;color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border)}
+nav.toc a{display:block;padding:.3em .8em;color:var(--muted);text-decoration:none;margin-left:-2px;
+border-left:2px solid transparent}
+nav.toc a:hover{color:var(--text);border-left-color:var(--accent)}
+section{margin-bottom:36px;scroll-margin-top:16px}
+h2{font-size:1.3rem;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.sec-no{display:inline-grid;place-items:center;min-width:1.8em;height:1.8em;border-radius:50%;
+background:var(--accent-soft);color:var(--accent);font-size:.85em}
+section.intro{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);
+border-radius:12px;padding:20px 22px;box-shadow:var(--shadow)}
+section.intro h2{font-size:1.15rem}
+section.intro p:last-child{margin-bottom:0}
+.file{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;background:var(--surface);
+border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.type{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.3em .6em;
+border-radius:6px;align-self:start;color:var(--surface);white-space:nowrap}
+.t-table{background:var(--t-table)}.t-seq{background:var(--t-seq)}.t-tree{background:var(--t-tree)}
+.t-chart{background:var(--t-chart)}.t-map{background:var(--t-map)}.t-folder{background:var(--t-folder)}
+.t-log{background:var(--t-log)}.t-doc{background:var(--t-doc)}
+.name-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px}
+.fname{font-weight:600;font-size:.95em;background:none;padding:0}
+.pill{background:var(--pill);color:var(--pill-text);font-size:.78rem;padding:.15em .6em;border-radius:999px}
+.open{font-size:.82rem;font-weight:600;text-decoration:none;border:1px solid var(--accent);border-radius:999px;
+padding:.05em .7em}
+.open:hover{background:var(--accent-soft)}
+.matches{margin:.2em 0 0;padding-left:1.1em;font-size:.88rem;width:100%}
+dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:10px 0 0}
+dt{color:var(--muted);font-weight:600;font-size:.9rem}
+dd{margin:0}
+ul.plain{margin:8px 0 0;padding-left:1.1em}
+.note{color:var(--muted);font-style:italic;margin:0 0 12px}
+.step{display:flex;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+padding:14px 18px;margin-bottom:10px;box-shadow:var(--shadow)}
+.step-no{flex:none;display:grid;place-items:center;width:2em;height:2em;border-radius:50%;background:var(--accent);
+color:var(--surface);font-weight:700}
+.step h3{margin:0;font-size:1rem}
+.step p{margin:.2em 0 0}
+.empty{display:none;color:var(--muted)}
+footer{border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+footer .wrap{padding-top:16px;padding-bottom:24px}
+.hidden{display:none !important}
+@media (max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}nav.toc{display:none}
+.file{grid-template-columns:minmax(0,1fr)}dl{grid-template-columns:minmax(0,1fr)}dt{margin-top:4px}}
+</style></head><body><div style="background:#fff4ce;color:#3d2e00;border-bottom:1px solid #e0c060;padding:10px 16px;font:14px/1.4 system-ui,sans-serif"><strong>Example page.</strong> In your own results this page is in <code>Analysis_&lt;date&gt;_&lt;time&gt;/TAC_Pipeline/</code>, and its <em>Open</em> buttons open your files. Generated from TACTIC v1.0.1-rc.1-1-g387e64f.</div><header><div class="wrap"><p class="eyebrow">TACTIC Pipeline</p><h1>TAC Pipeline Output Files</h1><p class="folder">Folder: <code>TAC_Pipeline/</code></p><div class="search"><input id="filter" type="search" placeholder="Filter files by name or description (press /)" aria-label="Filter files"></div></div></header><div class="wrap layout"><nav class="toc"><p>On this page</p><ol><li><a href="#what-is-the-tac-pipeline">What is the TAC Pipeline?</a></li><li><a href="#1-primary-abundance-tables">Primary Abundance Tables</a></li><li><a href="#2-sequence-files-and-traceability-mappings">Sequence Files and Traceability Mappings</a></li><li><a href="#3-phylogenetic-trees">Phylogenetic Trees</a></li><li><a href="#4-interactive-visualizations">Interactive Visualizations</a></li><li><a href="#5-silva-144-dual-outputs-8levels">SILVA 144+ Dual Outputs (*-8Levels.*)</a></li></ol></nav><main><section id="what-is-the-tac-pipeline" class="intro"><h2>What is the TAC Pipeline?</h2><p>The TAC (Taxonomy-Agnostic Clustering) pipeline takes the clean, denoised ZOTUs (Amplicon Sequence Variants) and clusters them at 98.7% sequence similarity — the standard threshold for bacterial species — without using any prior taxonomy labels.</p><p>This approach gives you the best of both worlds: it eliminates sequencing noise and PCR errors via denoising first, and then groups closely related variants into biologically sensible, species-level operational units.</p><p>Below is an explanation of each output file in this folder and how to use it.</p></section><section id="1-primary-abundance-tables" data-has-files="1"><h2><span class="sec-no">1</span>Primary Abundance Tables</h2><article class="file" data-search="otus-table-tac.tab a tab-separated text table containing the abundance count of each tac otu cluster in each sample. rows are tac otus (clustered at 98.7% similarity), columns are your sample ids, and the last column shows the assigned taxonomy (domain down to species). this is the primary abundance table for tac mode. open it in microsoft excel, r, python, or statistical software to analyze microbiome diversity and compare microbial communities between sample groups."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Table-TAC.tab</code></div></div><dl><dt>What it is</dt><dd>A tab-separated text table containing the abundance count of each TAC OTU cluster in each sample. Rows are TAC OTUs (clustered at 98.7% similarity), columns are your sample IDs, and the last column shows the assigned taxonomy (Domain down to Species).</dd><dt>Use it for</dt><dd>This is the primary abundance table for TAC mode. Open it in Microsoft Excel, R, Python, or statistical software to analyze microbiome diversity and compare microbial communities between sample groups.</dd></dl></div></article><article class="file" data-search="samplemincount_normalized-otus-table-tac.tab a depth-normalized version of the tac abundance table where all samples are subsampled (rarefied) to match the sequencing depth of the sample with the fewest reads. unbiased statistical comparisons of alpha and beta diversity across samples with different library sizes."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">SampleMinCount_Normalized-OTUs-Table-TAC.tab</code></div></div><dl><dt>What it is</dt><dd>A depth-normalized version of the TAC abundance table where all samples are subsampled (rarefied) to match the sequencing depth of the sample with the fewest reads.</dd><dt>Use it for</dt><dd>Unbiased statistical comparisons of alpha and beta diversity across samples with different library sizes.</dd></dl></div></article><article class="file" data-search="spike_normalized-otus-table-tac.tab an abundance table normalized against internal dna spike-in standards added to your samples before sequencing. estimating absolute microbial abundance (cell or copy numbers per unit of sample) instead of relative percentages."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">Spike_Normalized-OTUs-Table-TAC.tab</code><span class="pill">Present only if spike-ins were used</span></div></div><dl><dt>What it is</dt><dd>An abundance table normalized against internal DNA spike-in standards added to your samples before sequencing.</dd><dt>Use it for</dt><dd>Estimating absolute microbial abundance (cell or copy numbers per unit of sample) instead of relative percentages.</dd></dl></div></article></section><section id="2-sequence-files-and-traceability-mappings" data-has-files="1"><h2><span class="sec-no">2</span>Sequence Files and Traceability Mappings</h2><article class="file" data-search="otus-seqs-tac.fasta a fasta file containing the representative (centroid) dna sequence for each tac otu cluster, with taxonomy in the headers. sequence searches (blast), alignments, and phylogenetic analyses of the clustered representative sequences."><span class="type t-seq">Sequences</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Seqs-TAC.fasta</code></div></div><dl><dt>What it is</dt><dd>A FASTA file containing the representative (centroid) DNA sequence for each TAC OTU cluster, with taxonomy in the headers.</dd><dt>Use it for</dt><dd>Sequence searches (BLAST), alignments, and phylogenetic analyses of the clustered representative sequences.</dd></dl></div></article><article class="file" data-search="map-zotus-otus-tac.tab a two-column mapping table that connects each original zotu identifier to the tac otu cluster it was assigned to. full traceability. use this file if you need to know which exact sequence variants (zotus) were merged into a given tac otu."><span class="type t-map">Mapping</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">Map-ZOTUs-OTUs-TAC.tab</code></div></div><dl><dt>What it is</dt><dd>A two-column mapping table that connects each original ZOTU identifier to the TAC OTU cluster it was assigned to.</dd><dt>Use it for</dt><dd>Full traceability. Use this file if you need to know which exact sequence variants (ZOTUs) were merged into a given TAC OTU.</dd></dl></div></article></section><section id="3-phylogenetic-trees" data-has-files="1"><h2><span class="sec-no">3</span>Phylogenetic Trees</h2><article class="file" data-search="otus-tree-nj-tac.tre a phylogenetic tree of the tac otu centroid sequences in standard newick format (.tre), built using neighbor-joining. tree-based diversity analyses (such as unifrac) in qiime 2 or phyloseq, and visualization in tree viewers like figtree or itol."><span class="type t-tree">Tree</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Tree-nj-TAC.tre</code></div></div><dl><dt>What it is</dt><dd>A phylogenetic tree of the TAC OTU centroid sequences in standard Newick format (.tre), built using Neighbor-Joining.</dd><dt>Use it for</dt><dd>Tree-based diversity analyses (such as UniFrac) in QIIME 2 or phyloseq, and visualization in tree viewers like FigTree or iTOL.</dd></dl></div></article></section><section id="4-interactive-visualizations" data-has-files="1"><h2><span class="sec-no">4</span>Interactive Visualizations</h2><article class="file" data-search="otus-krona.html an interactive krona plot chart of taxonomic proportions. double-click to open in any web browser and explore the taxonomic breakdown of your tac otus visually."><span class="type t-chart">Interactive</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Krona.html</code></div></div><dl><dt>What it is</dt><dd>An interactive Krona plot chart of taxonomic proportions.</dd><dt>Use it for</dt><dd>Double-click to open in any web browser and explore the taxonomic breakdown of your TAC OTUs visually.</dd></dl></div></article></section><section id="5-silva-144-dual-outputs-8levels" data-has-files="1"><h2><span class="sec-no">5</span>SILVA 144+ Dual Outputs (*-8Levels.*)</h2><p class="note">Generated when a reference database with bacterial kingdoms is used, e.g. SILVA &gt;= 144</p><article class="file" data-search="otus-table-tac-8levels.tab otus-seqs-tac-8levels.fasta otus-krona-8levels.html samplemincount_normalized-otus-table-tac-8levels.tab spike_normalized-otus-table-tac-8levels.tab the exact same tac results as above, but with 8 taxonomic ranks including the bacterial kingdom rank (e.g., bacillati, pseudomonadati). use the *-8levels files for the latest silva 144+ taxonomy, or use the standard files for downstream tools expecting 7 levels."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Table-TAC-8Levels.tab</code></div><div class="name-row"><code class="fname">OTUs-Seqs-TAC-8Levels.fasta</code></div><div class="name-row"><code class="fname">OTUs-Krona-8Levels.html</code></div><div class="name-row"><code class="fname">SampleMinCount_Normalized-OTUs-Table-TAC-8Levels.tab</code></div><div class="name-row"><code class="fname">Spike_Normalized-OTUs-Table-TAC-8Levels.tab</code><span class="pill">If spike-ins were used</span></div></div><dl><dt>What they are</dt><dd>The exact same TAC results as above, but with 8 taxonomic ranks including the bacterial Kingdom rank (e.g., Bacillati, Pseudomonadati).</dd><dt>Use them for</dt><dd>Use the *-8Levels files for the latest SILVA 144+ taxonomy, or use the standard files for downstream tools expecting 7 levels.</dd></dl></div></article></section><p id="empty" class="empty">No files match your filter.</p></main></div><footer><div class="wrap">Generated by the TACTIC pipeline.</div></footer><script>
+(function(){
+  var input=document.getElementById('filter');
+  if(!input){return;}
+  var empty=document.getElementById('empty');
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase(), shown=0;
+    document.querySelectorAll('article.file').forEach(function(card){
+      var hit=!q||card.getAttribute('data-search').indexOf(q)!==-1;
+      card.classList.toggle('hidden',!hit); if(hit){shown++;}
+    });
+    document.querySelectorAll('section[data-has-files]').forEach(function(sec){
+      sec.classList.toggle('hidden',!!q&&!sec.querySelector('article.file:not(.hidden)'));
+    });
+    document.querySelectorAll('section:not([data-has-files])').forEach(function(sec){
+      sec.classList.toggle('hidden',!!q);
+    });
+    empty.style.display=(q&&!shown)?'block':'none';
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/'&&document.activeElement!==input){e.preventDefault();input.focus();}
+  });
+})();
+</script></body></html>

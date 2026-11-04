@@ -40,16 +40,16 @@ The installer is not yet signed, so Windows shows some warnings. They are expect
 <details>
 <summary><b>Your browser warns that the file is not commonly downloaded</b></summary>
 
-![warning](docs/images/windows/download_warning.png)
+![warning](docs/static/img/windows/download_warning.png)
 
 Hover over the download, click the three dots, and select `Keep`.
 
-![hover and click keep](docs/images/windows/click_keep.png)
+![hover and click keep](docs/static/img/windows/click_keep.png)
 
 If a second warning appears, click `Show more` and then `Keep anyway`.
 
-![click show more](docs/images/windows/click_show_more.png)
-![click keep anyway](docs/images/windows/click_keep_anyway.png)
+![click show more](docs/static/img/windows/click_show_more.png)
+![click keep anyway](docs/static/img/windows/click_keep_anyway.png)
 </details>
 
 <details>
@@ -57,8 +57,8 @@ If a second warning appears, click `Show more` and then `Keep anyway`.
 
 Click `More info` and then `Run anyway`.
 
-![click more info](docs/images/windows/click_more.png)
-![click run anyway](docs/images/windows/click_run_anyway.png)
+![click more info](docs/static/img/windows/click_more.png)
+![click run anyway](docs/static/img/windows/click_run_anyway.png)
 </details>
 
 The installer then installs BiotaWiz and starts it. You can find BiotaWiz in the Start menu afterwards.
@@ -100,7 +100,7 @@ Then restart BiotaWiz.
 Before you start, put all FASTQ files you want to analyze into one folder (sub-folders are fine).
 Gzip-compressed files (`.fastq.gz`, `.fq.gz`) work as well. BiotaWiz recognizes paired-end files by
 their names, e.g. `_R1_`/`_R2_` or `_1`/`_2`; see the
-[file naming guide](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/21).
+[file naming guide](https://tum-core-facility-microbiome.github.io/BiotaWiz/docs/getting-started/prepare-your-data).
 
 1. **Choose an analysis mode:** TIC, TAC or De Novo Clustering.
 2. **Select the base directory:** the folder that contains your FASTQ files. The results are written to this folder.
@@ -128,7 +128,8 @@ where automatic checks can be turned off.
 
 ## Getting help
 - If an error occurs, BiotaWiz shows a link to a help page for that error.
-- Questions and documentation: [BiotaWiz-docs discussions](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions)
+- Documentation and tutorial: [BiotaWiz documentation](https://tum-core-facility-microbiome.github.io/BiotaWiz/docs/intro)
+- Questions: [BiotaWiz discussions](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/discussions)
 - Bugs, or files that are not recognized: [open an issue](https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz/issues)
 
 ## Development

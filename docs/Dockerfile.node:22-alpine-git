@@ -1,0 +1,7 @@
+FROM node:22-alpine
+
+# Install git for cloning repositories
+RUN apk add --no-cache git
+
+# Set the working directory
+WORKDIR /Biotawiz-docs

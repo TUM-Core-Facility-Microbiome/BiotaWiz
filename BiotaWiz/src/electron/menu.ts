@@ -1,6 +1,6 @@
 // adapted from https://github.com/electron-react-boilerplate/electron-react-boilerplate/blob/main/src/main/main.ts
 import {app, BrowserWindow, Menu, MenuItemConstructorOptions, shell} from 'electron';
-import {GITHUB_BASE_URL} from '../config';
+import {DOCS_BASE_URL} from '../config';
 import {openCommunityDiscussions, openIssues} from "./browserLinks";
 import {checkForUpdates} from "../utils/updater";
 
@@ -158,7 +158,7 @@ export default class MenuBuilder {
                 {
                     label: 'Documentation',
                     click() {
-                        shell.openExternal(GITHUB_BASE_URL);
+                        shell.openExternal(`${DOCS_BASE_URL}/intro`);
                     },
                 },
                 {
@@ -246,7 +246,7 @@ export default class MenuBuilder {
                     {
                         label: 'Documentation',
                         click() {
-                            shell.openExternal(GITHUB_BASE_URL);
+                            shell.openExternal(`${DOCS_BASE_URL}/intro`);
                         },
                     },
                     {

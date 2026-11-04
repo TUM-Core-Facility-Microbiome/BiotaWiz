@@ -1,5 +1,7 @@
-export const GITHUB_REPO = "TUM-Core-Facility-Microbiome/BiotaWiz-docs";
+export const GITHUB_REPO = "TUM-Core-Facility-Microbiome/BiotaWiz";
 export const GITHUB_BASE_URL = `https://github.com/${GITHUB_REPO}`;
+// user documentation (docs/ folder of the BiotaWiz repository, published on GitHub Pages)
+export const DOCS_BASE_URL = "https://tum-core-facility-microbiome.github.io/BiotaWiz/docs";
 // repository the application itself is released from
 export const APP_GITHUB_REPO = "TUM-Core-Facility-Microbiome/BiotaWiz";
 export const APP_UPDATE_FEED_URL = `https://github.com/${APP_GITHUB_REPO}/releases/latest/download`;

@@ -149,6 +149,7 @@
 </template>
 
 <script setup lang="ts">
+import {DOCS_BASE_URL} from "../../../../config";
 import {defineExpose, ref, reactive, onActivated, watchEffect} from "vue";
 import {Environment, LogSection} from "../../../../enums";
 import {getAnnouncedAnalysisDirectory, getAnnouncedOfflineDatabaseVersion, PYTHON_LOGGER_REGEX} from "../tacticLog";
@@ -283,7 +284,7 @@ const mainLogProcessor = ref<LogStageProcessor>(new LogStageProcessor());
 let lastLoggerName: string | null = null;
 
 async function openDocumentationPreprocessing() {
-  const url = "https://github.com/TUM-Core-Facility-Microbiome/BiotaWiz-docs/discussions/23";
+  const url = `${DOCS_BASE_URL}/troubleshooting/troubleshooting-common-issues#failed-samples`;
   await indexBridge.openExternalLink(url);
 }
 

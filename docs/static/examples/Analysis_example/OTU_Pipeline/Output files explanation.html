@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>OTU Pipeline Output Files</title><style>
+:root{--bg:#f6f7f9;--surface:#ffffff;--surface-2:#f0f2f5;--text:#1d2330;--muted:#5b6475;--border:#e1e5eb;
+--accent:#1f6feb;--accent-soft:#e7f0fe;--pill:#fff4e0;--pill-text:#8a5300;--code:#eef1f5;
+--t-table:#1f6feb;--t-seq:#7c3aed;--t-tree:#15803d;--t-chart:#c2410c;--t-map:#0e7490;--t-folder:#a16207;
+--t-log:#475569;--t-doc:#475569;--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--surface:#171b23;--surface-2:#1e2430;--text:#e6e9ef;
+--muted:#9aa4b5;--border:#2a3140;--accent:#5b9dff;--accent-soft:#1a2740;--pill:#3a2a10;--pill-text:#f5c27a;
+--code:#232a37;--t-table:#5b9dff;--t-seq:#a78bfa;--t-tree:#4ade80;--t-chart:#fb923c;--t-map:#22d3ee;
+--t-folder:#facc15;--t-log:#94a3b8;--t-doc:#94a3b8;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",
+Roboto,"Helvetica Neue",Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:.88em}
+code{background:var(--code);padding:.1em .35em;border-radius:4px;overflow-wrap:anywhere}
+pre{background:var(--code);padding:.7em .9em;border-radius:8px;overflow-x:auto;margin:.6em 0 0}
+pre code{background:none;padding:0}
+header{background:var(--surface);border-bottom:1px solid var(--border)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header .wrap{padding-top:28px;padding-bottom:24px}
+.eyebrow{color:var(--accent);font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;margin:0}
+h1{font-size:clamp(1.6rem,3.5vw,2.2rem);line-height:1.2;margin:.25em 0 .2em}
+.folder{color:var(--muted);margin:0;font-size:.95rem}
+.search{margin-top:18px;position:relative;max-width:520px}
+.search input{width:100%;font:inherit;padding:.65em .9em;border:1px solid var(--border);border-radius:10px;
+background:var(--surface-2);color:var(--text)}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding-top:28px;padding-bottom:48px}
+nav.toc{position:sticky;top:20px;align-self:start;font-size:.92rem}
+nav.toc p{margin:0 0 .5em;color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border)}
+nav.toc a{display:block;padding:.3em .8em;color:var(--muted);text-decoration:none;margin-left:-2px;
+border-left:2px solid transparent}
+nav.toc a:hover{color:var(--text);border-left-color:var(--accent)}
+section{margin-bottom:36px;scroll-margin-top:16px}
+h2{font-size:1.3rem;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.sec-no{display:inline-grid;place-items:center;min-width:1.8em;height:1.8em;border-radius:50%;
+background:var(--accent-soft);color:var(--accent);font-size:.85em}
+section.intro{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);
+border-radius:12px;padding:20px 22px;box-shadow:var(--shadow)}
+section.intro h2{font-size:1.15rem}
+section.intro p:last-child{margin-bottom:0}
+.file{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;background:var(--surface);
+border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.type{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.3em .6em;
+border-radius:6px;align-self:start;color:var(--surface);white-space:nowrap}
+.t-table{background:var(--t-table)}.t-seq{background:var(--t-seq)}.t-tree{background:var(--t-tree)}
+.t-chart{background:var(--t-chart)}.t-map{background:var(--t-map)}.t-folder{background:var(--t-folder)}
+.t-log{background:var(--t-log)}.t-doc{background:var(--t-doc)}
+.name-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px}
+.fname{font-weight:600;font-size:.95em;background:none;padding:0}
+.pill{background:var(--pill);color:var(--pill-text);font-size:.78rem;padding:.15em .6em;border-radius:999px}
+.open{font-size:.82rem;font-weight:600;text-decoration:none;border:1px solid var(--accent);border-radius:999px;
+padding:.05em .7em}
+.open:hover{background:var(--accent-soft)}
+.matches{margin:.2em 0 0;padding-left:1.1em;font-size:.88rem;width:100%}
+dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:10px 0 0}
+dt{color:var(--muted);font-weight:600;font-size:.9rem}
+dd{margin:0}
+ul.plain{margin:8px 0 0;padding-left:1.1em}
+.note{color:var(--muted);font-style:italic;margin:0 0 12px}
+.step{display:flex;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+padding:14px 18px;margin-bottom:10px;box-shadow:var(--shadow)}
+.step-no{flex:none;display:grid;place-items:center;width:2em;height:2em;border-radius:50%;background:var(--accent);
+color:var(--surface);font-weight:700}
+.step h3{margin:0;font-size:1rem}
+.step p{margin:.2em 0 0}
+.empty{display:none;color:var(--muted)}
+footer{border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+footer .wrap{padding-top:16px;padding-bottom:24px}
+.hidden{display:none !important}
+@media (max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}nav.toc{display:none}
+.file{grid-template-columns:minmax(0,1fr)}dl{grid-template-columns:minmax(0,1fr)}dt{margin-top:4px}}
+</style></head><body><div style="background:#fff4ce;color:#3d2e00;border-bottom:1px solid #e0c060;padding:10px 16px;font:14px/1.4 system-ui,sans-serif"><strong>Example page.</strong> In your own results this page is in <code>Analysis_&lt;date&gt;_&lt;time&gt;/OTU_Pipeline/</code>, and its <em>Open</em> buttons open your files. Generated from TACTIC v1.0.1-rc.1-1-g387e64f.</div><header><div class="wrap"><p class="eyebrow">TACTIC Pipeline</p><h1>OTU Pipeline Output Files</h1><p class="folder">Folder: <code>OTU_Pipeline/</code></p><div class="search"><input id="filter" type="search" placeholder="Filter files by name or description (press /)" aria-label="Filter files"></div></div></header><div class="wrap layout"><nav class="toc"><p>On this page</p><ol><li><a href="#what-is-the-otu-pipeline">What is the OTU Pipeline?</a></li><li><a href="#1-primary-abundance-tables">Primary Abundance Tables</a></li><li><a href="#2-representative-sequences">Representative Sequences</a></li><li><a href="#3-phylogenetic-trees">Phylogenetic Trees</a></li><li><a href="#4-interactive-visualizations">Interactive Visualizations</a></li><li><a href="#5-silva-144-dual-outputs-8levels">SILVA 144+ Dual Outputs (*-8Levels.*)</a></li></ol></nav><main><section id="what-is-the-otu-pipeline" class="intro"><h2>What is the OTU Pipeline?</h2><p>The OTU (Operational Taxonomic Unit) pipeline clusters closely related 16S rRNA gene sequences together at 97% sequence similarity. Sequences that are 97% identical or higher are grouped into a single representative unit (an OTU). This is the classic, widely established approach for studying microbial communities.</p><p>Below is an explanation of each output file in this folder and how to use it.</p></section><section id="1-primary-abundance-tables" data-has-files="1"><h2><span class="sec-no">1</span>Primary Abundance Tables</h2><article class="file" data-search="otus-table.tab a tab-separated text table containing the count (abundance) of each 97% otu across all your samples. rows represent otu clusters, columns represent your sample ids, and the final column shows the assigned taxonomy (domain down to species). this is the main data table for your downstream analysis. you can open it in microsoft excel, google sheets, r (using packages like phyloseq, vegan, or deseq2), python, or statistical software to compare microbial composition, calculate diversity metrics, and identify differentially abundant bacteria between sample groups."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Table.tab</code></div></div><dl><dt>What it is</dt><dd>A tab-separated text table containing the count (abundance) of each 97% OTU across all your samples. Rows represent OTU clusters, columns represent your sample IDs, and the final column shows the assigned taxonomy (Domain down to Species).</dd><dt>Use it for</dt><dd>This is the main data table for your downstream analysis. You can open it in Microsoft Excel, Google Sheets, R (using packages like phyloseq, vegan, or DESeq2), Python, or statistical software to compare microbial composition, calculate diversity metrics, and identify differentially abundant bacteria between sample groups.</dd></dl></div></article><article class="file" data-search="samplemincount_normalized-otus-table.tab the otu abundance table normalized by subsampling (rarefying) every sample to match the sample with the lowest total read count. fair comparison between samples. because sequencing depth often varies between samples, this normalized table helps remove library-size bias before computing alpha and beta diversity."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">SampleMinCount_Normalized-OTUs-Table.tab</code></div></div><dl><dt>What it is</dt><dd>The OTU abundance table normalized by subsampling (rarefying) every sample to match the sample with the lowest total read count.</dd><dt>Use it for</dt><dd>Fair comparison between samples. Because sequencing depth often varies between samples, this normalized table helps remove library-size bias before computing alpha and beta diversity.</dd></dl></div></article><article class="file" data-search="spike_normalized-otus-table.tab the otu abundance table normalized against the internal spike-in dna standards added to your samples before sequencing. absolute quantification. while standard tables provide relative percentages, this table allows you to estimate absolute microbial loads (e.g., cell counts or copy numbers per gram of sample)."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">Spike_Normalized-OTUs-Table.tab</code><span class="pill">Present only if spike-ins were used</span></div></div><dl><dt>What it is</dt><dd>The OTU abundance table normalized against the internal spike-in DNA standards added to your samples before sequencing.</dd><dt>Use it for</dt><dd>Absolute quantification. While standard tables provide relative percentages, this table allows you to estimate absolute microbial loads (e.g., cell counts or copy numbers per gram of sample).</dd></dl></div></article></section><section id="2-representative-sequences" data-has-files="1"><h2><span class="sec-no">2</span>Representative Sequences</h2><article class="file" data-search="otus-seqs.fasta a standard fasta file containing the representative (centroid) dna sequence for each 97% otu cluster. the header line for each sequence contains the otu identifier and its assigned taxonomy. inspecting the actual dna sequences of your otus. use this file for sequence alignments, blast searches against ncbi, designing targeted pcr primers, or constructing custom phylogenetic trees."><span class="type t-seq">Sequences</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Seqs.fasta</code></div></div><dl><dt>What it is</dt><dd>A standard FASTA file containing the representative (centroid) DNA sequence for each 97% OTU cluster. The header line for each sequence contains the OTU identifier and its assigned taxonomy.</dd><dt>Use it for</dt><dd>Inspecting the actual DNA sequences of your OTUs. Use this file for sequence alignments, BLAST searches against NCBI, designing targeted PCR primers, or constructing custom phylogenetic trees.</dd></dl></div></article></section><section id="3-phylogenetic-trees" data-has-files="1"><h2><span class="sec-no">3</span>Phylogenetic Trees</h2><article class="file" data-search="otus-tree-nj.tre a phylogenetic tree of the otu representative sequences saved in standard newick format (.tre), constructed using the neighbor-joining algorithm. phylogeny-aware microbiome analyses, such as calculating unifrac distances (weighted or unweighted) in qiime 2 or phyloseq. you can also visualize this tree in interactive viewers like figtree, itol, or microreact."><span class="type t-tree">Tree</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Tree-nj.tre</code></div></div><dl><dt>What it is</dt><dd>A phylogenetic tree of the OTU representative sequences saved in standard Newick format (.tre), constructed using the Neighbor-Joining algorithm.</dd><dt>Use it for</dt><dd>Phylogeny-aware microbiome analyses, such as calculating UniFrac distances (weighted or unweighted) in QIIME 2 or phyloseq. You can also visualize this tree in interactive viewers like FigTree, iTOL, or Microreact.</dd></dl></div></article></section><section id="4-interactive-visualizations" data-has-files="1"><h2><span class="sec-no">4</span>Interactive Visualizations</h2><article class="file" data-search="otus-krona.html an interactive, visual taxonomy chart (krona plot) that opens in any web browser. exploring the bacterial composition of your samples visually without any coding. simply double-click the file to open it in chrome, firefox, safari, or edge. you can click on the colored concentric rings to zoom in and out through domain, phylum, class, order, family, genus, and species."><span class="type t-chart">Interactive</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Krona.html</code></div></div><dl><dt>What it is</dt><dd>An interactive, visual taxonomy chart (Krona plot) that opens in any web browser.</dd><dt>Use it for</dt><dd>Exploring the bacterial composition of your samples visually without any coding. Simply double-click the file to open it in Chrome, Firefox, Safari, or Edge. You can click on the colored concentric rings to zoom in and out through Domain, Phylum, Class, Order, Family, Genus, and Species.</dd></dl></div></article></section><section id="5-silva-144-dual-outputs-8levels" data-has-files="1"><h2><span class="sec-no">5</span>SILVA 144+ Dual Outputs (*-8Levels.*)</h2><p class="note">Generated when a reference database with bacterial kingdoms is used, e.g. SILVA &gt;= 144</p><article class="file" data-search="otus-table-8levels.tab otus-seqs-8levels.fasta otus-krona-8levels.html samplemincount_normalized-otus-table-8levels.tab spike_normalized-otus-table-8levels.tab the exact same otu results as above, but with 8 taxonomic ranks that explicitly include the bacterial kingdom rank (e.g., bacillati, pseudomonadati, fusobacteriati) between domain and phylum. use the *-8levels files if you need the latest silva 144+ kingdom classification (e.g., for namco, rhea, or krona). use the standard (7-level) files above if your downstream software (like picrust2 or older r scripts) expects classic 7-level taxonomies."><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">OTUs-Table-8Levels.tab</code></div><div class="name-row"><code class="fname">OTUs-Seqs-8Levels.fasta</code></div><div class="name-row"><code class="fname">OTUs-Krona-8Levels.html</code></div><div class="name-row"><code class="fname">SampleMinCount_Normalized-OTUs-Table-8Levels.tab</code></div><div class="name-row"><code class="fname">Spike_Normalized-OTUs-Table-8Levels.tab</code><span class="pill">If spike-ins were used</span></div></div><dl><dt>What they are</dt><dd>The exact same OTU results as above, but with 8 taxonomic ranks that explicitly include the bacterial Kingdom rank (e.g., Bacillati, Pseudomonadati, Fusobacteriati) between Domain and Phylum.</dd><dt>Use them for</dt><dd>Use the *-8Levels files if you need the latest SILVA 144+ kingdom classification (e.g., for Namco, Rhea, or Krona). Use the standard (7-level) files above if your downstream software (like PICRUSt2 or older R scripts) expects classic 7-level taxonomies.</dd></dl></div></article></section><p id="empty" class="empty">No files match your filter.</p></main></div><footer><div class="wrap">Generated by the TACTIC pipeline.</div></footer><script>
+(function(){
+  var input=document.getElementById('filter');
+  if(!input){return;}
+  var empty=document.getElementById('empty');
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase(), shown=0;
+    document.querySelectorAll('article.file').forEach(function(card){
+      var hit=!q||card.getAttribute('data-search').indexOf(q)!==-1;
+      card.classList.toggle('hidden',!hit); if(hit){shown++;}
+    });
+    document.querySelectorAll('section[data-has-files]').forEach(function(sec){
+      sec.classList.toggle('hidden',!!q&&!sec.querySelector('article.file:not(.hidden)'));
+    });
+    document.querySelectorAll('section:not([data-has-files])').forEach(function(sec){
+      sec.classList.toggle('hidden',!!q);
+    });
+    empty.style.display=(q&&!shown)?'block':'none';
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/'&&document.activeElement!==input){e.preventDefault();input.focus();}
+  });
+})();
+</script></body></html>

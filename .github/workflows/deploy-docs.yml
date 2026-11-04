@@ -1,0 +1,54 @@
+# Builds the Docusaurus site in docs/ and publishes it to GitHub Pages:
+# https://tum-core-facility-microbiome.github.io/BiotaWiz/
+# One-time setup: repository Settings > Pages > Source = "GitHub Actions".
+name: Deploy documentation
+
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "docs/**", ".github/workflows/deploy-docs.yml" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "docs/**", ".github/workflows/deploy-docs.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: docs/build
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

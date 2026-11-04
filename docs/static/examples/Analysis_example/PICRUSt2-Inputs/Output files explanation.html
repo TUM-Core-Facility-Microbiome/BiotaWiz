@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PICRUSt2 Input Files</title><style>
+:root{--bg:#f6f7f9;--surface:#ffffff;--surface-2:#f0f2f5;--text:#1d2330;--muted:#5b6475;--border:#e1e5eb;
+--accent:#1f6feb;--accent-soft:#e7f0fe;--pill:#fff4e0;--pill-text:#8a5300;--code:#eef1f5;
+--t-table:#1f6feb;--t-seq:#7c3aed;--t-tree:#15803d;--t-chart:#c2410c;--t-map:#0e7490;--t-folder:#a16207;
+--t-log:#475569;--t-doc:#475569;--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--surface:#171b23;--surface-2:#1e2430;--text:#e6e9ef;
+--muted:#9aa4b5;--border:#2a3140;--accent:#5b9dff;--accent-soft:#1a2740;--pill:#3a2a10;--pill-text:#f5c27a;
+--code:#232a37;--t-table:#5b9dff;--t-seq:#a78bfa;--t-tree:#4ade80;--t-chart:#fb923c;--t-map:#22d3ee;
+--t-folder:#facc15;--t-log:#94a3b8;--t-doc:#94a3b8;--shadow:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",
+Roboto,"Helvetica Neue",Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:.88em}
+code{background:var(--code);padding:.1em .35em;border-radius:4px;overflow-wrap:anywhere}
+pre{background:var(--code);padding:.7em .9em;border-radius:8px;overflow-x:auto;margin:.6em 0 0}
+pre code{background:none;padding:0}
+header{background:var(--surface);border-bottom:1px solid var(--border)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header .wrap{padding-top:28px;padding-bottom:24px}
+.eyebrow{color:var(--accent);font-weight:600;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;margin:0}
+h1{font-size:clamp(1.6rem,3.5vw,2.2rem);line-height:1.2;margin:.25em 0 .2em}
+.folder{color:var(--muted);margin:0;font-size:.95rem}
+.search{margin-top:18px;position:relative;max-width:520px}
+.search input{width:100%;font:inherit;padding:.65em .9em;border:1px solid var(--border);border-radius:10px;
+background:var(--surface-2);color:var(--text)}
+.search input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;padding-top:28px;padding-bottom:48px}
+nav.toc{position:sticky;top:20px;align-self:start;font-size:.92rem}
+nav.toc p{margin:0 0 .5em;color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--border)}
+nav.toc a{display:block;padding:.3em .8em;color:var(--muted);text-decoration:none;margin-left:-2px;
+border-left:2px solid transparent}
+nav.toc a:hover{color:var(--text);border-left-color:var(--accent)}
+section{margin-bottom:36px;scroll-margin-top:16px}
+h2{font-size:1.3rem;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.sec-no{display:inline-grid;place-items:center;min-width:1.8em;height:1.8em;border-radius:50%;
+background:var(--accent-soft);color:var(--accent);font-size:.85em}
+section.intro{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);
+border-radius:12px;padding:20px 22px;box-shadow:var(--shadow)}
+section.intro h2{font-size:1.15rem}
+section.intro p:last-child{margin-bottom:0}
+.file{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;background:var(--surface);
+border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.type{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.3em .6em;
+border-radius:6px;align-self:start;color:var(--surface);white-space:nowrap}
+.t-table{background:var(--t-table)}.t-seq{background:var(--t-seq)}.t-tree{background:var(--t-tree)}
+.t-chart{background:var(--t-chart)}.t-map{background:var(--t-map)}.t-folder{background:var(--t-folder)}
+.t-log{background:var(--t-log)}.t-doc{background:var(--t-doc)}
+.name-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px}
+.fname{font-weight:600;font-size:.95em;background:none;padding:0}
+.pill{background:var(--pill);color:var(--pill-text);font-size:.78rem;padding:.15em .6em;border-radius:999px}
+.open{font-size:.82rem;font-weight:600;text-decoration:none;border:1px solid var(--accent);border-radius:999px;
+padding:.05em .7em}
+.open:hover{background:var(--accent-soft)}
+.matches{margin:.2em 0 0;padding-left:1.1em;font-size:.88rem;width:100%}
+dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:10px 0 0}
+dt{color:var(--muted);font-weight:600;font-size:.9rem}
+dd{margin:0}
+ul.plain{margin:8px 0 0;padding-left:1.1em}
+.note{color:var(--muted);font-style:italic;margin:0 0 12px}
+.step{display:flex;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+padding:14px 18px;margin-bottom:10px;box-shadow:var(--shadow)}
+.step-no{flex:none;display:grid;place-items:center;width:2em;height:2em;border-radius:50%;background:var(--accent);
+color:var(--surface);font-weight:700}
+.step h3{margin:0;font-size:1rem}
+.step p{margin:.2em 0 0}
+.empty{display:none;color:var(--muted)}
+footer{border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+footer .wrap{padding-top:16px;padding-bottom:24px}
+.hidden{display:none !important}
+@media (max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}nav.toc{display:none}
+.file{grid-template-columns:minmax(0,1fr)}dl{grid-template-columns:minmax(0,1fr)}dt{margin-top:4px}}
+</style></head><body><div style="background:#fff4ce;color:#3d2e00;border-bottom:1px solid #e0c060;padding:10px 16px;font:14px/1.4 system-ui,sans-serif"><strong>Example page.</strong> In your own results this page is in <code>Analysis_&lt;date&gt;_&lt;time&gt;/PICRUSt2-Inputs/</code>, and its <em>Open</em> buttons open your files. Generated from TACTIC v1.0.1-rc.1-1-g387e64f.</div><header><div class="wrap"><p class="eyebrow">TACTIC Pipeline</p><h1>PICRUSt2 Input Files</h1><p class="folder">Folder: <code>PICRUSt2-Inputs/</code></p><div class="search"><input id="filter" type="search" placeholder="Filter files by name or description (press /)" aria-label="Filter files"></div></div></header><div class="wrap layout"><nav class="toc"><p>On this page</p><ol><li><a href="#what-is-picrust2">What is PICRUSt2?</a></li><li><a href="#files-in-this-folder">Files in this Folder</a></li></ol></nav><main><section id="what-is-picrust2" class="intro"><h2>What is PICRUSt2?</h2><p>PICRUSt2 (Phylogenetic Investigation of Communities by Reconstruction of Unobserved States) is a bioinformatics tool used to predict the functional metabolic potential (enzymes, gene families, and metabolic pathways) of a microbial community from 16S rRNA sequencing data.</p><p>To run PICRUSt2, you need two clean input files:</p><ol><li>An abundance table of sequence counts across samples.</li><li>A matching FASTA file of the representative DNA sequences.</li></ol><p>The files in this folder have been specially pre-formatted to be 100% compatible with the official PICRUSt2 pipeline (picrust2_pipeline.py).</p></section><section id="files-in-this-folder" data-has-files="1"><h2>Files in this Folder</h2><article class="file" data-search="&lt;pipeline&gt;__*otus-table*-for-picrust2.tab clean abundance tables in tab-separated format where the taxonomy column has been removed and sequence identifiers match the fasta. provide this file to the `--input` (-i) argument of picrust2:"><span class="type t-table">Table</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">&lt;Pipeline&gt;__*OTUs-Table*-For-PICRUSt2.tab</code></div></div><dl><dt>What it is</dt><dd>Clean abundance tables in tab-separated format where the taxonomy column has been removed and sequence identifiers match the FASTA.</dd><dt>Use it for</dt><dd>Provide this file to the <code>--input</code> (-i) argument of PICRUSt2:<pre><code>picrust2_pipeline.py -s &lt;Seqs.fasta&gt; -i &lt;Table.tab&gt; -o picrust2_out ...</code></pre></dd></dl></div></article><article class="file" data-search="&lt;pipeline&gt;__*otus-seqs*-for-picrust2.fasta clean fasta files containing only the sequence identifier and the dna sequence (all spaces, descriptions, and taxonomy headers removed). provide this file to the `--study_fasta` (-s) argument of picrust2 for sequence alignment and phylogenetic placement."><span class="type t-seq">Sequences</span><div class="file-body"><div class="names"><div class="name-row"><code class="fname">&lt;Pipeline&gt;__*OTUs-Seqs*-For-PICRUSt2.fasta</code></div></div><dl><dt>What it is</dt><dd>Clean FASTA files containing only the sequence identifier and the DNA sequence (all spaces, descriptions, and taxonomy headers removed).</dd><dt>Use it for</dt><dd>Provide this file to the <code>--study_fasta</code> (-s) argument of PICRUSt2 for sequence alignment and phylogenetic placement.</dd></dl></div></article></section><p id="empty" class="empty">No files match your filter.</p></main></div><footer><div class="wrap">Generated by the TACTIC pipeline.</div></footer><script>
+(function(){
+  var input=document.getElementById('filter');
+  if(!input){return;}
+  var empty=document.getElementById('empty');
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase(), shown=0;
+    document.querySelectorAll('article.file').forEach(function(card){
+      var hit=!q||card.getAttribute('data-search').indexOf(q)!==-1;
+      card.classList.toggle('hidden',!hit); if(hit){shown++;}
+    });
+    document.querySelectorAll('section[data-has-files]').forEach(function(sec){
+      sec.classList.toggle('hidden',!!q&&!sec.querySelector('article.file:not(.hidden)'));
+    });
+    document.querySelectorAll('section:not([data-has-files])').forEach(function(sec){
+      sec.classList.toggle('hidden',!!q);
+    });
+    empty.style.display=(q&&!shown)?'block':'none';
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/'&&document.activeElement!==input){e.preventDefault();input.focus();}
+  });
+})();
+</script></body></html>
