@@ -23,3 +23,9 @@ off-target products such as host DNA, chloroplast or mitochondrial sequences, an
 | Samples with **a lot of host DNA** (biopsies, low-biomass samples) | The filter works as intended: those reads are not bacterial. Check whether enough reads remain; consider sequencing deeper. |
 | **Wrong primer trimming**, so the sequences no longer look like 16S | Check [stripleft/stripright](../../getting-started/08-parameters.md#primer-trimming-stripleft-and-stripright). |
 | A **damaged reference database** after an interrupted first run | [Reset level 5](../../getting-started/10-reset-environment.md#level-5) (download SILVA again) and [level 2](../../getting-started/10-reset-environment.md#level-2) (re-install the pipeline). |
+
+
+> FIX: In parameter page (the step before the pipeline run), in advanced parameter section opt for "Keep sequences that are not bacterial or archaeal". This skips the SortMeRNA 16S filter, so all reads that pass merging and quality filtering go on to the analysis. (When using command line: add `--skip-non-bacterial-filter` (`-snbf`) instead). 
+
+> NOTE: Non-bacterial sequences (e.g. host or chloroplast DNA) then stay in your results, so check the taxonomy and remove them in your downstream analysis if needed.
+

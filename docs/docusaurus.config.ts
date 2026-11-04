@@ -12,6 +12,8 @@ const config: Config = {
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
+    // v4 also enables the Rspack-based "Faster" bundler, which needs the extra @docusaurus/faster package
+    faster: false,
   },
 
   // Set the production url of your site here
@@ -26,7 +28,17 @@ const config: Config = {
   projectName: 'BiotaWiz', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    // the pages use {#id} heading anchors and <!-- --> comments, which future.v4 would switch off
+    mdx1Compat: {
+      comments: true,
+      admonitions: true,
+      headingIds: true,
+    },
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
