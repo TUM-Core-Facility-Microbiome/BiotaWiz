@@ -1,18 +1,19 @@
 import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  image: string;
   description: ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'Four Pipelines, One Platform',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    image: '/img/feature-four-pipelines.jpg',
     description: (
       <>
       TACTIC integrates four distinct strategies into a single environment:
@@ -24,7 +25,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Hybrid Resilience to Diversity Inflation',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    image: '/img/feature-diversity-inflation.jpg',
     description: (
       <>
         While denoising (zOTUs/ASVs) offers high resolution, it often inflates apparent diversity. TACTIC implements Taxonomy-Informed (TIC) and Taxonomy-Agnostic (TAC) clustering to bridge the gap—clustering noise-free sequences to increase resilience against intra-genomic variability while maintaining single-nucleotide precision.
@@ -33,7 +34,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Run Where You Are: Private & Portable',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    image: '/img/feature-run-where-you-are.jpg',
     description: (
       <>
         TACTIC ensures consistent results across any computing environment.
@@ -44,12 +45,13 @@ const FeatureList: FeatureItem[] = [
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({title, image, description}: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
+      <figure className={clsx('text--center', styles.featureFigure)}>
+        <img className={styles.featureImage} src={useBaseUrl(image)} alt={title} loading="lazy" />
+        <figcaption className={styles.imageCredit}>Image created with Gemini 4</figcaption>
+      </figure>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>
