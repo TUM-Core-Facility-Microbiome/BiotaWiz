@@ -6,7 +6,19 @@ and BiotaWiz uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-05
+
+Release candidates: 1.0.3-rc.1, 1.0.3-rc.2, 1.0.3-rc.3 (2026-11-05).
+
+### Upgrade note
+- With TACTIC 1.0.0 and BiotaWiz 1.0.0 to 1.0.2, all zOTUs were kept (Minimum relative abundance 0). BiotaWiz 1.0.3
+  uses 0.25 % again. To get this filter for an earlier analysis, run it again with BiotaWiz 1.0.3; the processed
+  samples are reused, so only the analysis step runs.
+- Docker backend (Linux, Mac): BiotaWiz now contacts GitHub at every start to check the pipeline image. If GitHub has
+  a different image for the version, the first start after the update downloads it.
+
 ### Added
+- **Docs** button in the side panel (above **Discuss**), which opens the BiotaWiz documentation.
 - Docker backend (Linux, Mac): the pipeline image is checked against GitHub's container registry on every start, as
   the WSL backend checks its pipeline file. If GitHub has a different image (another SHA-256 digest) for the version,
   BiotaWiz downloads it and removes the old one; an old image that a container still uses stays on the computer
