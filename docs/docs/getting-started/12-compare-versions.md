@@ -20,8 +20,13 @@ tables differ from the previous version:
   result** with the new version.
 - One part per change with the details.
 
-**Affects** names who is concerned: **BiotaWiz** users, or **command-line** users who start TACTIC themselves with
-`docker run`. Both run the same Docker image.
+**Affects** says in which case a change concerns you. All three conditions must apply:
+
+- **Interface:** **BiotaWiz**, or the **command line** (you start TACTIC yourself with `docker run`). Both run the
+  same Docker image.
+- **Your run:** what your run had, e.g. spike-ins, a mode such as TIC, or a SILVA release.
+- **Files you used downstream:** the output files you analysed further, e.g. `Spike_Normalized-*.tab` for absolute
+  abundances. If you did not use them, the change does not affect your conclusions.
 
 Parameters are named as on the **Parameters** step of BiotaWiz, followed by their name in the arguments file, e.g.
 **Minimum relative abundance** (`ClusterZOTUsArgs` › `abund_limit`).
