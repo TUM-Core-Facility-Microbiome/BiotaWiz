@@ -73,7 +73,7 @@ const config: Config = {
       title: 'TACTIC & BiotaWiz Documentation',
       logo: {
         alt: 'BiotaWiz logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.png',
       },
       items: [
         // {
