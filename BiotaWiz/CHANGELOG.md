@@ -4,6 +4,18 @@ All notable changes to BiotaWiz are recorded in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and BiotaWiz uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- The default **Minimum relative abundance** of zOTUs (Parameters step › Advanced settings › zOTU picking (all
+  samples together), `abund_limit`) is now 0.25 % (`0.0025`) instead of 0 (keep all zOTUs). A zOTU is kept only if it
+  reaches this relative abundance in at least one sample, as recommended by
+  [Reitmeier et al. 2021](https://doi.org/10.1038/s43705-021-00033-z) before alpha and beta diversity analyses. The
+  value is written into the arguments file, so it applies to every TACTIC version you run. Users of BiotaWiz before
+  1.0.0 (TACTIC 0.7.x) already got this filter, because TACTIC 0.7.x ignored the `0`; with TACTIC 1.0.0 and BiotaWiz
+  1.0.0 to 1.0.2, `0` was used and all zOTUs were kept. Set the field to `0` to keep all zOTUs.
+- The help text of this field now says how the filter works: "in at least one sample", not "across all samples".
+
 ## [1.0.2] - 2026-10-23
 
 Release candidates: 1.0.2-rc.1, 1.0.2-rc.2, 1.0.2-rc.3 (2026-10-23).

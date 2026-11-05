@@ -51,7 +51,7 @@ Change these only if you know why. The names in brackets are the names used in t
 | Minimum / Maximum merged read length (`fastq_minmergelen` / `fastq_maxmergelen`) | 200 / 600 | Merged reads shorter or longer than this are discarded. Change only if your amplicon is far from V3–V4 length (about 460 bases). |
 | Maximum expected errors per base (`fastq_maxee_rate`) | 0.002 | Quality filter. A read is discarded if, judging from its quality scores, it is expected to contain more than 0.002 errors per base, i.e. more than 1 error in 500 bases. |
 | Minimum number of reads per zOTU (`minsize`) | 2 | A sequence must be seen at least this many times to become a zOTU. |
-| Minimum relative abundance (`abund_limit`), zOTUs | 0 | zOTUs below this relative abundance in **all** samples are removed (0 = keep all). |
+| Minimum relative abundance (`abund_limit`), zOTUs | 0.0025 | A zOTU is kept only if it reaches this relative abundance (0.0025 = 0.25 %) in at least one sample; 0 keeps all zOTUs. The default follows [Reitmeier et al. 2021](https://doi.org/10.1038/s43705-021-00033-z), who found 0.25 % removes most spurious sequences before alpha and beta diversity analyses. |
 | Sample-wise correction (`sample_wise_correction`) | No | Sets relative abundances below the abundance limit to 0 in each sample. |
 | Minimum identity for mapping reads to zOTUs (`match_id`) | 0.99 | How similar a read must be to a zOTU to be counted for it. |
 | Minimum number of reads per OTU / Minimum relative abundance (De Novo) | 8 / 0.0025 | The same two filters, for 97 % OTU clustering. |

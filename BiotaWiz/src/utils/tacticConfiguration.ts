@@ -222,7 +222,8 @@ export class TacticConfiguration {
             },
             ClusterZOTUsArgs: {
                 minsize: 2,
-                abund_limit: 0.000,
+                // keep a zOTU only if it reaches 0.25 % in at least one sample (Reitmeier et al. 2021)
+                abund_limit: 0.0025,
                 sample_wise_correction: false,
                 match_id: 0.99,
             },

@@ -157,7 +157,7 @@ Reference: [USEARCH manual for UNOISE algorithm (ZOTU clustering)](https://www.d
 
 #### ClusterZOTUsArgs (Adjustable from GUI's expert mode)
 - **minsize**: Minimum abundance threshold; amplicons with fewer reads are filtered out (default: 2)
-- **abund_limit**: Abundance limit threshold for filtering low-abundance sequences. ZOTUs with relative abundance below this threshold in all samples will be discarded (default: 0.000)
+- **abund_limit**: Abundance limit threshold for filtering low-abundance sequences. ZOTUs with relative abundance below this threshold in all samples will be discarded, i.e. a ZOTU is kept if it reaches the threshold in at least one sample (default: 0.0025, as recommended by [Reitmeier et al. 2021](https://doi.org/10.1038/s43705-021-00033-z))
 - **sample_wise_correction**: Enable or disable sample-wise abundance correction (default: false)
 - **match_id**: Minimum sequence identity threshold for ZOTU clustering (default: 0.99)
 

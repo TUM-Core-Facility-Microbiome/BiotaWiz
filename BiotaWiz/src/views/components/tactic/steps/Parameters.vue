@@ -322,13 +322,13 @@
                 <label for="clusterZOTUsArgs_abund_limit">
                   <div class="text-sm font-medium">Minimum relative abundance</div>
                   <div class="text-xs font-mono text-gray-400">abund_limit</div>
-                  <div class="text-xs text-gray-500">Minimum relative abundance of a zOTU across all samples for the zOTU to be kept.</div>
+                  <div class="text-xs text-gray-500">A zOTU is kept if it reaches this relative abundance in at least one sample (default 0.25 %, as recommended by Reitmeier et al. 2021).</div>
                 </label>
                 <input
                     id="clusterZOTUsArgs_abund_limit"
                     type="text"
                     v-model="clusterZOTUsArgs_abund_limit"
-                    placeholder="default: 0.0000"
+                    placeholder="default: 0.0025"
                     class="block w-full px-4 py-2 mt-2 border rounded-md focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                 >
               </div>
@@ -676,7 +676,7 @@ let filterOneSideArgs_fastq_maxee_rate = ref(0.002);
 let filterOneSideArgs_fastq_truncqual = ref(10);
 // ClusterZOTUsArgs
 let clusterZOTUsArgs_minsize = ref(2);
-let clusterZOTUsArgs_abund_limit = ref(0.0000);
+let clusterZOTUsArgs_abund_limit = ref(0.0025);
 let clusterZOTUsArgs_sample_wise_correction = ref(false);
 let clusterZOTUsArgs_match_id = ref(0.99);
 // DeNovoClusterZOTUsArgs
