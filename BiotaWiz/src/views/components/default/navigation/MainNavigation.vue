@@ -40,6 +40,18 @@
 
       <div class="sticky inset-x-0 bottom-0 border-gray-100 bg-white p-2">
         <div class="py-1">
+          <a @click="openDocumentation"
+             class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100 cursor-pointer"
+          >
+            <code class="absolute mt-6 text-xs">Docs</code>
+            <BookOpenIcon></BookOpenIcon>
+            <span
+                class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible min-w-28">
+              Documentation and tutorial
+            </span>
+          </a>
+        </div>
+        <div class="py-1">
           <a @click="openCommunityDiscussions"
              class="t group relative flex justify-center rounded px-2 py-1.5 mb-2 hover:bg-gray-100 cursor-pointer"
           >
@@ -85,7 +97,9 @@ import SettingsIcon from "../icons/SettingsIcon.vue";
 import ChatBubbleLeftRightIcon from "../icons/ChatBubbleLeftRightIcon.vue";
 import FireIcon from "../icons/FireIcon.vue";
 import HomeIcon from "../icons/HomeIcon.vue";
+import BookOpenIcon from "../icons/BookOpenIcon.vue";
 import {useRouter} from "vue-router";
+import {DOCS_BASE_URL} from "../../../../config";
 
 const router = useRouter();
 
@@ -98,6 +112,10 @@ async function startOver() {
     return;
   }
   await router.push('/application-selector');
+}
+
+function openDocumentation() {
+  indexBridge.openExternalLink(`${DOCS_BASE_URL}/intro`);
 }
 
 function openIssues() {
