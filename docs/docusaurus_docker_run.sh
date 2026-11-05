@@ -26,7 +26,7 @@ fi
 # If image is not available, build it
 if ! docker image inspect ${biotawiz_docs_docker_image} > /dev/null 2>&1; then
     echo "Image ${biotawiz_docs_docker_image} not found. Building the image..."
-    docker build -t ${biotawiz_docs_docker_image} -f Dockerfile.node:22-alpine-git .
+    docker build -t ${biotawiz_docs_docker_image} -f Dockerfile.node-22-alpine-git .
     if [ $? -ne 0 ]; then
         echo "Error: Failed to build the Docker image."
         exit 1
