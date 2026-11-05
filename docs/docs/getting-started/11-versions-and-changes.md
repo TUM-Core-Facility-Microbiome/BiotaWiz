@@ -96,6 +96,8 @@ Each project keeps two records of its changes:
 If you rerun old data with a newer TACTIC version and the numbers differ, check the TACTIC changelog between the
 two versions (see `Analysis_log.txt` of each run). To reproduce an old analysis exactly, pin the old version under
 **Update strategy**.
+See [Comparing results of different versions](./12-compare-versions.md) for which changes affect results and how
+to reproduce them.
 :::
 
 ## Release candidates (for testing only)
