@@ -6,6 +6,12 @@ and BiotaWiz uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Docker backend (Linux, Mac): the pipeline image is checked against GitHub's container registry on every start, as
+  the WSL backend checks its pipeline file. If GitHub has a different image (another SHA-256 digest) for the version,
+  BiotaWiz downloads it and removes the old one; an old image that a container still uses stays on the computer
+  without a tag. Without internet access, BiotaWiz uses the installed image and shows a warning.
+
 ### Changed
 - The default **Minimum relative abundance** of zOTUs (Parameters step › Advanced settings › zOTU picking (all
   samples together), `abund_limit`) is now 0.25 % (`0.0025`) instead of 0 (keep all zOTUs). A zOTU is kept only if it

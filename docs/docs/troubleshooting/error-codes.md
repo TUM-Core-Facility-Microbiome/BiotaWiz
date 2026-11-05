@@ -46,6 +46,8 @@ Open `Pipeline_log.txt` in your base directory. Its last lines usually say what 
 ### DOCPIF: Pipeline image could not be downloaded {#docpif}
 
 BiotaWiz could not download (pull) the TACTIC pipeline image with Docker.
+BiotaWiz checks the image against GitHub at every start. This error only appears if the image is not installed yet;
+an installed image is used with a warning when GitHub cannot be reached.
 
 - Check your internet connection and try again.
 - [Clear the download cache and delete the installed pipeline](../getting-started/10-reset-environment.md#level-1).

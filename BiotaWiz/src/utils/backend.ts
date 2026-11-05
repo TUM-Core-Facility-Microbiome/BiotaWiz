@@ -912,88 +912,124 @@ export async function initializeWslBackend(environment: Environment, releaseTag:
     });
 }
 
-export async function initializeDockerBackend(environment: Environment, releaseTag: SemVer) {
+/**
+ * Pull the image from the container registry, showing the progress. Docker compares the digest of the tag on the
+ * registry with the local one and only downloads the image (its changed layers) if they differ.
+ * @throws Error if the pull fails, also if it fails during the download
+ */
+function pullImage(environment: Environment, image: string, releaseTag: SemVer): Promise<void> {
+    const step = `Initializing ${environment} environment`;
     return new Promise<void>((resolve, reject) => {
-        // initialize with defaults; using socket
-        getImageName(environment, releaseTag).then(async (image) => {
-            updateProgress({
-                step: `Initializing ${environment} environment`,
-                message: "Checking Docker image tag",
-                state: "running",
-            });
-            // check if the image is registered
-            const images = await docker.listImages();
-            const imageExists = images.some((imageInfo) => {
-                // untagged images have no RepoTags
-                return imageInfo.RepoTags?.includes(image) ?? false;
-            });
+        docker.pull(image).then((stream: NodeJS.ReadableStream) => {
+            let currentStatus = "";
+            let lastUpdateTimeStamp = 0;
 
-            if (imageExists) {
-                logToDevTools(`Image ${image} exists.`);
+            function onFinished(error: Error | null) {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                logToDevTools(`Image ${image} pulled.`);
                 resolve();
-            } else {
-                logToDevTools(`Image ${image} does not exist locally.`);
-                // pull the image
-                updateProgress({
-                    step: `Initializing ${environment} environment`,
-                    message: `Pulling v${getVersionString(releaseTag)} image`,
-                    state: "running",
-                });
-                await docker.pull(image).then((stream: NodeJS.ReadableStream) => {
-                    docker.modem.followProgress(stream, onFinished, onProgress);
-                    let currentStatus = "";
-                    let lastUpdateTimeStamp = 0;
+            }
 
-                    function onFinished() {
-                        logToDevTools(`Image ${image} pulled.`);
-                        resolve();
-                    }
-
-                    function onProgress(event: {
-                        status: string,
-                        progressDetail: { current: number, total: number },
-                        progress: string,
-                        id: string
-                    }) {
-                        if (event.status !== currentStatus) {
-                            currentStatus = event.status;
-                            logToDevTools(`Image pull: ${event.status}`);
+            function onProgress(event: {
+                status: string,
+                progressDetail: { current: number, total: number },
+                progress: string,
+                id: string
+            }) {
+                if (event.status !== currentStatus) {
+                    currentStatus = event.status;
+                    logToDevTools(`Image pull: ${event.status}`);
+                    updateProgress({
+                        step,
+                        message: `Pulling image (${event.status})`,
+                        state: "running",
+                    });
+                }
+                if (event.status == "Downloading" || event.status == "Extracting") {
+                    const now = Date.now();
+                    if (now - lastUpdateTimeStamp > 1000) {
+                        if (event.progressDetail) {
+                            const pct = Math.round((event.progressDetail.current / event.progressDetail.total) * 100);
+                            lastUpdateTimeStamp = now;
                             updateProgress({
-                                step: `Initializing ${environment} environment`,
-                                message: `Pulling image (${event.status})`,
+                                step,
+                                message: `${event.status} image v${getVersionString(releaseTag)} (${pct}%)`,
                                 state: "running",
                             });
                         }
-                        if (event.status == "Downloading" || event.status == "Extracting") {
-                            const now = Date.now();
-                            if (now - lastUpdateTimeStamp > 1000) {
-                                if (event.progressDetail) {
-                                    const pct = Math.round((event.progressDetail.current / event.progressDetail.total) * 100);
-                                    lastUpdateTimeStamp = now;
-                                    updateProgress({
-                                        step: `Initializing ${environment} environment`,
-                                        message: `${event.status} image v${getVersionString(releaseTag)} (${pct}%)`,
-                                        state: "running",
-                                    });
-                                }
-                            }
-                        }
                     }
-                }).catch((error: Error) => {
-                    updateProgress({
-                        step: `Initializing ${environment} environment`,
-                        message: `Failed to pull image v${getVersionString(releaseTag)}`,
-                        state: "error",
-                        error: {
-                            code: "DOCPIF",
-                            helpUrl: helpPages.DOCPIF,
-                        },
-                    });
-                    reject(error);
-                });
+                }
             }
-        });
+
+            docker.modem.followProgress(stream, onFinished, onProgress);
+        }, reject);
     });
+}
+
+/**
+ * Get the local image with the given name and tag, or undefined if it is not on this computer.
+ */
+async function findLocalImage(image: string): Promise<Dockerode.ImageInfo | undefined> {
+    const images = await docker.listImages();
+    // untagged images have no RepoTags
+    return images.find((imageInfo) => imageInfo.RepoTags?.includes(image) ?? false);
+}
+
+function describeImage(imageInfo: Dockerode.ImageInfo) {
+    return imageInfo.RepoDigests?.length ? imageInfo.RepoDigests.join(", ") : imageInfo.Id;
+}
+
+/**
+ * Make sure the local image of the version is the one on the container registry of GitHub, like the WSL backend
+ * checks its pipeline file: the image is pulled on every start, so that Docker replaces the local image when GitHub has
+ * another one for the version, and the replaced image is removed. Without access to GitHub, an installed image is used
+ * with a warning.
+ */
+export async function initializeDockerBackend(environment: Environment, releaseTag: SemVer) {
+    const step = `Initializing ${environment} environment`;
+    const version = getVersionString(releaseTag);
+    const image = await getImageName(environment, releaseTag);
+    const installed = await findLocalImage(image);
+    logToDevTools(installed ? `Image ${image} exists (${describeImage(installed)}).` : `Image ${image} does not exist locally.`);
+
+    updateProgress({step, message: `Checking TACTIC pipeline v${version} against GitHub`, state: "running"});
+    try {
+        await pullImage(environment, image, releaseTag);
+    } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error);
+        if (installed) {
+            const warning = `Could not verify the installed TACTIC pipeline v${version} against GitHub (${reason}). ` +
+                `Using the installed version.`;
+            logToDevTools(warning, 'warn');
+            logToSection(LogSection.PREPARE_BACKEND, `Warning: ${warning}`);
+            return;
+        }
+        updateProgress({
+            step,
+            message: `Failed to pull image v${version}`,
+            state: "error",
+            error: {
+                code: "DOCPIF",
+                helpUrl: helpPages.DOCPIF,
+            },
+        });
+        throw error;
+    }
+
+    const current = await findLocalImage(image);
+    if (installed && current && current.Id !== installed.Id) {
+        logToDevTools(`Image ${image} was replaced by the one on GitHub: ${describeImage(installed)} -> ${describeImage(current)}`);
+        try {
+            // without force: an image that a container still uses stays, untagged
+            await docker.getImage(installed.Id).remove();
+            logToDevTools(`Removed the replaced image ${installed.Id}.`);
+        } catch (error) {
+            logToDevTools(`Could not remove the replaced image ${installed.Id}: ${error}`, 'warn');
+        }
+    }
 }
 
 const STOP_TIMEOUT_MS = 30 * 1000;  // how long to wait for the pipeline to stop
